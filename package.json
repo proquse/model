@@ -70,6 +70,7 @@
 		"watch": "^0.13.0"
 	},
 	"dependencies": {
+		"authly": "^2.0.1",
 		"cryptly": "^2.1.0",
 		"isoly": "^2.0.1"
 	}
