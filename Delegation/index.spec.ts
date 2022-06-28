@@ -74,9 +74,9 @@ describe("Delegation", () => {
 	}
 
 	it("initialDelegation", () => {
-		expect(initialDelegation).not.toEqual(42)
+		expect(model.Delegation.is(initialDelegation)).toEqual(true)
 	})
 	it("topLevelDelegation", () => {
-		expect(topLevelDelegation).not.toEqual(42)
+		expect(model.Delegation.is(topLevelDelegation)).toEqual(true)
 	})
 })
