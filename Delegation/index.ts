@@ -7,6 +7,7 @@ export interface Delegation extends DelegationCreatable {
 	id: cryptly.Identifier
 	costCenter?: string
 	created: isoly.DateTime
+	modified: isoly.DateTime
 	from?: string
 	delegations: Delegation[]
 	purchases: Purchase[]
@@ -18,6 +19,8 @@ export namespace Delegation {
 			DelegationCreatable.is(value) &&
 			(typeof value.costCenter == "string" || typeof value.costCenter == "undefined") &&
 			isoly.DateTime.is(value.created) &&
+			(typeof value.from == "string" || typeof value.from == "undefined") &&
+			isoly.DateTime.is(value.modified) &&
 			(typeof value.from == "string" || typeof value.from == "undefined") &&
 			Array.isArray(value.delegations) &&
 			value.delegations.every((delegation: any) => Delegation.is(delegation)) &&
