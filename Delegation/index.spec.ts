@@ -4,6 +4,7 @@ describe("Delegation", () => {
 	const initialDelegation: model.Delegation = {
 		id: "abcd0001",
 		created: "2021-12-20T13:37:42Z",
+		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
 		purpose: "Total company Budget",
 		amount: [20000, "EUR"],
@@ -13,6 +14,7 @@ describe("Delegation", () => {
 	const topLevelDelegation: model.Delegation = {
 		id: "abcd0001",
 		created: "2021-12-20T13:37:42Z",
+		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
 		purpose: "Total company Budget",
 		amount: [20000, "EUR"],
@@ -20,6 +22,7 @@ describe("Delegation", () => {
 			{
 				id: "abcd002",
 				created: "2021-12-22T13:37:42Z",
+				modified: "2021-12-22T13:37:42Z",
 				to: ["jane@example.com"],
 				costCenter: "IT",
 				purpose: "hosting costs",
@@ -28,6 +31,7 @@ describe("Delegation", () => {
 					{
 						id: "abcd002",
 						created: "2021-12-28T13:37:42Z",
+						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
 						costCenter: "IT",
 						purpose: "Cloudflare",
