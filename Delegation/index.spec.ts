@@ -73,6 +73,39 @@ describe("Delegation", () => {
 				],
 				purchases: [],
 			},
+			{
+				id: "abcd002",
+				created: "2021-12-28T13:37:42Z",
+				modified: "2021-12-20T13:37:42Z",
+				to: ["richard@example.com"],
+				costCenter: "IT",
+				purpose: "Cloudflare",
+				amount: [2000, "EUR"],
+				delegations: [
+					{
+						id: "abcd0001",
+						created: "2021-12-20T13:37:42Z",
+						modified: "2021-12-20T13:37:42Z",
+						to: ["john@example.com", "jane@example.com"],
+						purpose: "Partial company budget",
+						amount: [1000, "EUR"],
+						delegations: [
+							{
+								id: "abcd0001",
+								created: "2021-12-20T13:37:42Z",
+								modified: "2021-12-20T13:37:42Z",
+								to: ["richard@example.com"],
+								purpose: "Partial company budget",
+								amount: [1000, "EUR"],
+								delegations: [],
+								purchases: [],
+							},
+						],
+						purchases: [],
+					},
+				],
+				purchases: [],
+			},
 		],
 		purchases: [],
 	}
@@ -82,5 +115,21 @@ describe("Delegation", () => {
 	})
 	it("topLevelDelegation", () => {
 		expect(model.Delegation.is(topLevelDelegation)).toEqual(true)
+	})
+	it("findUser", () => {
+		expect(model.Delegation.findUser(topLevelDelegation, "john@example.com")).toEqual([
+			topLevelDelegation,
+			topLevelDelegation.delegations[1].delegations[0],
+		])
+		expect(model.Delegation.findUser(topLevelDelegation, "john@example.com")).toEqual([
+			topLevelDelegation,
+			topLevelDelegation.delegations[1].delegations[0],
+		])
+		const found = model.Delegation.findUser(topLevelDelegation, "richard@example.com")
+		expect(found).toEqual([
+			topLevelDelegation.delegations[0].delegations[0],
+			topLevelDelegation.delegations[1],
+			topLevelDelegation.delegations[1].delegations[0].delegations[0],
+		])
 	})
 })
