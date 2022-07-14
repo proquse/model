@@ -20,7 +20,7 @@ describe("Delegation", () => {
 		amount: [20000, "EUR"],
 		delegations: [
 			{
-				id: "abcd002",
+				id: "abcd0002",
 				created: "2021-12-22T13:37:42Z",
 				modified: "2021-12-22T13:37:42Z",
 				to: ["jane@example.com"],
@@ -29,7 +29,7 @@ describe("Delegation", () => {
 				amount: [2000, "EUR"],
 				delegations: [
 					{
-						id: "abcd002",
+						id: "abcd0003",
 						created: "2021-12-28T13:37:42Z",
 						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
@@ -74,7 +74,7 @@ describe("Delegation", () => {
 				purchases: [],
 			},
 			{
-				id: "abcd002",
+				id: "abcd0004",
 				created: "2021-12-28T13:37:42Z",
 				modified: "2021-12-20T13:37:42Z",
 				to: ["richard@example.com"],
@@ -83,7 +83,7 @@ describe("Delegation", () => {
 				amount: [2000, "EUR"],
 				delegations: [
 					{
-						id: "abcd0001",
+						id: "abcd0005",
 						created: "2021-12-20T13:37:42Z",
 						modified: "2021-12-20T13:37:42Z",
 						to: ["john@example.com", "jane@example.com"],
@@ -91,7 +91,7 @@ describe("Delegation", () => {
 						amount: [1000, "EUR"],
 						delegations: [
 							{
-								id: "abcd0001",
+								id: "abcd0006",
 								created: "2021-12-20T13:37:42Z",
 								modified: "2021-12-20T13:37:42Z",
 								to: ["richard@example.com"],
@@ -131,5 +131,100 @@ describe("Delegation", () => {
 			topLevelDelegation.delegations[1],
 			topLevelDelegation.delegations[1].delegations[0].delegations[0],
 		])
+	})
+	it("find", () => {
+		expect(model.Delegation.find(topLevelDelegation, "abcd0001")).toEqual(topLevelDelegation)
+		expect(model.Delegation.find(topLevelDelegation, "abcd0002")).toEqual(topLevelDelegation.delegations[0])
+		expect(model.Delegation.find(topLevelDelegation, "abcd0005")).toEqual(
+			topLevelDelegation.delegations[1].delegations[0]
+		)
+	})
+	it("change", () => {
+		const before: model.Delegation = {
+			id: "abcd0001",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [
+				{
+					id: "abcd0002",
+					created: "2021-12-20T13:37:42Z",
+					modified: "2021-12-20T13:37:42Z",
+					to: ["jane@example.com"],
+					purpose: "Partial company Budget",
+					amount: [2000, "EUR"],
+					delegations: [],
+					purchases: [],
+				},
+			],
+			purchases: [],
+		}
+		const updated: model.Delegation = {
+			id: "abcd0002",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["jane@example.com"],
+			purpose: "Partial company Budget",
+			amount: [3000, "EUR"],
+			delegations: [],
+			purchases: [],
+		}
+		const after: model.Delegation = {
+			id: "abcd0001",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [{ ...updated }],
+			purchases: [],
+		}
+		model.Delegation.change(before, before.delegations[0].id, updated)
+		expect(before).toEqual(after)
+		const final = { ...before, to: ["jane@example.com"] }
+		model.Delegation.change(before, before.id, final)
+		expect(before).toEqual(final)
+	})
+	it("remove", () => {
+		const toBeRemoved: model.Delegation = {
+			id: "abcd0003",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["jane@example.com"],
+			purpose: "Partial company Budget",
+			amount: [2000, "EUR"],
+			delegations: [],
+			purchases: [],
+		}
+		const after: model.Delegation = {
+			id: "abcd0001",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [
+				{
+					id: "abcd0002",
+					created: "2021-12-20T13:37:42Z",
+					modified: "2021-12-20T13:37:42Z",
+					to: ["jane@example.com"],
+					purpose: "Partial company Budget",
+					amount: [2000, "EUR"],
+					delegations: [],
+					purchases: [],
+				},
+			],
+			purchases: [],
+		}
+		const before: model.Delegation = {
+			...after,
+			delegations: [...after.delegations, toBeRemoved],
+		}
+		expect(model.Delegation.remove(before, toBeRemoved.id)).toEqual(toBeRemoved)
+		expect(before).toEqual(after)
+		expect(model.Delegation.remove(before, before.id)).toEqual(undefined)
 	})
 })

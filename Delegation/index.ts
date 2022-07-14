@@ -37,4 +37,30 @@ export namespace Delegation {
 
 		return found
 	}
+	export function find(root: Delegation, delegationId: string): Delegation | undefined {
+		let result: Delegation | undefined = root.id == delegationId ? root : undefined
+		if (!result)
+			root.delegations.find(delegation => (result = find(delegation, delegationId)))
+		return result
+	}
+
+	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
+		let result: Delegation | undefined = undefined
+		const old = find(root, outdatedId)
+		if (old) {
+			Object.keys(old).forEach((key: keyof Delegation) => delete old[key])
+			Object.assign(old, updated)
+			result = old
+		}
+		return result
+	}
+	export function remove(root: Delegation, id: string): Delegation | undefined {
+		let result: Delegation | undefined = undefined
+		const index = root.delegations.findIndex(delegation => delegation.id == id)
+		if (index >= 0)
+			result = root.delegations.splice(index, 1).shift()
+		else
+			root.delegations.find(delegation => (result = remove(delegation, id)))
+		return result
+	}
 }
