@@ -33,7 +33,8 @@ export namespace Delegation {
 		const found: Delegation[] = []
 		if (delegation.to.includes(email))
 			found.push(delegation)
-		delegation.delegations.forEach(delegation => found.push(...findUser(delegation, email)))
+		else
+			delegation.delegations.forEach(delegation => found.push(...findUser(delegation, email)))
 
 		return found
 	}
@@ -62,5 +63,19 @@ export namespace Delegation {
 		else
 			root.delegations.find(delegation => (result = remove(delegation, id)))
 		return result
+	}
+	export function spent(delegation: Delegation): Record<isoly.Currency, number | undefined> {
+		const purchases = delegation.purchases.reduce((previous: Record<string, number | undefined>, current) => {
+			if (current.amount != undefined) {
+				previous[current.amount[1]] = (previous[current.amount[1]] ?? 0) + current.amount[0]
+			}
+			return previous
+		}, {} as Record<string, number | undefined>)
+		delegation.delegations.forEach(d =>
+			Object.entries(spent(d)).forEach(([currency, amount]) => {
+				purchases[currency] = (purchases[currency] ?? 0) + (amount ?? 0)
+			})
+		)
+		return purchases
 	}
 }
