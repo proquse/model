@@ -29,7 +29,7 @@ export namespace Delegation {
 			cryptly.Identifier.is(value.id)
 		)
 	}
-	export function findUser(delegation: Delegation, email: string): Delegation[] {
+	export function findUser(delegation: Delegation, email: string, recursive = false): Delegation[] {
 		const found: Delegation[] = []
 		if (delegation.to.includes(email))
 			found.push(delegation)
@@ -64,18 +64,11 @@ export namespace Delegation {
 			root.delegations.find(delegation => (result = remove(delegation, id)))
 		return result
 	}
-	export function spent(delegation: Delegation): Record<isoly.Currency, number | undefined> {
-		const purchases = delegation.purchases.reduce((previous: Record<string, number | undefined>, current) => {
-			if (current.amount != undefined) {
-				previous[current.amount[1]] = (previous[current.amount[1]] ?? 0) + current.amount[0]
-			}
-			return previous
-		}, {} as Record<string, number | undefined>)
-		delegation.delegations.forEach(d =>
-			Object.entries(spent(d)).forEach(([currency, amount]) => {
-				purchases[currency] = (purchases[currency] ?? 0) + (amount ?? 0)
-			})
+
+	export function spent(delegation: Delegation): number {
+		return delegation.purchases.reduce(
+			(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
+			delegation.delegations.reduce((aggregate, current) => aggregate + spent(current), 0)
 		)
-		return purchases
 	}
 }

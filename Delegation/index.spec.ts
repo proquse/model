@@ -218,9 +218,7 @@ describe("Delegation", () => {
 		expect(model.Delegation.remove(before, before.id)).toEqual(undefined)
 	})
 	it("spent", () => {
-		expect(model.Delegation.spent(topLevelDelegation.delegations[1])).toEqual({})
-		expect(model.Delegation.spent(topLevelDelegation)).toEqual({
-			EUR: 19.5,
-		})
+		expect(model.Delegation.spent(topLevelDelegation.delegations[1])).toEqual(0)
+		expect(model.Delegation.spent(topLevelDelegation)).toEqual(19.5)
 	})
 })
