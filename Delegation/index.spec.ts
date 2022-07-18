@@ -221,4 +221,8 @@ describe("Delegation", () => {
 		expect(model.Delegation.spent(topLevelDelegation.delegations[1])).toEqual(0)
 		expect(model.Delegation.spent(topLevelDelegation)).toEqual(19.5)
 	})
+	it("balance", () => {
+		expect(model.Delegation.balance(topLevelDelegation)).toEqual(16000)
+		expect(model.Delegation.balance(topLevelDelegation.delegations[1].delegations[0].delegations[0])).toEqual(1000)
+	})
 })
