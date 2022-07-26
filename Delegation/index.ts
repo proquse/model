@@ -65,12 +65,26 @@ export namespace Delegation {
 		return result
 	}
 
-	export function spent(delegation: Delegation): number {
-		return delegation.purchases.reduce(
-			(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
-			delegation.delegations.reduce((aggregate, current) => aggregate + spent(current), 0)
-		)
+	export function spent(delegation: Delegation, includeOwnPurchases?: boolean): number {
+		return includeOwnPurchases
+			? delegation.purchases.reduce(
+					(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
+					delegation.delegations.reduce((aggregate, current) => aggregate + spent(current, true), 0)
+			  )
+			: delegation.delegations.reduce((aggregate, current) => aggregate + spent(current, true), 0)
 	}
+	// export function spent(delegation: Delegation): number {
+	// 	return delegation.delegations.reduce(
+	// 		(aggregate, current) =>
+	// 			aggregate +
+	// 			spent(current) +
+	// 			current.purchases.reduce(
+	// 				(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
+	// 				0
+	// 			),
+	// 		0
+	// 	)
+	// }
 	export function balance(delegation: Delegation): number {
 		return delegation.delegations.reduce(
 			(aggregate, current) => aggregate - current.amount[0],

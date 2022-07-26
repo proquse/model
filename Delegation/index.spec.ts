@@ -23,7 +23,7 @@ describe("Delegation", () => {
 				id: "abcd0002",
 				created: "2021-12-22T13:37:42Z",
 				modified: "2021-12-22T13:37:42Z",
-				to: ["jane@example.com"],
+				to: ["mary@example.com"],
 				costCenter: "IT",
 				purpose: "hosting costs",
 				amount: [2000, "EUR"],
@@ -71,7 +71,26 @@ describe("Delegation", () => {
 						],
 					},
 				],
-				purchases: [],
+				purchases: [
+					{
+						id: "aoeu2345",
+						created: "2022-01-01T00:00:42Z",
+						buyer: "mary@example.com",
+						amount: [9.5, "EUR"],
+						purpose: "Production Workers",
+						payment: {
+							type: "card",
+							limit: [10, "EUR"],
+							card: "4200000000/2202/aoeuhatns",
+						},
+						receipt: {
+							currency: "USD",
+							amount: 10,
+							vat: 0,
+							original: "https://example.com/receipt.pdf",
+						},
+					},
+				],
 			},
 			{
 				id: "abcd0004",
@@ -218,8 +237,12 @@ describe("Delegation", () => {
 		expect(model.Delegation.remove(before, before.id)).toEqual(undefined)
 	})
 	it("spent", () => {
+		expect(model.Delegation.spent(topLevelDelegation)).toEqual(29)
 		expect(model.Delegation.spent(topLevelDelegation.delegations[1])).toEqual(0)
-		expect(model.Delegation.spent(topLevelDelegation)).toEqual(19.5)
+		expect(model.Delegation.spent(topLevelDelegation.delegations[0])).toEqual(19.5)
+		expect(model.Delegation.spent(topLevelDelegation, true)).toEqual(29)
+		expect(model.Delegation.spent(topLevelDelegation.delegations[0].delegations[0], true)).toEqual(19.5)
+		expect(model.Delegation.spent(topLevelDelegation.delegations[0], true)).toEqual(29)
 	})
 	it("balance", () => {
 		expect(model.Delegation.balance(topLevelDelegation)).toEqual(16000)
