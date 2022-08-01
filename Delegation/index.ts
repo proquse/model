@@ -29,13 +29,12 @@ export namespace Delegation {
 			cryptly.Identifier.is(value.id)
 		)
 	}
-	export function findUser(delegation: Delegation, email: string, recursive = false): Delegation[] {
+	export function findUser(delegation: Delegation, email: string): Delegation[] {
 		const found: Delegation[] = []
 		if (delegation.to.includes(email))
 			found.push(delegation)
 		else
 			delegation.delegations.forEach(delegation => found.push(...findUser(delegation, email)))
-
 		return found
 	}
 	export function find(root: Delegation, delegationId: string): Delegation | undefined {
