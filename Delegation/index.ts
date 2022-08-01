@@ -29,40 +29,46 @@ export namespace Delegation {
 			cryptly.Identifier.is(value.id)
 		)
 	}
-	export function findUser(delegation: Delegation, email: string, recursive = false): Delegation[] {
-		const found: Delegation[] = []
+	export function findUser(delegation: Delegation, email: string): Delegation[] {
+		const result: Delegation[] = []
 		if (delegation.to.includes(email))
-			found.push(delegation)
+			result.push(delegation)
 		else
-			delegation.delegations.forEach(delegation => found.push(...findUser(delegation, email)))
-
-		return found
+			delegation.delegations.forEach(delegation => result.push(...findUser(delegation, email)))
+		return result
 	}
 	export function find(root: Delegation, delegationId: string): Delegation | undefined {
 		let result: Delegation | undefined = root.id == delegationId ? root : undefined
-		if (!result)
-			root.delegations.find(delegation => (result = find(delegation, delegationId)))
 		return result
+			? result
+			: root.delegations.find(delegation => (result = find(delegation, delegationId)))
+			? result
+			: undefined
 	}
-
-	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
+	export function findParent(root: Delegation, id: string): Delegation | undefined {
 		let result: Delegation | undefined = undefined
-		const old = find(root, outdatedId)
-		if (old) {
-			Object.keys(old).forEach((key: keyof Delegation) => delete old[key])
-			Object.assign(old, updated)
-			result = old
+		return root.delegations.find(delegation => delegation.id == id)
+			? (result = root)
+			: root.delegations.find(delegation => (result = findParent(delegation, id)))
+			? result
+			: undefined
+	}
+	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
+		const result = find(root, outdatedId)
+		if (result) {
+			Object.keys(result).forEach((key: keyof Delegation) => delete result[key])
+			Object.assign(result, updated)
 		}
 		return result
 	}
 	export function remove(root: Delegation, id: string): Delegation | undefined {
 		let result: Delegation | undefined = undefined
 		const index = root.delegations.findIndex(delegation => delegation.id == id)
-		if (index >= 0)
-			result = root.delegations.splice(index, 1).shift()
-		else
-			root.delegations.find(delegation => (result = remove(delegation, id)))
-		return result
+		return index >= 0
+			? (result = root.delegations.splice(index, 1).shift())
+			: root.delegations.find(delegation => (result = remove(delegation, id)))
+			? result
+			: undefined
 	}
 	export function spent(delegation: Delegation, includeOwnPurchases?: boolean): number {
 		return includeOwnPurchases

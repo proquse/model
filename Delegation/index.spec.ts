@@ -148,6 +148,14 @@ describe("Delegation", () => {
 			topLevelDelegation.delegations[1].delegations[0]
 		)
 	})
+	it("findParent", () => {
+		const result = model.Delegation.findParent(topLevelDelegation, topLevelDelegation.delegations[0].id)
+		expect(result).toEqual(topLevelDelegation)
+		expect(model.Delegation.findParent(topLevelDelegation.delegations[1], "abcd0006")).toEqual(
+			topLevelDelegation.delegations[1].delegations[0]
+		)
+		expect(model.Delegation.findParent(topLevelDelegation.delegations[0], "abcd0006")).toEqual(undefined)
+	})
 	it("change", () => {
 		const before: model.Delegation = {
 			id: "abcd0001",
