@@ -54,12 +54,10 @@ export namespace Delegation {
 			: undefined
 	}
 	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
-		let result: Delegation | undefined = undefined
-		const old = find(root, outdatedId)
-		if (old) {
-			Object.keys(old).forEach((key: keyof Delegation) => delete old[key])
-			Object.assign(old, updated)
-			result = old
+		const result = find(root, outdatedId)
+		if (result) {
+			Object.keys(result).forEach((key: keyof Delegation) => delete result[key])
+			Object.assign(result, updated)
 		}
 		return result
 	}
