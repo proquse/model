@@ -1,4 +1,5 @@
 import * as isoly from "isoly"
+import { Amount } from "../../Amount"
 
 export interface Creatable {
 	type: "card"
@@ -8,13 +9,7 @@ export interface Creatable {
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable & Record<string, any> {
 		return (
-			typeof value == "object" &&
-			value.type == "card" &&
-			(typeof value.limit == "undefined" ||
-				(Array.isArray(value.limit) &&
-					value.limit.length == 2 &&
-					typeof value.limit[0] == "number" &&
-					isoly.Currency.is(value.limit[1])))
+			typeof value == "object" && value.type == "card" && (typeof value.limit == "undefined" || Amount.is(value.limit))
 		)
 	}
 }
