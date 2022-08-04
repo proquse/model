@@ -14,6 +14,7 @@ export interface Delegation extends DelegationCreatable {
 }
 export namespace Delegation {
 	export type Creatable = DelegationCreatable
+	export const Creatable = DelegationCreatable
 	export function is(value: Delegation | any): value is Delegation & Record<string, any> {
 		return (
 			DelegationCreatable.is(value) &&
