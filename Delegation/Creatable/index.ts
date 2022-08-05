@@ -1,3 +1,4 @@
+import * as isoly from "isoly"
 import { Amount } from "../../Amount"
 
 export interface Creatable {
@@ -24,5 +25,8 @@ export namespace Creatable {
 			first.amount.every((value, index) => value == second.amount[index]) &&
 			first.to.every((value, index) => value == second.to[index])
 		)
+	}
+	export function create(currency?: isoly.Currency): Creatable {
+		return { to: [], purpose: "", amount: [0, currency ?? "EUR"] }
 	}
 }
