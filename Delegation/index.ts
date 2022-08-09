@@ -87,4 +87,11 @@ export namespace Delegation {
 			)
 		)
 	}
+	export function path(root: Delegation, delegationId: string): Delegation[] | undefined {
+		let result: Delegation[] | undefined = undefined
+		root.delegations.find(delegation =>
+			delegation.id == delegationId ? (result = []) : (result = path(delegation, delegationId))
+		)
+		return !result ? result : [root, ...result]
+	}
 }

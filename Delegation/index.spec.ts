@@ -259,4 +259,16 @@ describe("Delegation", () => {
 	it("create", () => {
 		expect(model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create()))).toEqual(true)
 	})
+	it("path", () => {
+		expect(model.Delegation.path(topLevelDelegation, "abcd0003")).toEqual([
+			topLevelDelegation,
+			topLevelDelegation.delegations[0],
+		])
+		expect(model.Delegation.path(topLevelDelegation, "abcd0001")).toEqual(undefined)
+		expect(model.Delegation.path(topLevelDelegation, "abcd0006")).toEqual([
+			topLevelDelegation,
+			topLevelDelegation.delegations[1],
+			topLevelDelegation.delegations[1].delegations[0],
+		])
+	})
 })
