@@ -36,6 +36,6 @@ describe("Delegation.Creatable", () => {
 	})
 	it("create", () => {
 		expect(model.Delegation.Creatable.is(model.Delegation.Creatable.create())).toEqual(true)
-		expect(model.Delegation.Creatable.is(model.Delegation.Creatable.create("USD"))).toEqual(true)
+		expect(model.Delegation.Creatable.is(model.Delegation.Creatable.create(undefined, undefined, "USD"))).toEqual(true)
 	})
 })

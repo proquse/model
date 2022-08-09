@@ -1,3 +1,5 @@
+import * as cryptly from "cryptly"
+import * as isoly from "isoly"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { Data as DelegationData } from "./Data"
 
@@ -15,6 +17,17 @@ export namespace Delegation {
 			Array.isArray(value.delegations) &&
 			value.delegations.every(delegation => Delegation.is(delegation))
 		)
+	}
+	export function create(creatable: DelegationCreatable, idLength: cryptly.Identifier.Length = 8): Delegation {
+		const now = isoly.DateTime.now()
+		return {
+			...creatable,
+			id: cryptly.Identifier.generate(idLength),
+			created: now,
+			modified: now,
+			purchases: [],
+			delegations: [],
+		}
 	}
 	export function findUser(delegation: Delegation, email: string): Delegation[] {
 		const result: Delegation[] = []
