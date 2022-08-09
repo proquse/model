@@ -26,7 +26,7 @@ export namespace Creatable {
 			first.to.every((value, index) => value == second.to[index])
 		)
 	}
-	export function create(currency?: isoly.Currency): Creatable {
-		return { to: [], purpose: "", amount: [0, currency ?? "EUR"] }
+	export function create(to?: string[], purpose?: string, currency?: isoly.Currency): Creatable {
+		return { to: to ?? [], purpose: purpose ?? "", amount: [0, currency ?? "EUR"] }
 	}
 }
