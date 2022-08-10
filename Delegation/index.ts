@@ -53,6 +53,13 @@ export namespace Delegation {
 			? result
 			: undefined
 	}
+	export function path(root: Delegation, delegationId: string): Delegation[] | undefined {
+		let result: Delegation[] | undefined = undefined
+		root.delegations.find(delegation =>
+			delegation.id == delegationId ? (result = []) : (result = path(delegation, delegationId))
+		)
+		return !result ? result : [root, ...result]
+	}
 	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
 		const result = find(root, outdatedId)
 		if (result) {
@@ -86,12 +93,5 @@ export namespace Delegation {
 				delegation.amount[0]
 			)
 		)
-	}
-	export function path(root: Delegation, delegationId: string): Delegation[] | undefined {
-		let result: Delegation[] | undefined = undefined
-		root.delegations.find(delegation =>
-			delegation.id == delegationId ? (result = []) : (result = path(delegation, delegationId))
-		)
-		return !result ? result : [root, ...result]
 	}
 }
