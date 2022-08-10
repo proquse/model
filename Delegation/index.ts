@@ -53,6 +53,13 @@ export namespace Delegation {
 			? result
 			: undefined
 	}
+	export function findParents(root: Delegation, delegationId: string): Delegation[] | undefined {
+		let result: Delegation[] | undefined = undefined
+		root.delegations.find(delegation =>
+			delegation.id == delegationId ? (result = []) : (result = findParents(delegation, delegationId))
+		)
+		return !result ? result : [root, ...result]
+	}
 	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
 		const result = find(root, outdatedId)
 		if (result) {
