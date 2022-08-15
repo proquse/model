@@ -9,6 +9,6 @@ describe("Purchase.Creatable", () => {
 		},
 	}
 	it("is", () => {
-		expect(model.Purchase.Creatable.is(creatable))
+		expect(model.Purchase.Creatable.is(creatable)).toEqual(true)
 	})
 })
