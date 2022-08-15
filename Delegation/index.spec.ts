@@ -133,12 +133,11 @@ describe("Delegation", () => {
 		purchases: [],
 	}
 
-	it("initialDelegation", () => {
+	it("is", () => {
 		expect(model.Delegation.is(initialDelegation)).toEqual(true)
-	})
-	it("topLevelDelegation", () => {
 		expect(model.Delegation.is(topLevelDelegation)).toEqual(true)
 	})
+
 	it("findUser", () => {
 		expect(model.Delegation.findUser(topLevelDelegation, "john@example.com")).toEqual([topLevelDelegation])
 		expect(model.Delegation.findUser(topLevelDelegation, "john@example.com")).toEqual([topLevelDelegation])
