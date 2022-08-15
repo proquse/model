@@ -11,7 +11,7 @@ export interface Purchase extends Creatable {
 	buyer: string
 	payment: Payment
 	amount?: Amount
-	receipt: Receipt | { to: string }
+	receipt?: Receipt | { to: string }
 }
 
 export namespace Purchase {
@@ -23,7 +23,9 @@ export namespace Purchase {
 			typeof value.buyer == "string" &&
 			Payment.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
-			(Receipt.is(value.receipt) || (typeof value.receipt == "object" && typeof value.receipt.to == "string"))
+			(Receipt.is(value.receipt) ||
+				(typeof value.receipt == "object" && typeof value.receipt.to == "string") ||
+				typeof value.receipt == "undefined")
 		)
 	}
 }
