@@ -26,12 +26,13 @@ describe("Purchase", () => {
 	it("create", () => {
 		const purchase: model.Purchase.Creatable = {
 			purpose: "buy things",
-			buyer: "jane doe",
 			payment: {
 				type: "card",
 				limit: [10, "EUR"],
 			},
 		}
-		expect(model.Purchase.is(model.Purchase.create(purchase, "0123456789101112/0122/969/Jane Doe"))).toEqual(true)
+		expect(
+			model.Purchase.is(model.Purchase.create(purchase, "0123456789101112/0122/969/Jane Doe", "jane@example.com"))
+		).toEqual(true)
 	})
 })

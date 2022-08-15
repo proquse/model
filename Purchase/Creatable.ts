@@ -3,7 +3,6 @@ import { Payment } from "../Payment"
 export interface Creatable {
 	purpose: string
 	payment: Payment.Creatable
-	buyer: string
 }
 
 export namespace Creatable {
