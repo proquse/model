@@ -7,11 +7,6 @@ export interface Creatable {
 
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			typeof value.purpose == "string" &&
-			Payment.Creatable.is(value.payment) &&
-			typeof value.buyer == "string"
-		)
+		return typeof value == "object" && typeof value.purpose == "string" && Payment.Creatable.is(value.payment)
 	}
 }
