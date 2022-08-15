@@ -1,15 +1,10 @@
-import { Card as PaymentCard } from "../Card"
+import { Card } from "../Card"
 import { Creatable as PaymentCreatable } from "./Creatable"
 
-export type Payment = PaymentCard
+export type Payment = Card
 
 export namespace Payment {
-	export const is = PaymentCard.is
+	export const is = Card.is
 	export type Creatable = PaymentCreatable
 	export const Creatable = PaymentCreatable
-	export type Card = PaymentCard
-	export namespace Card {
-		export type Creatable = PaymentCard.Creatable
-		export const Creatable = PaymentCard.Creatable
-	}
 }

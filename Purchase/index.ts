@@ -11,7 +11,7 @@ export interface Purchase extends Creatable {
 	buyer: string
 	payment: Payment
 	amount?: Amount
-	receipt: Receipt | { to: string }
+	receipt?: Receipt | { to: string }
 }
 
 export namespace Purchase {
