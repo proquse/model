@@ -3,9 +3,9 @@ import * as isoly from "isoly"
 import { Amount } from "../Amount"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
-import { Creatable } from "./Creatable"
+import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase extends Creatable {
+export interface Purchase extends PurchaseCreatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	buyer: string
@@ -17,7 +17,7 @@ export interface Purchase extends Creatable {
 export namespace Purchase {
 	export function is(value: Purchase | any): value is Purchase & Record<string, any> {
 		return (
-			Creatable.is(value) &&
+			PurchaseCreatable.is(value) &&
 			cryptly.Identifier.is(value.id) &&
 			isoly.DateTime.is(value.created) &&
 			typeof value.buyer == "string" &&
@@ -28,4 +28,6 @@ export namespace Purchase {
 				typeof value.receipt == "undefined")
 		)
 	}
+	export type Creatable = PurchaseCreatable
+	export const Creatable = PurchaseCreatable
 }
