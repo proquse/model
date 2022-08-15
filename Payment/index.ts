@@ -7,4 +7,10 @@ export namespace Payment {
 	export const is = Card.is
 	export type Creatable = PaymentCreatable
 	export const Creatable = PaymentCreatable
+	export function create(payment: Creatable, card: string): Payment {
+		return {
+			...payment,
+			card: card,
+		}
+	}
 }

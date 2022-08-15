@@ -8,7 +8,7 @@ import { Creatable as PurchaseCreatable } from "./Creatable"
 export interface Purchase extends PurchaseCreatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
-	buyer: string
+	modified: isoly.DateTime
 	payment: Payment
 	amount?: Amount
 	receipt?: Receipt | { to: string }
@@ -20,6 +20,7 @@ export namespace Purchase {
 			PurchaseCreatable.is(value) &&
 			cryptly.Identifier.is(value.id) &&
 			isoly.DateTime.is(value.created) &&
+			isoly.DateTime.is(value.modified) &&
 			typeof value.buyer == "string" &&
 			Payment.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
@@ -27,6 +28,20 @@ export namespace Purchase {
 				(typeof value.receipt == "object" && typeof value.receipt.to == "string") ||
 				typeof value.receipt == "undefined")
 		)
+	}
+	export function create(
+		purchase: Purchase.Creatable,
+		card: string,
+		idLength: cryptly.Identifier.Length = 8
+	): Purchase {
+		const now = isoly.DateTime.now()
+		return {
+			id: cryptly.Identifier.generate(idLength),
+			created: now,
+			modified: now,
+			...purchase,
+			payment: Payment.create(purchase.payment, card),
+		}
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
