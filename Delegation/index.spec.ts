@@ -41,6 +41,7 @@ describe("Delegation", () => {
 							{
 								id: "aoeu1234",
 								created: "2022-01-01T00:00:42Z",
+								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
@@ -59,12 +60,14 @@ describe("Delegation", () => {
 							{
 								id: "aoeu1234",
 								created: "2022-02-01T00:00:42Z",
+								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
 								payment: {
 									type: "card",
-									card: "4200000000000000/1015/969/richard doe"
+									limit: [10, "EUR"],
+									card: "4200000000000000/1015/969/richard doe",
 								},
 								receipt: { to: "receipt+aoeu1234@company.com" },
 							},
@@ -75,6 +78,7 @@ describe("Delegation", () => {
 					{
 						id: "aoeu2345",
 						created: "2022-01-01T00:00:42Z",
+						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",

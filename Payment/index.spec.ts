@@ -9,4 +9,11 @@ describe("Payment", () => {
 	it("is", () => {
 		expect(model.Payment.is(payment)).toEqual(true)
 	})
+	it("create", () => {
+		const creatable: model.Payment.Creatable = {
+			type: "card",
+			limit: [10, "EUR"],
+		}
+		expect(model.Payment.is(model.Payment.create(creatable, "0123456789121112/0122/969/Jane Doe"))).toEqual(true)
+	})
 })
