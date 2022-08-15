@@ -1,4 +1,4 @@
-import { Card as PaymentCard } from "./Card"
+import { Card as PaymentCard } from "../Card"
 import { Creatable as PaymentCreatable } from "./Creatable"
 
 export type Payment = PaymentCard

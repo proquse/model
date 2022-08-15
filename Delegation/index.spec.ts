@@ -47,7 +47,7 @@ describe("Delegation", () => {
 								payment: {
 									type: "card",
 									limit: [10, "EUR"],
-									card: "4200000000/2202/aoeuhatns",
+									card: "4200000000000000/1015/969/richard doe",
 								},
 								receipt: {
 									currency: "USD",
@@ -64,7 +64,7 @@ describe("Delegation", () => {
 								purpose: "Production Workers",
 								payment: {
 									type: "card",
-									card: "4200000020/2202/aoeuhatns",
+									card: "4200000000000000/1015/969/richard doe"
 								},
 								receipt: { to: "receipt+aoeu1234@company.com" },
 							},
@@ -81,7 +81,7 @@ describe("Delegation", () => {
 						payment: {
 							type: "card",
 							limit: [10, "EUR"],
-							card: "4200000000/2202/aoeuhatns",
+							card: "4200000000000000/1015/969/mary doe",
 						},
 						receipt: {
 							currency: "USD",
