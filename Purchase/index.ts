@@ -1,6 +1,7 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import { Amount } from "../Amount"
+import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Creatable as PurchaseCreatable } from "./Creatable"
@@ -41,6 +42,10 @@ export namespace Purchase {
 			...purchase,
 			payment: Payment.create(purchase.payment, card),
 		}
+	}
+	export function find(root: Delegation, purchaseId: string): Purchase | undefined {
+		let result: Purchase | undefined = root.purchases.find(purchase => purchase.id == purchaseId)
+		return result ?? root.delegations.find(delegation => (result = find(delegation, purchaseId))) ? result : undefined
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
