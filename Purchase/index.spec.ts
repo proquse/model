@@ -30,9 +30,8 @@ describe("Purchase", () => {
 				type: "card",
 				limit: [10, "EUR"],
 			},
+			buyer: "jane@example.com",
 		}
-		expect(
-			model.Purchase.is(model.Purchase.create(purchase, "0123456789101112/0122/969/Jane Doe", "jane@example.com"))
-		).toEqual(true)
+		expect(model.Purchase.is(model.Purchase.create(purchase, "0123456789101112/0122/969/Jane Doe"))).toEqual(true)
 	})
 })

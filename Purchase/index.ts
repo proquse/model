@@ -9,7 +9,6 @@ export interface Purchase extends PurchaseCreatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	buyer: string
 	payment: Payment
 	amount?: Amount
 	receipt?: Receipt | { to: string }
@@ -22,7 +21,6 @@ export namespace Purchase {
 			cryptly.Identifier.is(value.id) &&
 			isoly.DateTime.is(value.created) &&
 			isoly.DateTime.is(value.modified) &&
-			typeof value.buyer == "string" &&
 			Payment.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
 			(Receipt.is(value.receipt) ||
@@ -33,7 +31,6 @@ export namespace Purchase {
 	export function create(
 		purchase: Purchase.Creatable,
 		card: string,
-		buyer: string,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
@@ -41,7 +38,6 @@ export namespace Purchase {
 			id: cryptly.Identifier.generate(idLength),
 			created: now,
 			modified: now,
-			buyer: buyer,
 			...purchase,
 			payment: Payment.create(purchase.payment, card),
 		}
