@@ -156,7 +156,81 @@ describe("Purchase", () => {
 		expect(model.Purchase.is(model.Purchase.create(purchase, "0123456789101112/0122/969/Jane Doe"))).toEqual(true)
 	})
 	it("find", () => {
-		const purchase = model.Purchase.find(delegation, "aoeu1234")
-		console.log(purchase)
+		expect(model.Purchase.find(delegation, "aoeu1234")).toEqual(delegation.delegations[0].delegations[0].purchases[0])
+	})
+	it("change", () => {
+		const card = "0123456789101112/0122/969/Jane Doe"
+		const target: model.Purchase = model.Purchase.create(
+			{
+				purpose: "buy things",
+				payment: {
+					type: "card",
+					limit: [10, "EUR"],
+				},
+				buyer: "jane@example.com",
+			},
+			card
+		)
+		const updated: model.Purchase = {
+			...target,
+			purpose: "buy more things",
+			payment: {
+				type: "card",
+				limit: [10, "EUR"],
+				card,
+			},
+			buyer: "john@example.com",
+		}
+		const after: model.Purchase = {
+			...target,
+			purpose: "buy more things",
+			payment: {
+				type: "card",
+				limit: [10, "EUR"],
+				card: card,
+			},
+			buyer: "john@example.com",
+		}
+		const root: model.Delegation = {
+			id: "abcd0001",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [],
+			purchases: [target],
+		}
+		expect(target).not.toEqual(updated)
+		model.Purchase.change(target, updated)
+		expect(target).toEqual(after)
+		const result = model.Purchase.change(root, updated)
+		expect(result).toEqual(updated)
+	})
+	it("remove", () => {
+		const card = "0123456789101112/0122/969/Jane Doe"
+		const target: model.Purchase = model.Purchase.create(
+			{
+				purpose: "buy things",
+				payment: {
+					type: "card",
+					limit: [10, "EUR"],
+				},
+				buyer: "jane@example.com",
+			},
+			card
+		)
+		const root: model.Delegation = {
+			id: "abcd0001",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [],
+			purchases: [target],
+		}
+		model.Purchase.remove(root, target.id)
+		expect(root.purchases.length).toEqual(0)
 	})
 })
