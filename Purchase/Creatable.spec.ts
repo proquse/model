@@ -7,6 +7,7 @@ describe("Purchase.Creatable", () => {
 			type: "card",
 			limit: [10, "EUR"],
 		},
+		buyer: "jane@example.com",
 	}
 	it("is", () => {
 		expect(model.Purchase.Creatable.is(creatable)).toEqual(true)
