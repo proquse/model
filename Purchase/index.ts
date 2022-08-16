@@ -1,6 +1,7 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import { Amount } from "../Amount"
+import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Creatable as PurchaseCreatable } from "./Creatable"
@@ -41,6 +42,29 @@ export namespace Purchase {
 			...purchase,
 			payment: Payment.create(purchase.payment, card),
 		}
+	}
+	export function find(root: Delegation, purchaseId: string): Purchase | undefined {
+		let result: Purchase | undefined = root.purchases.find(purchase => purchase.id == purchaseId)
+		return result ?? root.delegations.find(delegation => (result = find(delegation, purchaseId))) ? result : undefined
+	}
+	export function change(root: Delegation, updated: Purchase): Purchase | undefined
+	export function change(old: Purchase, updated: Purchase): Purchase | undefined
+	export function change(root: Delegation | Purchase, updated: Purchase): Purchase | undefined {
+		const result = Purchase.is(root) ? root : find(root, updated.id)
+		if (result) {
+			Object.keys(result).forEach((key: keyof Purchase) => delete result[key])
+			Object.assign(result, updated)
+		}
+		return result
+	}
+	export function remove(root: Delegation, purchaseId: string): Purchase | undefined {
+		let result: Purchase | undefined = undefined
+		const index = root.purchases.findIndex(purchase => purchase.id == purchaseId)
+		return index >= 0
+			? (result = root.purchases.splice(index, 1).at(0))
+			: root.delegations.find(delegation => (result = remove(delegation, purchaseId)))
+			? result
+			: undefined
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
