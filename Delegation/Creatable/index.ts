@@ -23,6 +23,7 @@ export namespace Creatable {
 			is(second) &&
 			first.purpose == second.purpose &&
 			first.amount.every((value, index) => value == second.amount[index]) &&
+			first.to.length == second.to.length &&
 			first.to.every((value, index) => value == second.to[index])
 		)
 	}
