@@ -31,6 +31,12 @@ describe("Delegation.Creatable", () => {
 			purpose: "testing",
 			amount: [10, "EUR"],
 		}
+		const third: model.Delegation.Creatable = {
+			to: [],
+			purpose: "testing",
+			amount: [10, "EUR"],
+		}
+		expect(model.Delegation.Creatable.equals(third, first)).toEqual(false)
 		expect(model.Delegation.Creatable.equals(first, second)).toEqual(true)
 		expect(model.Delegation.Creatable.equals(first, creatable)).toEqual(false)
 	})
