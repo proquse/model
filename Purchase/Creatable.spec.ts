@@ -12,4 +12,13 @@ describe("Purchase.Creatable", () => {
 	it("is", () => {
 		expect(model.Purchase.Creatable.is(creatable)).toEqual(true)
 	})
+	it("validate", () => {
+		expect(model.Purchase.Creatable.validate(creatable)).toEqual(true)
+		expect(
+			model.Purchase.Creatable.validate({ purpose: "asdas", payment: { type: "card", limit: [10, "EUR"] }, buyer: "" })
+		).toEqual(false)
+		expect(
+			model.Purchase.Creatable.validate({ purpose: "", payment: { type: "card", limit: [10, "EUR"] }, buyer: "sasd" })
+		).toEqual(false)
+	})
 })
