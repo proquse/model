@@ -12,6 +12,9 @@ export namespace Card {
 			value.card.match(/^[0-9]{16}\/(0[1-9]|1[0-2])[0-9]{2}\/[0-9]{3}\/[^\t-@\-`~]+\s[^\t-@\-`~]+$/) != null
 		) //regex test match: 4200000000000000/1015/969/gjdfölskgj fsfghfkljjjjj
 	}
+	export function validate(value: Card){
+		return CardCreatable.validate(value)
+	}
 	export type Creatable = CardCreatable
 	export const Creatable = CardCreatable
 }
