@@ -1,8 +1,9 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
+import { Amount } from "../../Amount"
 import { Purchase } from "../../Purchase"
 import { Creatable } from "../Creatable"
-import type { Delegation } from "../index"
+import { Delegation } from "../index"
 
 export interface Data extends Creatable {
 	id: cryptly.Identifier
@@ -31,5 +32,10 @@ export namespace Data {
 		return Object.fromEntries(
 			Object.entries(delegation).filter(([key, _]: [keyof Delegation, any]) => key != "delegations")
 		) as Data
+	}
+	export function validate(value: Delegation.Data) {
+		return (
+			!!value.id && value.created < value.modified && !!value.to && !!value.purpose && Amount.validate(value.amount)
+		)
 	}
 }

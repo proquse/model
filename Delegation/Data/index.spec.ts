@@ -28,4 +28,5 @@ describe("Delegation.Data", () => {
 		expect(model.Delegation.Data.is(data)).toEqual(true)
 		expect(model.Delegation.is(data)).toEqual(false)
 	})
+	
 })
