@@ -233,4 +233,98 @@ describe("Purchase", () => {
 		model.Purchase.remove(root, target.id)
 		expect(root.purchases.length).toEqual(0)
 	})
+	it("validate", () => {
+		const card = "0123456789101112/0122/969/Jane Doe"
+		const target: model.Purchase = model.Purchase.create(
+			{
+				purpose: "buy things",
+				payment: {
+					type: "card",
+					limit: [10, "EUR"],
+				},
+				buyer: "jane@example.com",
+			},
+			card
+		)
+
+		expect(model.Purchase.validate(target)).toEqual(true)
+		expect(
+			model.Purchase.validate(
+				model.Purchase.create(
+					{
+						purpose: "",
+						payment: {
+							type: "card",
+							limit: [10, "EUR"],
+						},
+						buyer: "jane@example.com",
+					},
+					card
+				)
+			)
+		).toEqual(false)
+		expect(
+			model.Purchase.validate(
+				model.Purchase.create(
+					{
+						purpose: "buy things",
+						payment: {
+							type: "card",
+							limit: [10, "EUR"],
+						},
+						buyer: "",
+					},
+					card
+				)
+			)
+		).toEqual(false)
+		expect(
+			model.Purchase.validate(
+				model.Purchase.create(
+					{
+						purpose: "buy things",
+						payment: {
+							type: "card",
+							limit: [10, "EUR"],
+						},
+						buyer: "jane@example.com",
+					},
+					card
+				),
+				[10, "EUR"]
+			)
+		).toEqual(true)
+		expect(
+			model.Purchase.validate(
+				model.Purchase.create(
+					{
+						purpose: "buy things",
+						payment: {
+							type: "card",
+							limit: [10, "EUR"],
+						},
+						buyer: "jane@example.com",
+					},
+					card
+				),
+				[1, "EUR"]
+			)
+		).toEqual(false)
+		expect(
+			model.Purchase.validate(
+				model.Purchase.create(
+					{
+						purpose: "buy things",
+						payment: {
+							type: "card",
+							limit: [10, "EUR"],
+						},
+						buyer: "jane@example.com",
+					},
+					card
+				),
+				[10, "SEK"]
+			)
+		).toEqual(false)
+	})
 })
