@@ -33,9 +33,17 @@ export namespace Data {
 			Object.entries(delegation).filter(([key, _]: [keyof Delegation, any]) => key != "delegations")
 		) as Data
 	}
-	export function validate(value: Delegation.Data) {
+	export function validate(value: Delegation.Data, limit?: Amount) {
 		return (
-			!!value.id && value.created < value.modified && !!value.to && !!value.purpose && Amount.validate(value.amount)
+			!!value.id &&
+			value.costCenter != "" &&
+			value.created <= value.modified &&
+			value.from != "" &&
+			Creatable.validate({ to: value.to, purpose: value.purpose, amount: value.amount }, limit) &&
+			value.purchases.every(purchase => Purchase.validate(purchase)) &&
+			value.purchases.reduce((aggregate, current) => {
+				return aggregate + (current.amount?.[0] ?? 0)
+			}, 0) <= value.amount[0]
 		)
 	}
 }
