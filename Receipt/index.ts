@@ -17,4 +17,7 @@ export namespace Receipt {
 			isoly.Currency.is(value.currency)
 		)
 	}
+	export function validate(value: Receipt) {
+		return !!value.original && value.amount > 0 && value.vat >= 0 && isoly.Currency.is(value.currency)
+	}
 }
