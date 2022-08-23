@@ -17,4 +17,11 @@ describe("Payment", () => {
 		expect(model.Payment.Creatable.is(creatable))
 		expect(model.Payment.is(model.Payment.create(creatable, "0123456789121112/0122/969/Jane Doe"))).toEqual(true)
 	})
+	it("validate", () => {
+		expect(model.Payment.validate(payment)).toEqual(true)
+		expect(model.Payment.validate({ type: "card", limit: [10, "EUR"], card: "" })).toEqual(false)
+		expect(model.Payment.validate(payment, [11, "EUR"])).toEqual(true)
+		expect(model.Payment.validate(payment, [1, "EUR"])).toEqual(false)
+		expect(model.Payment.validate(payment, [11, "SEK"])).toEqual(false)
+	})
 })

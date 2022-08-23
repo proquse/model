@@ -10,8 +10,8 @@ describe("Card.Creatable", () => {
 	})
 	it("validate", () => {
 		expect(model.Card.Creatable.validate(creatable)).toEqual(true)
-		expect(model.Card.Creatable.validate(creatable, 99)).toEqual(false)
-		expect(model.Card.Creatable.validate(creatable, undefined, "SEK")).toEqual(false)
-		expect(model.Card.Creatable.validate(creatable, undefined, undefined)).toEqual(true)
+		expect(model.Card.Creatable.validate(creatable, [99, "EUR"])).toEqual(false)
+		expect(model.Card.Creatable.validate(creatable, [101, "SEK"])).toEqual(false)
+		expect(model.Card.Creatable.validate(creatable, [101, "EUR"])).toEqual(true)
 	})
 })

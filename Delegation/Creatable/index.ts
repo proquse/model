@@ -1,4 +1,3 @@
-import * as isoly from "isoly"
 import { Amount } from "../../Amount"
 
 export interface Creatable {
@@ -30,12 +29,7 @@ export namespace Creatable {
 	export function create(to?: string[], purpose?: string, amount?: Amount): Creatable {
 		return { to: to ?? [], purpose: purpose ?? "", amount: amount ?? [0, "EUR"] }
 	}
-	export function validate(value: Creatable, limit: number, currency: isoly.Currency) {
-		return (
-			value.to.length >= 0 &&
-			!value.to.some(to => !to) &&
-			!!value.purpose &&
-			Amount.validate(value.amount, limit, currency)
-		)
+	export function validate(value: Creatable, limit: Amount) {
+		return value.to.length >= 0 && !value.to.some(to => !to) && !!value.purpose && Amount.validate(value.amount, limit)
 	}
 }
