@@ -1,4 +1,4 @@
-import { Amount } from "../../model/Amount"
+import { Amount } from "../Amount"
 import { Payment } from "../Payment"
 
 export interface Creatable {
