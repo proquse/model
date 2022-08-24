@@ -53,8 +53,7 @@ describe("Delegation", () => {
 									card: "4200000000000000/1015/969/richard doe",
 								},
 								receipt: {
-									currency: "USD",
-									amount: 10,
+									amount: [10, "USD"],
 									vat: 0,
 									original: "https://example.com/receipt.pdf",
 								},
@@ -90,8 +89,7 @@ describe("Delegation", () => {
 							card: "4200000000000000/1015/969/mary doe",
 						},
 						receipt: {
-							currency: "USD",
-							amount: 10,
+							amount: [10, "USD"],
 							vat: 0,
 							original: "https://example.com/receipt.pdf",
 						},
