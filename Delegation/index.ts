@@ -107,7 +107,7 @@ export namespace Delegation {
 			value.created <= value.modified &&
 			value.modified <= isoly.DateTime.now() &&
 			(root ? value.from == undefined && value.costCenter == undefined : !!value.from && !!value.costCenter) &&
-			Delegation.Creatable.validate(value, limit) && // to, purpose, amount check
+			Delegation.Creatable.validate(value, limit) &&
 			balance(value) >= 0 &&
 			value.delegations.every(delegation => Delegation.validate(delegation, value.amount, false))
 		)
