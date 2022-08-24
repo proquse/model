@@ -38,6 +38,7 @@ export namespace Data {
 			!!value.id &&
 			value.costCenter != "" &&
 			value.created <= value.modified &&
+			value.modified <= isoly.DateTime.now() &&
 			value.from != "" &&
 			Creatable.validate({ to: value.to, purpose: value.purpose, amount: value.amount }, limit) &&
 			value.purchases.every(purchase => Purchase.validate(purchase)) &&

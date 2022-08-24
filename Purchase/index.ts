@@ -72,6 +72,7 @@ export namespace Purchase {
 			!!value.purpose &&
 			!!value.buyer &&
 			value.created <= value.modified &&
+			value.modified <= isoly.DateTime.now() &&
 			Payment.validate(value.payment, limit) &&
 			(!value.amount || Amount.validate(value.amount)) &&
 			(!value.receipt ||
