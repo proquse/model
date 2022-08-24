@@ -16,7 +16,13 @@ export namespace Receipt {
 			typeof value.vat == "number"
 		)
 	}
-	export function validate(value: Receipt) {
-		return !!value.original && Amount.is(value.amount) && value.amount[0] > 0 && value.vat >= 0 && value.vat <= 1
+	export function validate(value: Receipt, limit?: Amount) {
+		return (
+			!!value.original &&
+			Amount.validate(value.amount, limit) &&
+			value.amount[0] > 0 &&
+			value.vat >= 0 &&
+			value.vat <= 1
+		)
 	}
 }
