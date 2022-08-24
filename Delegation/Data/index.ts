@@ -3,7 +3,7 @@ import * as isoly from "isoly"
 import { Amount } from "../../Amount"
 import { Purchase } from "../../Purchase"
 import { Creatable } from "../Creatable"
-import { Delegation } from "../index"
+import type { Delegation } from "../index"
 
 export interface Data extends Creatable {
 	id: cryptly.Identifier
@@ -33,7 +33,7 @@ export namespace Data {
 			Object.entries(delegation).filter(([key, _]: [keyof Delegation, any]) => key != "delegations")
 		) as Data
 	}
-	export function validate(value: Delegation.Data, limit?: Amount) {
+	export function validate(value: Data, limit?: Amount) {
 		return (
 			!!value.id &&
 			value.costCenter != "" &&
