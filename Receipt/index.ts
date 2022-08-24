@@ -17,6 +17,6 @@ export namespace Receipt {
 		)
 	}
 	export function validate(value: Receipt) {
-		return !!value.original && Amount.is(value.amount) && value.amount[0] > 0 && value.vat >= 0
+		return !!value.original && Amount.is(value.amount) && value.amount[0] > 0 && value.vat >= 0 && value.vat <= 1
 	}
 }
