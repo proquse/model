@@ -40,7 +40,7 @@ export namespace Data {
 			value.created <= value.modified &&
 			value.modified <= isoly.DateTime.now() &&
 			value.from != "" &&
-			Creatable.validate({ to: value.to, purpose: value.purpose, amount: value.amount }, limit) &&
+			Creatable.validate(value, limit) &&
 			value.purchases.every(purchase => Purchase.validate(purchase)) &&
 			value.purchases.reduce((aggregate, current) => {
 				return aggregate + (current.amount?.[0] ?? 0)
