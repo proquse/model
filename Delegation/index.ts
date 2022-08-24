@@ -1,5 +1,6 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
+import { Amount } from "../Amount"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { Data as DelegationData } from "./Data"
 
@@ -11,6 +12,7 @@ export namespace Delegation {
 	export const Creatable = DelegationCreatable
 	export type Data = DelegationData
 	export const Data = DelegationData
+
 	export function is(value: Delegation | any): value is Delegation & Record<string, any> {
 		return (
 			DelegationData.is(value) &&
@@ -97,6 +99,17 @@ export namespace Delegation {
 				(aggregate, current) => (current.amount == undefined ? aggregate : aggregate - current.amount[0]),
 				delegation.amount[0]
 			)
+		)
+	}
+	export function validate(value: Delegation, limit?: Amount, root = false): boolean {
+		return (
+			!!value.id &&
+			value.created <= value.modified &&
+			value.modified <= isoly.DateTime.now() &&
+			(root ? value.from == undefined && value.costCenter == undefined : !!value.from && !!value.costCenter) &&
+			Delegation.Creatable.validate(value, limit) &&
+			balance(value) >= 0 &&
+			value.delegations.every(delegation => Delegation.validate(delegation, value.amount, false))
 		)
 	}
 }

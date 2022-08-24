@@ -1,10 +1,10 @@
-import * as isoly from "isoly"
+import { Amount } from "../Amount"
 
 export interface Receipt {
 	original: string
-	amount: number
+	amount: Amount
 	vat: number
-	currency: isoly.Currency
+	// currency: isoly.Currency
 }
 
 export namespace Receipt {
@@ -12,9 +12,17 @@ export namespace Receipt {
 		return (
 			typeof value == "object" &&
 			typeof value.original == "string" &&
-			typeof value.amount == "number" &&
-			typeof value.vat == "number" &&
-			isoly.Currency.is(value.currency)
+			Amount.is(value.amount) &&
+			typeof value.vat == "number"
+		)
+	}
+	export function validate(value: Receipt, limit?: Amount) {
+		return (
+			!!value.original &&
+			Amount.validate(value.amount, limit) &&
+			value.amount[0] > 0 &&
+			value.vat >= 0 &&
+			value.vat <= 1
 		)
 	}
 }

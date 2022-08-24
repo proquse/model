@@ -66,6 +66,20 @@ export namespace Purchase {
 			? result
 			: undefined
 	}
+	export function validate(value: Purchase, limit?: Amount) {
+		return (
+			!!value.id &&
+			!!value.purpose &&
+			!!value.buyer &&
+			value.created <= value.modified &&
+			value.modified <= isoly.DateTime.now() &&
+			Payment.validate(value.payment, limit) &&
+			(!value.amount || Amount.validate(value.amount, value.payment.limit)) &&
+			(!value.receipt ||
+				(Receipt.is(value.receipt) && Receipt.validate(value.receipt)) ||
+				!!(value.receipt as { to?: string }).to)
+		)
+	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
 }

@@ -1,3 +1,4 @@
+import { Amount } from "../Amount"
 import { Payment } from "../Payment"
 
 export interface Creatable {
@@ -13,6 +14,11 @@ export namespace Creatable {
 			typeof value.purpose == "string" &&
 			Payment.Creatable.is(value.payment) &&
 			typeof value.buyer == "string"
+		)
+	}
+	export function validate(value: Creatable, limit?: Amount) {
+		return (
+			!!value.buyer && !!value.purpose && Amount.validate(value.payment.limit, limit) && value.payment.type == "card"
 		)
 	}
 }

@@ -28,4 +28,74 @@ describe("Delegation.Data", () => {
 		expect(model.Delegation.Data.is(data)).toEqual(true)
 		expect(model.Delegation.is(data)).toEqual(false)
 	})
+	it("validate", () => {
+		const card = "0123456789101112/0122/969/Jane Doe"
+		const purchase: model.Purchase = model.Purchase.create(
+			{
+				purpose: "buy things",
+				payment: {
+					type: "card",
+					limit: [10, "EUR"],
+				},
+				buyer: "jane@example.com",
+			},
+			card
+		)
+		expect(model.Delegation.Data.validate(data)).toEqual(true)
+		expect(
+			model.Delegation.Data.validate({
+				id: "",
+				created: "2021-12-20T13:37:42Z",
+				modified: "2021-12-20T13:37:42Z",
+				to: ["john@example.com"],
+				purpose: "Total company Budget",
+				amount: [20000, "EUR"],
+				purchases: [],
+			})
+		).toEqual(false)
+		expect(
+			model.Delegation.Data.validate({
+				id: "abcd0001",
+				created: "2021-12-20T13:37:42Z",
+				modified: "2021-11-20T13:37:42Z",
+				to: ["john@example.com"],
+				purpose: "Total company Budget",
+				amount: [20000, "EUR"],
+				purchases: [],
+			})
+		).toEqual(false)
+		expect(
+			model.Delegation.Data.validate({
+				id: "abcd0001",
+				created: "2021-12-20T13:37:42Z",
+				modified: "2021-12-20T13:37:42Z",
+				to: [""],
+				purpose: "Total company Budget",
+				amount: [20000, "EUR"],
+				purchases: [],
+			})
+		).toEqual(false)
+		expect(
+			model.Delegation.Data.validate({
+				id: "abcd0001",
+				created: "2021-12-20T13:37:42Z",
+				modified: "2021-12-20T13:37:42Z",
+				to: ["john@example.com"],
+				purpose: "",
+				amount: [20000, "EUR"],
+				purchases: [],
+			})
+		).toEqual(false)
+		expect(
+			model.Delegation.Data.validate({
+				id: "abcd0001",
+				created: "2021-12-20T13:37:42Z",
+				modified: "2021-12-20T13:37:42Z",
+				to: ["john@example.com"],
+				purpose: "Total company Budget",
+				amount: [20000, "EUR"],
+				purchases: [purchase],
+			})
+		).toEqual(true)
+	})
 })
