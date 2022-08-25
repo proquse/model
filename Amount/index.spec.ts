@@ -11,5 +11,6 @@ describe("Amount", () => {
 		expect(model.Amount.validate([1, "EUR"], [10, "SEK"])).toEqual(false)
 		expect(model.Amount.validate([11, "EUR"], [10, "EUR"])).toEqual(false)
 		expect(model.Amount.validate([11, "EUR"], [10, "SEK"])).toEqual(false)
+		expect(model.Amount.validate([-1, "EUR"])).toEqual(false)
 	})
 })
