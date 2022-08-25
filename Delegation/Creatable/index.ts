@@ -30,6 +30,6 @@ export namespace Creatable {
 		return { to: to ?? [], purpose: purpose ?? "", amount: amount ?? [0, "EUR"] }
 	}
 	export function validate(value: Creatable, limit?: Amount) {
-		return value.to.length >= 0 && !value.to.some(to => !to) && !!value.purpose && Amount.validate(value.amount, limit)
+		return value.to.length > 0 && !value.to.some(to => !to) && !!value.purpose && Amount.validate(value.amount, limit)
 	}
 }

@@ -80,5 +80,11 @@ describe("Delegation.Creatable", () => {
 				"EUR",
 			])
 		).toEqual(false)
+		expect(
+			model.Delegation.Creatable.validate(model.Delegation.Creatable.create(undefined, "testPurpose", [9, "EUR"]), [
+				10,
+				"EUR",
+			])
+		).toEqual(false)
 	})
 })
