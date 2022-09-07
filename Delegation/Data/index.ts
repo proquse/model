@@ -18,7 +18,6 @@ export namespace Data {
 	export function is(value: Data | any): value is Data & Record<string, any> {
 		return (
 			Creatable.is(value) &&
-			(typeof value.costCenter == "string" || typeof value.costCenter == "undefined") &&
 			isoly.DateTime.is(value.created) &&
 			(typeof value.from == "string" || typeof value.from == "undefined") &&
 			isoly.DateTime.is(value.modified) &&
