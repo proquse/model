@@ -6,11 +6,13 @@ import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase extends PurchaseCreatable {
+export interface Purchase {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	payment: Payment
+	payment: Payment.Card.Token
+	purpose: string
+	buyer: string
 	amount?: Amount
 	receipt?: Receipt | { to: string }
 }
@@ -18,11 +20,13 @@ export interface Purchase extends PurchaseCreatable {
 export namespace Purchase {
 	export function is(value: Purchase | any): value is Purchase & Record<string, any> {
 		return (
-			PurchaseCreatable.is(value) &&
+			typeof value == "object" &&
+			typeof value.purpose == "string" &&
+			typeof value.buyer == "string" &&
 			cryptly.Identifier.is(value.id) &&
 			isoly.DateTime.is(value.created) &&
 			isoly.DateTime.is(value.modified) &&
-			Payment.is(value.payment) &&
+			Payment.Card.Token.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
 			(Receipt.is(value.receipt) ||
 				(typeof value.receipt == "object" && typeof value.receipt.to == "string") ||
@@ -31,7 +35,7 @@ export namespace Purchase {
 	}
 	export function create(
 		purchase: Purchase.Creatable,
-		card: string,
+		token: Payment.Card.Token,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
@@ -40,7 +44,7 @@ export namespace Purchase {
 			created: now,
 			modified: now,
 			...purchase,
-			payment: Payment.create(purchase.payment, card),
+			payment: token,
 		}
 	}
 	export function find(root: Delegation, purchaseId: string): Purchase | undefined {
@@ -73,8 +77,8 @@ export namespace Purchase {
 			!!value.buyer &&
 			value.created <= value.modified &&
 			value.modified <= isoly.DateTime.now() &&
-			Payment.validate(value.payment, limit) &&
-			(!value.amount || Amount.validate(value.amount, value.payment.limit)) &&
+			Payment.Card.Token.validate(value.payment) &&
+			(!value.amount || Amount.validate(value.amount, limit)) &&
 			(!value.receipt ||
 				(Receipt.is(value.receipt) && Receipt.validate(value.receipt)) ||
 				!!(value.receipt as { to?: string }).to)

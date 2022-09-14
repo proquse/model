@@ -9,9 +9,8 @@ describe("Purchase", () => {
 		amount: [9.5, "EUR"],
 		purpose: "Production Workers",
 		payment: {
-			type: "card",
-			limit: [10, "EUR"],
-			card: "4200000000000000/1015/969/richard doe",
+			value: "someToken",
+			supplier: "someSupplier",
 		},
 		receipt: {
 			amount: [10, "USD"],
@@ -54,9 +53,8 @@ describe("Purchase", () => {
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
 								payment: {
-									type: "card",
-									limit: [10, "EUR"],
-									card: "4200000000000000/1015/969/richard doe",
+									value: "someToken",
+									supplier: "someSupplier",
 								},
 								receipt: {
 									amount: [10, "USD"],
@@ -72,9 +70,8 @@ describe("Purchase", () => {
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
 								payment: {
-									type: "card",
-									limit: [10, "EUR"],
-									card: "4200000000000000/1015/969/richard doe",
+									value: "someToken",
+									supplier: "someSupplier",
 								},
 								receipt: { to: "receipt+aoeu1234@company.com" },
 							},
@@ -90,9 +87,8 @@ describe("Purchase", () => {
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
 						payment: {
-							type: "card",
-							limit: [10, "EUR"],
-							card: "4200000000000000/1015/969/mary doe",
+							value: "someToken",
+							supplier: "someSupplier",
 						},
 						receipt: {
 							amount: [10, "USD"],
@@ -150,13 +146,15 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		expect(model.Purchase.is(model.Purchase.create(purchase, "0123456789101112/0122/969/Jane Doe"))).toEqual(true)
+		expect(
+			model.Purchase.is(model.Purchase.create(purchase, { value: "someToken", supplier: "someSupplier" }))
+		).toEqual(true)
 	})
 	it("find", () => {
 		expect(model.Purchase.find(delegation, "aoeu1234")).toEqual(delegation.delegations[0].delegations[0].purchases[0])
 	})
 	it("change", () => {
-		const card = "0123456789101112/0122/969/Jane Doe"
+		const card = { value: "someToken", supplier: "someSupplier" }
 		const target: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -171,21 +169,13 @@ describe("Purchase", () => {
 		const updated: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: {
-				type: "card",
-				limit: [10, "EUR"],
-				card,
-			},
+			payment: { value: "someToken", supplier: "someSupplier" },
 			buyer: "john@example.com",
 		}
 		const after: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: {
-				type: "card",
-				limit: [10, "EUR"],
-				card: card,
-			},
+			payment: { value: "someToken", supplier: "someSupplier" },
 			buyer: "john@example.com",
 		}
 		const root: model.Delegation = {
@@ -205,7 +195,7 @@ describe("Purchase", () => {
 		expect(result).toEqual(updated)
 	})
 	it("remove", () => {
-		const card = "0123456789101112/0122/969/Jane Doe"
+		const card = { value: "someToken", supplier: "someSupplier" }
 		const target: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -231,7 +221,7 @@ describe("Purchase", () => {
 		expect(root.purchases.length).toEqual(0)
 	})
 	it("validate", () => {
-		const card = "0123456789101112/0122/969/Jane Doe"
+		const card = { value: "someToken", supplier: "someSupplier" }
 		const target: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -293,17 +283,20 @@ describe("Purchase", () => {
 		).toEqual(true)
 		expect(
 			model.Purchase.validate(
-				model.Purchase.create(
-					{
-						purpose: "buy things",
-						payment: {
-							type: "card",
-							limit: [10, "EUR"],
+				{
+					...model.Purchase.create(
+						{
+							purpose: "buy things",
+							payment: {
+								type: "card",
+								limit: [10, "EUR"],
+							},
+							buyer: "jane@example.com",
 						},
-						buyer: "jane@example.com",
-					},
-					card
-				),
+						card
+					),
+					amount: [2, "EUR"],
+				},
 				[1, "EUR"]
 			)
 		).toEqual(false)
@@ -322,6 +315,6 @@ describe("Purchase", () => {
 				),
 				[10, "SEK"]
 			)
-		).toEqual(false)
+		).toEqual(true)
 	})
 })
