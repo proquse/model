@@ -29,7 +29,7 @@ describe("Delegation.Data", () => {
 		expect(model.Delegation.is(data)).toEqual(false)
 	})
 	it("validate", () => {
-		const card = "0123456789101112/0122/969/Jane Doe"
+		const card = { value: "someToken", supplier: "someSupplier" }
 		const purchase: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",

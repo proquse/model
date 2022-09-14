@@ -25,5 +25,6 @@ export namespace Card {
 	export type Token = CardToken
 	export namespace Token {
 		export const is = CardToken.is
+		export const validate = CardToken.validate
 	}
 }

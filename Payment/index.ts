@@ -29,6 +29,7 @@ export namespace Payment {
 		export type Token = CardPayment.Token
 		export namespace Token {
 			export const is = CardPayment.Token.is
+			export const validate = CardPayment.Token.validate
 		}
 	}
 }
