@@ -4,7 +4,6 @@ export interface Receipt {
 	original: string
 	amount: Amount
 	vat: number
-	// currency: isoly.Currency
 }
 
 export namespace Receipt {
