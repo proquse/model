@@ -9,6 +9,8 @@ describe("Purchase", () => {
 		amount: [9.5, "EUR"],
 		purpose: "Production Workers",
 		payment: {
+			type: "card",
+			limit: [10, "EUR"],
 			value: "someToken",
 			supplier: "someSupplier",
 		},
@@ -53,6 +55,8 @@ describe("Purchase", () => {
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
 								payment: {
+									type: "card",
+									limit: [10, "EUR"],
 									value: "someToken",
 									supplier: "someSupplier",
 								},
@@ -70,6 +74,8 @@ describe("Purchase", () => {
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
 								payment: {
+									type: "card",
+									limit: [10, "EUR"],
 									value: "someToken",
 									supplier: "someSupplier",
 								},
@@ -87,6 +93,8 @@ describe("Purchase", () => {
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
 						payment: {
+							type: "card",
+							limit: [5, "EUR"],
 							value: "someToken",
 							supplier: "someSupplier",
 						},
@@ -146,15 +154,12 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		expect(
-			model.Purchase.is(model.Purchase.create(purchase, { value: "someToken", supplier: "someSupplier" }))
-		).toEqual(true)
+		expect(model.Purchase.is(model.Purchase.create(purchase, "someSupplier", "someToken"))).toEqual(true)
 	})
 	it("find", () => {
 		expect(model.Purchase.find(delegation, "aoeu1234")).toEqual(delegation.delegations[0].delegations[0].purchases[0])
 	})
 	it("change", () => {
-		const card = { value: "someToken", supplier: "someSupplier" }
 		const target: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -164,18 +169,19 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			card
+			"someToken",
+			"someSupplier"
 		)
 		const updated: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { value: "someToken", supplier: "someSupplier" },
+			payment: { type: "card", limit: [10, "EUR"], value: "someToken", supplier: "someSupplier" },
 			buyer: "john@example.com",
 		}
 		const after: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { value: "someToken", supplier: "someSupplier" },
+			payment: { type: "card", limit: [10, "EUR"], value: "someToken", supplier: "someSupplier" },
 			buyer: "john@example.com",
 		}
 		const root: model.Delegation = {
@@ -195,7 +201,6 @@ describe("Purchase", () => {
 		expect(result).toEqual(updated)
 	})
 	it("remove", () => {
-		const card = { value: "someToken", supplier: "someSupplier" }
 		const target: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -205,7 +210,8 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			card
+			"someToken",
+			"someSupplier"
 		)
 		const root: model.Delegation = {
 			id: "abcd0001",
@@ -221,7 +227,6 @@ describe("Purchase", () => {
 		expect(root.purchases.length).toEqual(0)
 	})
 	it("validate", () => {
-		const card = { value: "someToken", supplier: "someSupplier" }
 		const target: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -231,7 +236,8 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			card
+			"someToken",
+			"someSupplier"
 		)
 
 		expect(model.Purchase.validate(target)).toEqual(true)
@@ -246,7 +252,8 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					card
+					"someToken",
+					"someSupplier"
 				)
 			)
 		).toEqual(false)
@@ -261,7 +268,8 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					card
+					"someToken",
+					"someSupplier"
 				)
 			)
 		).toEqual(false)
@@ -276,7 +284,8 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					card
+					"someToken",
+					"someSupplier"
 				),
 				[10, "EUR"]
 			)
@@ -293,7 +302,8 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						card
+						"someToken",
+						"someSupplier"
 					),
 					amount: [2, "EUR"],
 				},
@@ -311,10 +321,11 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					card
+					"someToken",
+					"someSupplier"
 				),
 				[10, "SEK"]
 			)
-		).toEqual(true)
+		).toEqual(false)
 	})
 })

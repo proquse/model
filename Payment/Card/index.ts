@@ -1,30 +1,36 @@
-import { Amount } from "../../Amount"
-import { Creatable as CardCreatable } from "./Creatable"
 import { Token as CardToken } from "./Token"
 
-export interface Card extends CardCreatable {
-	card: string
+export interface Card {
+	cvc: string
+	pan: string
+	holder: string
+	expire: {
+		year: string
+		month: string
+	}
 }
-
 export namespace Card {
 	export function is(value: Card | any): value is Card & Record<string, any> {
 		return (
-			CardCreatable.is(value) &&
-			typeof value.card == "string" &&
-			value.card.match(/^[0-9]{16}\/(0[1-9]|1[0-2])[0-9]{2}\/[0-9]{3}\/[^\t-@\-`~]+\s[^\t-@\-`~]+$/) != null
+			typeof value == "object" &&
+			typeof value.pan == "string" &&
+			!!value.pan.match(/\d{16}/) &&
+			typeof value.cvc == "string" &&
+			!!value.cvc.match(/^\d\d\d$/) &&
+			typeof value.holder == "string" &&
+			typeof value.expire == "object" &&
+			typeof value.expire.month == "string" &&
+			!!value.expire.month.match(/^0[1-9]|1[012]$/) &&
+			typeof value.expire.year == "string" &&
+			!!value.expire.year.match(/^\d\d$/)
 		)
-	}
-	export function validate(value: Card, limit?: Amount) {
-		return CardCreatable.validate(value, limit)
-	}
-	export type Creatable = CardCreatable
-	export namespace Creatable {
-		export const is = CardCreatable.is
-		export const validate = CardCreatable.validate
 	}
 	export type Token = CardToken
 	export namespace Token {
+		export type Creatable = CardToken.Creatable
+		export const Creatable = CardToken.Creatable
 		export const is = CardToken.is
 		export const validate = CardToken.validate
+		export const create = CardToken.create
 	}
 }
