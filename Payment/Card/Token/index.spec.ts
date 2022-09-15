@@ -1,11 +1,17 @@
 import * as model from "../../../index"
 
 describe("Payment.Card.Token", () => {
-	const a: model.Payment.Card.Token = {
-		value: "someCardToken",
+	const card: model.Payment.Card.Token = {
+		type: "card",
+		limit: [100, "EUR"],
 		supplier: "someSupplier",
+		value: "someToken",
 	}
 	it("is", () => {
-		expect(model.Payment.Card.Token.is(a)).toEqual(true)
+		expect(model.Payment.Card.Token.is(card)).toEqual(true)
+	})
+	it("validate", () => {
+		expect(model.Payment.Card.Token.validate(card)).toEqual(true)
+		expect(model.Payment.Card.Token.validate(card, [99, "EUR"])).toEqual(false)
 	})
 })

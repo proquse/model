@@ -29,7 +29,6 @@ describe("Delegation.Data", () => {
 		expect(model.Delegation.is(data)).toEqual(false)
 	})
 	it("validate", () => {
-		const card = { value: "someToken", supplier: "someSupplier" }
 		const purchase: model.Purchase = model.Purchase.create(
 			{
 				purpose: "buy things",
@@ -39,7 +38,8 @@ describe("Delegation.Data", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			card
+			"someToken",
+			"someSupplier"
 		)
 		expect(model.Delegation.Data.validate(data)).toEqual(true)
 		expect(
