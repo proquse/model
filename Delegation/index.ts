@@ -96,7 +96,7 @@ export namespace Delegation {
 		return delegation.delegations.reduce(
 			(aggregate, current) => aggregate - current.amount[0],
 			delegation.purchases.reduce(
-				(aggregate, current) => (current.amount == undefined ? aggregate : aggregate - current.amount[0]),
+				(aggregate, current) => (current.payment.limit == undefined ? aggregate : aggregate - current.payment.limit[0]),
 				delegation.amount[0]
 			)
 		)
