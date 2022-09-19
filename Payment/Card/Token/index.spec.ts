@@ -4,7 +4,6 @@ describe("Payment.Card.Token", () => {
 	const card: model.Payment.Card.Token = {
 		type: "card",
 		limit: [100, "EUR"],
-		supplier: "someSupplier",
 		value: "someToken",
 	}
 	it("is", () => {

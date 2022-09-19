@@ -12,7 +12,6 @@ describe("Purchase", () => {
 			type: "card",
 			limit: [10, "EUR"],
 			value: "someToken",
-			supplier: "someSupplier",
 		},
 		receipt: {
 			amount: [10, "USD"],
@@ -58,7 +57,6 @@ describe("Purchase", () => {
 									type: "card",
 									limit: [10, "EUR"],
 									value: "someToken",
-									supplier: "someSupplier",
 								},
 								receipt: {
 									amount: [10, "USD"],
@@ -77,7 +75,6 @@ describe("Purchase", () => {
 									type: "card",
 									limit: [10, "EUR"],
 									value: "someToken",
-									supplier: "someSupplier",
 								},
 								receipt: { to: "receipt+aoeu1234@company.com" },
 							},
@@ -96,7 +93,6 @@ describe("Purchase", () => {
 							type: "card",
 							limit: [5, "EUR"],
 							value: "someToken",
-							supplier: "someSupplier",
 						},
 						receipt: {
 							amount: [10, "USD"],
@@ -175,13 +171,13 @@ describe("Purchase", () => {
 		const updated: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { type: "card", limit: [10, "EUR"], value: "someToken", supplier: "someSupplier" },
+			payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
 			buyer: "john@example.com",
 		}
 		const after: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { type: "card", limit: [10, "EUR"], value: "someToken", supplier: "someSupplier" },
+			payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
 			buyer: "john@example.com",
 		}
 		const root: model.Delegation = {

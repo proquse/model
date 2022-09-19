@@ -4,7 +4,6 @@ describe("Payment", () => {
 	const payment: model.Payment = {
 		type: "card",
 		limit: [10, "EUR"],
-		supplier: "someSupplier",
 		value: "someToken",
 	}
 	it("is", () => {
@@ -20,7 +19,7 @@ describe("Payment", () => {
 	})
 	it("validate", () => {
 		expect(model.Payment.validate(payment)).toEqual(true)
-		expect(model.Payment.validate({ type: "card", limit: [10, "EUR"], value: "", supplier: "" })).toEqual(false)
+		expect(model.Payment.validate({ type: "card", limit: [10, "EUR"], value: "" })).toEqual(false)
 		expect(model.Payment.validate(payment, [11, "EUR"])).toEqual(true)
 		expect(model.Payment.validate(payment, [1, "EUR"])).toEqual(false)
 		expect(model.Payment.validate(payment, [11, "SEK"])).toEqual(false)
