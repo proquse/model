@@ -33,10 +33,8 @@ export namespace Delegation {
 	}
 	export function findUser(delegation: Delegation, email: string): Delegation[] {
 		const result: Delegation[] = []
-		if (delegation.to.includes(email))
-			result.push(delegation)
-		else
-			delegation.delegations.forEach(delegation => result.push(...findUser(delegation, email)))
+		delegation.to.includes(email) && result.push(delegation)
+		delegation.delegations.forEach(delegation => result.push(...findUser(delegation, email)))
 		return result
 	}
 	export function find(root: Delegation, delegationId: string): Delegation | undefined {
@@ -63,16 +61,14 @@ export namespace Delegation {
 	}
 	export function path(root: Delegation, delegationId: string): [Delegation, ...Delegation[]] | undefined {
 		let result: Delegation[] | undefined = root.id == delegationId ? [] : undefined
-		if (!result)
-			root.delegations.find(delegation => (result = path(delegation, delegationId)))
+		!result && root.delegations.find(delegation => (result = path(delegation, delegationId)))
 		return !result ? result : [root, ...result]
 	}
 	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
 		const result = find(root, outdatedId)
-		if (result) {
-			Object.keys(result).forEach((key: keyof Delegation) => delete result[key])
-			Object.assign(result, updated)
-		}
+		result &&
+			(Object.keys(result).forEach((key: keyof Delegation) => delete result[key]), Object.assign(result, updated))
+
 		return result
 	}
 	export function remove(root: Delegation, id: string): Delegation | undefined {
