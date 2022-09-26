@@ -162,7 +162,10 @@ describe("Purchase", () => {
 		expect(model.Purchase.is(model.Purchase.create(purchase, "someSupplier", "someToken"))).toEqual(true)
 	})
 	it("find", () => {
-		expect(model.Purchase.find(delegation, "aoeu1234")).toEqual(delegation.delegations[0].delegations[0].purchases[0])
+		expect(model.Purchase.find([delegation], "aoeu1234")).toEqual({
+			root: delegation,
+			found: delegation.delegations[0].delegations[0].purchases[0],
+		})
 	})
 	it("change", () => {
 		const target: model.Purchase = model.Purchase.create(
@@ -202,10 +205,12 @@ describe("Purchase", () => {
 			purchases: [target],
 		}
 		expect(target).not.toEqual(updated)
-		model.Purchase.change(target, updated)
+		const first = model.Purchase.change(target, updated)
 		expect(target).toEqual(after)
-		const result = model.Purchase.change(root, updated)
-		expect(result).toEqual(updated)
+		expect(first).not.toBe(after)
+		const second = model.Purchase.change([root], updated)
+		expect(second).toEqual({ root: root, changed: updated })
+		expect(second?.changed).not.toBe(updated)
 	})
 	it("remove", () => {
 		const target: model.Purchase = model.Purchase.create(
@@ -232,8 +237,10 @@ describe("Purchase", () => {
 			delegations: [],
 			purchases: [target],
 		}
-		model.Purchase.remove(root, target.id)
+		const result = model.Purchase.remove([root], target.id)
+		console.log(result)
 		expect(root.purchases.length).toEqual(0)
+		expect(result?.removed).toBe(target)
 	})
 	it("validate", () => {
 		const target: model.Purchase = model.Purchase.create(

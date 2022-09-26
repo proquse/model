@@ -66,30 +66,22 @@ export namespace Delegation {
 	}
 	export function change(
 		roots: Delegation[],
-		id: string,
 		updated: Delegation
 	): { root: Delegation; changed: Delegation } | undefined {
-		const search = find(roots, id)
+		const search = find(roots, updated.id)
 		const result = !search ? undefined : { root: search.root, changed: search.found }
 		result &&
 			(Object.keys(result.changed).forEach((key: keyof Delegation) => delete result.changed[key]),
 			Object.assign(result.changed, updated))
 		return result
 	}
-	export function remove(root: Delegation, id: string): Delegation | undefined {
-		let result: Delegation | undefined = undefined
-		const index = root.delegations.findIndex(delegation => delegation.id == id)
-		return index >= 0
-			? (result = root.delegations.splice(index, 1).shift())
-			: root.delegations.find(delegation => (result = remove(delegation, id)))
-			? result
-			: undefined
-	}
-	export function f(roots: Delegation[], id: string): { root: Delegation; deleted: Delegation } | undefined {
-		let result: { root: Delegation; deleted: Delegation } | undefined
-		const index = roots.findIndex(root => root.id == id && (result = { root: root, deleted: root }))
+	export function remove(roots: Delegation[], id: string): { root: Delegation; removed: Delegation } | undefined {
+		let result: { root: Delegation; removed: Delegation } | undefined
+		const index = roots.findIndex(root => root.id == id && (result = { root: root, removed: root }))
 		index >= 0 && roots.splice(index, 1)
-		return result ? result : roots.find(root => (result = f(root.delegations, id)) && (result.root = root)) && result
+		return result
+			? result
+			: roots.find(root => (result = remove(root.delegations, id)) && (result.root = root)) && result
 	}
 	export function spent(delegation: Delegation, includeOwnPurchases?: boolean): number {
 		return includeOwnPurchases

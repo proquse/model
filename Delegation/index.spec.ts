@@ -233,11 +233,11 @@ describe("Delegation", () => {
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
-		let result = model.Delegation.change([before], before.delegations[0].id, updated)
+		let result = model.Delegation.change([before], updated)
 		expect(before).toEqual(after)
 		expect(result).toEqual({ root: before, changed: updated })
 		const final = { ...before, to: ["jane@example.com"] }
-		result = model.Delegation.change([before], before.id, final)
+		result = model.Delegation.change([before], final)
 		expect(before).toEqual(final)
 		expect(result).toEqual({ root: before, changed: final })
 	})
@@ -283,10 +283,10 @@ describe("Delegation", () => {
 			...after,
 			delegations: [...after.delegations, toBeRemoved],
 		}
-		expect(model.Delegation.f([before], toBeRemoved.id)).toEqual({ root: before, deleted: toBeRemoved })
+		expect(model.Delegation.remove([before], toBeRemoved.id)).toEqual({ root: before, removed: toBeRemoved })
 		expect(before).toEqual(after)
-		expect(model.Delegation.f([before], before.id)).toEqual({ root: before, deleted: before })
-		expect(model.Delegation.f([after], "xyz")).toEqual(undefined)
+		expect(model.Delegation.remove([before], before.id)).toEqual({ root: before, removed: before })
+		expect(model.Delegation.remove([after], "xyz")).toEqual(undefined)
 	})
 	it("spent", () => {
 		expect(model.Delegation.spent(topLevelDelegation)).toEqual(29)
