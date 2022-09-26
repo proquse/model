@@ -25,50 +25,55 @@ export namespace Delegation {
 		return {
 			...creatable,
 			id: cryptly.Identifier.generate(idLength),
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: now,
 			modified: now,
 			purchases: [],
 			delegations: [],
 		}
 	}
-	export function findUser(delegation: Delegation, email: string): Delegation[] {
+	export function findUser(roots: Delegation[], email: string): Delegation[] {
 		const result: Delegation[] = []
-		delegation.to.includes(email) && result.push(delegation)
-		delegation.delegations.forEach(delegation => result.push(...findUser(delegation, email)))
+		roots.forEach(root => root.to.includes(email) && result.push(root))
+		roots.forEach(root => result.push(...findUser(root.delegations, email)))
 		return result
 	}
-	export function find(root: Delegation, delegationId: string): Delegation | undefined {
-		let result: Delegation | undefined = root.id == delegationId ? root : undefined
-		return result ?? root.delegations.find(delegation => (result = find(delegation, delegationId))) ? result : undefined
+	export function find(roots: Delegation[], id: string): { root: Delegation; found: Delegation } | undefined {
+		let result: { root: Delegation; found: Delegation } | undefined
+		roots.find(root => root.id == id && (result = { root: root, found: root }))
+		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
 	}
-	export function findParent(root: Delegation, id: string): Delegation | undefined {
-		let result: Delegation | undefined = undefined
-		return root.delegations.find(delegation => delegation.id == id)
-			? (result = root)
-			: root.delegations.find(delegation => (result = findParent(delegation, id)))
-			? result
-			: undefined
-	}
-	export function findParents(
-		root: Delegation,
-		delegationId: string
-	): [Delegation, Delegation, ...Delegation[]] | undefined {
-		let result: Delegation[] | undefined = undefined
-		root.delegations.find(delegation =>
-			delegation.id == delegationId ? (result = []) : (result = findParents(delegation, delegationId))
+	export function findParent(roots: Delegation[], id: string): { root: Delegation; found: Delegation } | undefined {
+		let result: { root: Delegation; found: Delegation } | undefined
+		return roots.find(
+			root => root.delegations.find(delegation => delegation.id == id) && (result = { root: root, found: root })
 		)
-		return !result ? result : [root, ...result]
+			? result
+			: roots.find(root => (result = findParent(root.delegations, id)) && (result.root = root)) && result
 	}
-	export function path(root: Delegation, delegationId: string): [Delegation, ...Delegation[]] | undefined {
-		let result: Delegation[] | undefined = root.id == delegationId ? [] : undefined
-		!result && root.delegations.find(delegation => (result = path(delegation, delegationId)))
-		return !result ? result : [root, ...result]
+	export function findParents(roots: Delegation[], id: string): Delegation[] | undefined {
+		let result: Delegation[] | undefined = roots.find(root => root.id == id) && []
+		return result
+			? result
+			: roots.find(root => (result = findParents(root.delegations, id)) && (result = [root, ...result])) && result
 	}
-	export function change(root: Delegation, outdatedId: string, updated: Delegation): Delegation | undefined {
-		const result = find(root, outdatedId)
+	export function path(roots: Delegation[], id: string): Delegation[] | undefined {
+		let result: Delegation[] | undefined = [roots.find(root => root.id == id) ?? []].flat()
+		return result.length
+			? result
+			: roots.find(root => (result = path(root.delegations, id)) && (result = [root, ...result])) && result
+	}
+	export function change(
+		roots: Delegation[],
+		id: string,
+		updated: Delegation
+	): { root: Delegation; changed: Delegation } | undefined {
+		const search = find(roots, id)
+		const result = !search ? undefined : { root: search.root, changed: search.found }
 		result &&
-			(Object.keys(result).forEach((key: keyof Delegation) => delete result[key]), Object.assign(result, updated))
-
+			(Object.keys(result.changed).forEach((key: keyof Delegation) => delete result.changed[key]),
+			Object.assign(result.changed, updated))
 		return result
 	}
 	export function remove(root: Delegation, id: string): Delegation | undefined {
@@ -79,6 +84,12 @@ export namespace Delegation {
 			: root.delegations.find(delegation => (result = remove(delegation, id)))
 			? result
 			: undefined
+	}
+	export function f(roots: Delegation[], id: string): { root: Delegation; deleted: Delegation } | undefined {
+		let result: { root: Delegation; deleted: Delegation } | undefined
+		const index = roots.findIndex(root => root.id == id && (result = { root: root, deleted: root }))
+		index >= 0 && roots.splice(index, 1)
+		return result ? result : roots.find(root => (result = f(root.delegations, id)) && (result.root = root)) && result
 	}
 	export function spent(delegation: Delegation, includeOwnPurchases?: boolean): number {
 		return includeOwnPurchases

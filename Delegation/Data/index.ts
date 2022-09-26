@@ -7,10 +7,9 @@ import type { Delegation } from "../index"
 
 export interface Data extends Creatable {
 	id: cryptly.Identifier
-	costCenter?: string
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	from?: string
+	from: string
 	purchases: Purchase[]
 }
 
@@ -34,12 +33,12 @@ export namespace Data {
 	}
 	export function validate(value: Data, limit?: Amount) {
 		return (
+			Creatable.validate(value, limit) &&
 			!!value.id &&
-			value.costCenter != "" &&
+			!!value.costCenter &&
 			value.created <= value.modified &&
 			value.modified <= isoly.DateTime.now() &&
-			value.from != "" &&
-			Creatable.validate(value, limit) &&
+			!!value.from &&
 			value.purchases.every(purchase => Purchase.validate(purchase)) &&
 			value.purchases.reduce((aggregate, current) => {
 				return aggregate + (current.amount?.[0] ?? 0)

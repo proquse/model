@@ -5,10 +5,13 @@ describe("Delegation.Creatable", () => {
 		to: ["jessie@example.com"],
 		purpose: "testing",
 		amount: [10, "EUR"],
+		costCenter: "budget",
 	}
 	it("is", () => {
 		const delegation: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["james@example.com"],
@@ -25,16 +28,19 @@ describe("Delegation.Creatable", () => {
 			to: ["james@example.com"],
 			purpose: "testing",
 			amount: [10, "EUR"],
+			costCenter: "budget",
 		}
 		const second: model.Delegation.Creatable = {
 			to: ["james@example.com"],
 			purpose: "testing",
 			amount: [10, "EUR"],
+			costCenter: "budget",
 		}
 		const third: model.Delegation.Creatable = {
 			to: [],
 			purpose: "testing",
 			amount: [10, "EUR"],
+			costCenter: "budget",
 		}
 		expect(model.Delegation.Creatable.equals(third, first)).toEqual(false)
 		expect(model.Delegation.Creatable.equals(first, second)).toEqual(true)
@@ -54,10 +60,10 @@ describe("Delegation.Creatable", () => {
 			model.Delegation.Creatable.validate(model.Delegation.Creatable.create([""], "", [0, "SEK"]), [10, "EUR"])
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "EUR"]), [
-				10,
-				"EUR",
-			])
+			model.Delegation.Creatable.validate(
+				model.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "EUR"], "budget"),
+				[10, "EUR"]
+			)
 		).toEqual(true)
 		expect(
 			model.Delegation.Creatable.validate(model.Delegation.Creatable.create([""], "testPurpose", [9, "EUR"]), [

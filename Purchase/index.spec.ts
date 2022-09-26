@@ -21,6 +21,8 @@ describe("Purchase", () => {
 	}
 	const delegation: model.Delegation = {
 		id: "abcd0001",
+		from: "jane@example.com",
+		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
@@ -29,6 +31,7 @@ describe("Purchase", () => {
 		delegations: [
 			{
 				id: "abcd0002",
+				from: "jane@example.com",
 				created: "2021-12-22T13:37:42Z",
 				modified: "2021-12-22T13:37:42Z",
 				to: ["mary@example.com"],
@@ -38,6 +41,7 @@ describe("Purchase", () => {
 				delegations: [
 					{
 						id: "abcd0003",
+						from: "jane@example.com",
 						created: "2021-12-28T13:37:42Z",
 						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
@@ -104,6 +108,7 @@ describe("Purchase", () => {
 			},
 			{
 				id: "abcd0004",
+				from: "jane@example.com",
 				created: "2021-12-28T13:37:42Z",
 				modified: "2021-12-20T13:37:42Z",
 				to: ["richard@example.com"],
@@ -113,6 +118,8 @@ describe("Purchase", () => {
 				delegations: [
 					{
 						id: "abcd0005",
+						from: "jane@example.com",
+						costCenter: "IT",
 						created: "2021-12-20T13:37:42Z",
 						modified: "2021-12-20T13:37:42Z",
 						to: ["john@example.com", "jane@example.com"],
@@ -121,6 +128,8 @@ describe("Purchase", () => {
 						delegations: [
 							{
 								id: "abcd0006",
+								from: "jane@example.com",
+								costCenter: "IT",
 								created: "2021-12-20T13:37:42Z",
 								modified: "2021-12-20T13:37:42Z",
 								to: ["mary@example.com"],
@@ -182,6 +191,8 @@ describe("Purchase", () => {
 		}
 		const root: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -211,6 +222,8 @@ describe("Purchase", () => {
 		)
 		const root: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],

@@ -3,6 +3,8 @@ import * as model from "../index"
 describe("Delegation", () => {
 	const initialDelegation: model.Delegation = {
 		id: "abcd0001",
+		from: "jane@example.com",
+		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
@@ -13,6 +15,8 @@ describe("Delegation", () => {
 	}
 	const topLevelDelegation: model.Delegation = {
 		id: "abcd0001",
+		from: "jane@example.com",
+		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
@@ -145,34 +149,45 @@ describe("Delegation", () => {
 	})
 
 	it("findUser", () => {
-		expect(model.Delegation.findUser(topLevelDelegation, "john@example.com")).toEqual([
+		expect(model.Delegation.findUser([topLevelDelegation], "john@example.com")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[0].delegations[0].delegations[0],
 			topLevelDelegation.delegations[1].delegations[0],
 		])
-		expect(model.Delegation.findUser(topLevelDelegation, "richard@example.com")).toEqual([
-			topLevelDelegation.delegations[0].delegations[0],
-			topLevelDelegation.delegations[1],
-		])
+		expect(new Set(model.Delegation.findUser([topLevelDelegation], "richard@example.com"))).toEqual(
+			new Set([topLevelDelegation.delegations[1], topLevelDelegation.delegations[0].delegations[0]])
+		)
 	})
 	it("find", () => {
-		expect(model.Delegation.find(topLevelDelegation, "abcd0001")).toEqual(topLevelDelegation)
-		expect(model.Delegation.find(topLevelDelegation, "abcd0002")).toEqual(topLevelDelegation.delegations[0])
-		expect(model.Delegation.find(topLevelDelegation, "abcd0005")).toEqual(
-			topLevelDelegation.delegations[1].delegations[0]
-		)
+		expect(model.Delegation.find([topLevelDelegation], "abcd0001")).toEqual({
+			root: topLevelDelegation,
+			found: topLevelDelegation,
+		})
+		expect(model.Delegation.find([topLevelDelegation], "abcd0002")).toEqual({
+			root: topLevelDelegation,
+			found: topLevelDelegation.delegations[0],
+		})
+		expect(model.Delegation.find([topLevelDelegation], "abcd0005")).toEqual({
+			root: topLevelDelegation,
+			found: topLevelDelegation.delegations[1].delegations[0],
+		})
 	})
 	it("findParent", () => {
-		const result = model.Delegation.findParent(topLevelDelegation, topLevelDelegation.delegations[0].id)
-		expect(result).toEqual(topLevelDelegation)
-		expect(model.Delegation.findParent(topLevelDelegation.delegations[1], "abcd0006")).toEqual(
-			topLevelDelegation.delegations[1].delegations[0]
-		)
-		expect(model.Delegation.findParent(topLevelDelegation.delegations[0], "abcd0006")).toEqual(undefined)
+		expect(model.Delegation.findParent([topLevelDelegation], topLevelDelegation.delegations[0].id)).toEqual({
+			root: topLevelDelegation,
+			found: topLevelDelegation,
+		})
+		expect(model.Delegation.findParent([topLevelDelegation.delegations[1]], "abcd0006")).toEqual({
+			root: topLevelDelegation.delegations[1],
+			found: topLevelDelegation.delegations[1].delegations[0],
+		})
+		expect(model.Delegation.findParent([topLevelDelegation.delegations[0]], "abcd0006")).toEqual(undefined)
 	})
 	it("change", () => {
 		const before: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -181,6 +196,8 @@ describe("Delegation", () => {
 			delegations: [
 				{
 					id: "abcd0002",
+					from: "jane@example.com",
+					costCenter: "budget",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2021-12-20T13:37:42Z",
 					to: ["jane@example.com"],
@@ -194,6 +211,8 @@ describe("Delegation", () => {
 		}
 		const updated: model.Delegation = {
 			id: "abcd0002",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["jane@example.com"],
@@ -204,6 +223,8 @@ describe("Delegation", () => {
 		}
 		const after: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -212,15 +233,19 @@ describe("Delegation", () => {
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
-		model.Delegation.change(before, before.delegations[0].id, updated)
+		let result = model.Delegation.change([before], before.delegations[0].id, updated)
 		expect(before).toEqual(after)
+		expect(result).toEqual({ root: before, changed: updated })
 		const final = { ...before, to: ["jane@example.com"] }
-		model.Delegation.change(before, before.id, final)
+		result = model.Delegation.change([before], before.id, final)
 		expect(before).toEqual(final)
+		expect(result).toEqual({ root: before, changed: final })
 	})
 	it("remove", () => {
 		const toBeRemoved: model.Delegation = {
 			id: "abcd0003",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["jane@example.com"],
@@ -231,6 +256,8 @@ describe("Delegation", () => {
 		}
 		const after: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -239,6 +266,8 @@ describe("Delegation", () => {
 			delegations: [
 				{
 					id: "abcd0002",
+					from: "jane@example.com",
+					costCenter: "budget",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2021-12-20T13:37:42Z",
 					to: ["jane@example.com"],
@@ -254,9 +283,10 @@ describe("Delegation", () => {
 			...after,
 			delegations: [...after.delegations, toBeRemoved],
 		}
-		expect(model.Delegation.remove(before, toBeRemoved.id)).toEqual(toBeRemoved)
+		expect(model.Delegation.f([before], toBeRemoved.id)).toEqual({ root: before, deleted: toBeRemoved })
 		expect(before).toEqual(after)
-		expect(model.Delegation.remove(before, before.id)).toEqual(undefined)
+		expect(model.Delegation.f([before], before.id)).toEqual({ root: before, deleted: before })
+		expect(model.Delegation.f([after], "xyz")).toEqual(undefined)
 	})
 	it("spent", () => {
 		expect(model.Delegation.spent(topLevelDelegation)).toEqual(29)
@@ -274,26 +304,27 @@ describe("Delegation", () => {
 		expect(model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create()))).toEqual(true)
 	})
 	it("findParents", () => {
-		expect(model.Delegation.findParents(topLevelDelegation, "abcd0003")).toEqual([
+		expect(model.Delegation.findParents([topLevelDelegation], "abcd0003")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[0],
 		])
-		expect(model.Delegation.findParents(topLevelDelegation, "abcd0001")).toEqual(undefined)
-		expect(model.Delegation.findParents(topLevelDelegation, "abcd0006")).toEqual([
+		expect(model.Delegation.findParents([topLevelDelegation], "abcd0001")).toEqual([])
+		expect(model.Delegation.findParents([topLevelDelegation], "abcd0006")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[1],
 			topLevelDelegation.delegations[1].delegations[0],
 		])
-		expect(model.Delegation.findParents(topLevelDelegation, "abcd0002")).toEqual([topLevelDelegation])
+		expect(model.Delegation.findParents([topLevelDelegation], "abcd0002")).toEqual([topLevelDelegation])
+		expect(model.Delegation.findParents([topLevelDelegation], "xyz")).toEqual(undefined)
 	})
 	it("path", () => {
-		expect(model.Delegation.path(topLevelDelegation, "abcd0001")).toEqual([topLevelDelegation])
-		expect(model.Delegation.path(topLevelDelegation, "abcd0003")).toEqual([
+		expect(model.Delegation.path([topLevelDelegation], "abcd0001")).toEqual([topLevelDelegation])
+		expect(model.Delegation.path([topLevelDelegation], "abcd0003")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[0],
 			topLevelDelegation.delegations[0].delegations[0],
 		])
-		expect(model.Delegation.path(topLevelDelegation, "abcd0006")).toEqual([
+		expect(model.Delegation.path([topLevelDelegation], "abcd0006")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[1],
 			topLevelDelegation.delegations[1].delegations[0],
@@ -303,6 +334,8 @@ describe("Delegation", () => {
 	it("validate", () => {
 		const testFrom: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -326,6 +359,8 @@ describe("Delegation", () => {
 		}
 		const testCostCenter: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -347,9 +382,9 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		expect(model.Delegation.validate(topLevelDelegation, undefined, true)).toEqual(true)
-		expect(model.Delegation.validate(initialDelegation, undefined, true)).toEqual(true)
-		expect(model.Delegation.validate(testFrom, undefined, true)).toEqual(false)
-		expect(model.Delegation.validate(testCostCenter, undefined, true)).toEqual(false)
+		expect(model.Delegation.validate(topLevelDelegation)).toEqual(true)
+		expect(model.Delegation.validate(initialDelegation)).toEqual(true)
+		expect(model.Delegation.validate(testFrom)).toEqual(false)
+		expect(model.Delegation.validate(testCostCenter)).toEqual(false)
 	})
 })
