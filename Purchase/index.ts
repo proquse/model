@@ -36,7 +36,6 @@ export namespace Purchase {
 	export function create(
 		purchase: Purchase.Creatable,
 		token: string,
-		supplier: string,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
@@ -45,31 +44,42 @@ export namespace Purchase {
 			created: now,
 			modified: now,
 			...purchase,
-			payment: Payment.create(purchase.payment, token, supplier),
+			payment: Payment.create(purchase.payment, token),
 		}
 	}
-	export function find(root: Delegation, purchaseId: string): Purchase | undefined {
-		let result: Purchase | undefined = root.purchases.find(purchase => purchase.id == purchaseId)
-		return result ?? root.delegations.find(delegation => (result = find(delegation, purchaseId))) ? result : undefined
+	export function find(roots: Delegation[], id: string): { root: Delegation; found: Purchase } | undefined {
+		let result: { root: Delegation; found: Purchase } | undefined
+		roots.find(root => root.purchases.find(purchase => purchase.id == id && (result = { root: root, found: purchase })))
+		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
 	}
-	export function change(root: Delegation, updated: Purchase): Purchase | undefined
-	export function change(old: Purchase, updated: Purchase): Purchase | undefined
-	export function change(root: Delegation | Purchase, updated: Purchase): Purchase | undefined {
-		const result = Purchase.is(root) ? root : find(root, updated.id)
-		if (result) {
-			Object.keys(result).forEach((key: keyof Purchase) => delete result[key])
-			Object.assign(result, updated)
+	export function change(roots: Delegation[], updated: Purchase): { root: Delegation; changed: Purchase } | undefined
+	export function change(old: Purchase, updated: Purchase): Purchase
+	export function change(
+		roots: Delegation[] | Purchase,
+		updated: Purchase
+	): { root: Delegation; changed: Purchase } | Purchase | undefined {
+		let result: { root: Delegation; changed: Purchase } | Purchase | undefined
+		if (Array.isArray(roots)) {
+			const search = find(roots, updated.id)
+			search &&
+				(result = { root: search.root, changed: { ...search.found } }) &&
+				(Object.keys(search.found).forEach((key: keyof Purchase) => delete search.found[key]),
+				Object.assign(search.found, updated))
+		} else {
+			result = { ...roots }
+			Object.keys(roots).forEach((key: keyof Purchase) => delete roots[key])
+			Object.assign(roots, updated)
 		}
 		return result
 	}
-	export function remove(root: Delegation, purchaseId: string): Purchase | undefined {
-		let result: Purchase | undefined = undefined
-		const index = root.purchases.findIndex(purchase => purchase.id == purchaseId)
-		return index >= 0
-			? (result = root.purchases.splice(index, 1).at(0))
-			: root.delegations.find(delegation => (result = remove(delegation, purchaseId)))
-			? result
-			: undefined
+	export function remove(roots: Delegation[], id: string): { root: Delegation; removed: Purchase } | undefined {
+		let result: { root: Delegation; removed: Purchase } | undefined
+		roots.find(root =>
+			root.purchases.find(
+				(purchase, index) => purchase.id == id && (result = { root: root, removed: root.purchases.splice(index, 1)[0] })
+			)
+		)
+		return result ?? (roots.find(root => (result = remove(root.delegations, id))) && result)
 	}
 	export function validate(value: Purchase, limit?: Amount) {
 		return (

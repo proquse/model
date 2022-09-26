@@ -21,6 +21,8 @@ describe("Purchase", () => {
 	}
 	const delegation: model.Delegation = {
 		id: "abcd0001",
+		from: "jane@example.com",
+		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
@@ -29,6 +31,7 @@ describe("Purchase", () => {
 		delegations: [
 			{
 				id: "abcd0002",
+				from: "jane@example.com",
 				created: "2021-12-22T13:37:42Z",
 				modified: "2021-12-22T13:37:42Z",
 				to: ["mary@example.com"],
@@ -38,6 +41,7 @@ describe("Purchase", () => {
 				delegations: [
 					{
 						id: "abcd0003",
+						from: "jane@example.com",
 						created: "2021-12-28T13:37:42Z",
 						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
@@ -104,6 +108,7 @@ describe("Purchase", () => {
 			},
 			{
 				id: "abcd0004",
+				from: "jane@example.com",
 				created: "2021-12-28T13:37:42Z",
 				modified: "2021-12-20T13:37:42Z",
 				to: ["richard@example.com"],
@@ -113,6 +118,8 @@ describe("Purchase", () => {
 				delegations: [
 					{
 						id: "abcd0005",
+						from: "jane@example.com",
+						costCenter: "IT",
 						created: "2021-12-20T13:37:42Z",
 						modified: "2021-12-20T13:37:42Z",
 						to: ["john@example.com", "jane@example.com"],
@@ -121,6 +128,8 @@ describe("Purchase", () => {
 						delegations: [
 							{
 								id: "abcd0006",
+								from: "jane@example.com",
+								costCenter: "IT",
 								created: "2021-12-20T13:37:42Z",
 								modified: "2021-12-20T13:37:42Z",
 								to: ["mary@example.com"],
@@ -150,10 +159,13 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		expect(model.Purchase.is(model.Purchase.create(purchase, "someSupplier", "someToken"))).toEqual(true)
+		expect(model.Purchase.is(model.Purchase.create(purchase, "someToken"))).toEqual(true)
 	})
 	it("find", () => {
-		expect(model.Purchase.find(delegation, "aoeu1234")).toEqual(delegation.delegations[0].delegations[0].purchases[0])
+		expect(model.Purchase.find([delegation], "aoeu1234")).toEqual({
+			root: delegation,
+			found: delegation.delegations[0].delegations[0].purchases[0],
+		})
 	})
 	it("change", () => {
 		const target: model.Purchase = model.Purchase.create(
@@ -165,8 +177,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
-			"someSupplier"
+			"someToken"
 		)
 		const updated: model.Purchase = {
 			...target,
@@ -182,6 +193,8 @@ describe("Purchase", () => {
 		}
 		const root: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -191,10 +204,12 @@ describe("Purchase", () => {
 			purchases: [target],
 		}
 		expect(target).not.toEqual(updated)
-		model.Purchase.change(target, updated)
+		const first = model.Purchase.change(target, updated)
 		expect(target).toEqual(after)
-		const result = model.Purchase.change(root, updated)
-		expect(result).toEqual(updated)
+		expect(first).not.toBe(after)
+		const second = model.Purchase.change([root], updated)
+		expect(second).toEqual({ root: root, changed: updated })
+		expect(second?.changed).not.toBe(updated)
 	})
 	it("remove", () => {
 		const target: model.Purchase = model.Purchase.create(
@@ -206,11 +221,12 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
-			"someSupplier"
+			"someToken"
 		)
 		const root: model.Delegation = {
 			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
@@ -219,8 +235,10 @@ describe("Purchase", () => {
 			delegations: [],
 			purchases: [target],
 		}
-		model.Purchase.remove(root, target.id)
+		const result = model.Purchase.remove([root], target.id)
+		console.log(result)
 		expect(root.purchases.length).toEqual(0)
+		expect(result?.removed).toBe(target)
 	})
 	it("validate", () => {
 		const target: model.Purchase = model.Purchase.create(
@@ -232,8 +250,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
-			"someSupplier"
+			"someToken"
 		)
 
 		expect(model.Purchase.validate(target)).toEqual(true)
@@ -248,8 +265,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
-					"someSupplier"
+					"someToken"
 				)
 			)
 		).toEqual(false)
@@ -264,8 +280,7 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					"someToken",
-					"someSupplier"
+					"someToken"
 				)
 			)
 		).toEqual(false)
@@ -280,8 +295,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
-					"someSupplier"
+					"someToken"
 				),
 				[10, "EUR"]
 			)
@@ -298,8 +312,7 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						"someToken",
-						"someSupplier"
+						"someToken"
 					),
 					amount: [2, "EUR"],
 				},
@@ -317,8 +330,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
-					"someSupplier"
+					"someToken"
 				),
 				[10, "SEK"]
 			)

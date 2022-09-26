@@ -15,7 +15,7 @@ describe("Payment", () => {
 			limit: [10, "EUR"],
 		}
 		expect(model.Payment.Creatable.is(creatable))
-		expect(model.Payment.is(model.Payment.create(creatable, "someToken", "someSupplier"))).toEqual(true)
+		expect(model.Payment.is(model.Payment.create(creatable, "someToken"))).toEqual(true)
 	})
 	it("validate", () => {
 		expect(model.Payment.validate(payment)).toEqual(true)

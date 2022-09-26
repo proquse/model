@@ -4,7 +4,7 @@ export interface Creatable {
 	to: string[]
 	purpose: string
 	amount: Amount
-	costCenter?: string
+	costCenter: string
 }
 
 export namespace Creatable {
@@ -34,7 +34,7 @@ export namespace Creatable {
 			to: to ?? [],
 			purpose: purpose ?? "",
 			amount: amount ?? [0, "EUR"],
-			...(costCenter && { costCenter: costCenter }),
+			costCenter: costCenter ?? "",
 		}
 	}
 	export function validate(value: Creatable, limit?: Amount): boolean {
@@ -43,7 +43,7 @@ export namespace Creatable {
 			!value.to.some(to => !to) &&
 			!!value.purpose &&
 			Amount.validate(value.amount, limit) &&
-			(value.costCenter == undefined || value.costCenter.length > 0)
+			!!value.costCenter
 		)
 	}
 }
