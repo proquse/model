@@ -42,8 +42,7 @@ describe("Delegation.Data", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
-			"someSupplier"
+			"someToken"
 		)
 		expect(model.Delegation.Data.validate(data)).toEqual(true)
 		expect(

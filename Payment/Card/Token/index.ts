@@ -9,8 +9,8 @@ export namespace Token {
 	export function is(value: Token | any): value is Token & Record<string, any> {
 		return CreatableToken.is(value) && typeof value.value == "string"
 	}
-	export function create(token: Creatable, value: string, supplier: string) {
-		return { ...token, value: value, supplier: supplier }
+	export function create(token: Creatable, value: string): Token {
+		return { ...token, value: value }
 	}
 	export function validate(value: Token, limit?: Amount) {
 		return CreatableToken.validate(value, limit) && !!value.value

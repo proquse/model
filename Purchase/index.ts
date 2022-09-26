@@ -36,7 +36,6 @@ export namespace Purchase {
 	export function create(
 		purchase: Purchase.Creatable,
 		token: string,
-		supplier: string,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
@@ -45,7 +44,7 @@ export namespace Purchase {
 			created: now,
 			modified: now,
 			...purchase,
-			payment: Payment.create(purchase.payment, token, supplier),
+			payment: Payment.create(purchase.payment, token),
 		}
 	}
 	export function find(roots: Delegation[], id: string): { root: Delegation; found: Purchase } | undefined {
