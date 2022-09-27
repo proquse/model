@@ -236,7 +236,6 @@ describe("Purchase", () => {
 			purchases: [target],
 		}
 		const result = model.Purchase.remove([root], target.id)
-		console.log(result)
 		expect(root.purchases.length).toEqual(0)
 		expect(result?.removed).toBe(target)
 	})
