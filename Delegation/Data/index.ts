@@ -10,6 +10,7 @@ export interface Data extends Creatable {
 	created: isoly.DateTime
 	modified: isoly.DateTime
 	from: string
+	costCenter: string
 	purchases: Purchase[]
 }
 
@@ -18,9 +19,9 @@ export namespace Data {
 		return (
 			Creatable.is(value) &&
 			isoly.DateTime.is(value.created) &&
-			(typeof value.from == "string" || typeof value.from == "undefined") &&
 			isoly.DateTime.is(value.modified) &&
-			(typeof value.from == "string" || typeof value.from == "undefined") &&
+			typeof value.from == "string" &&
+			typeof value.costCenter == "string" &&
 			Array.isArray(value.purchases) &&
 			value.purchases.every(purchase => Purchase.is(purchase)) &&
 			cryptly.Identifier.is(value.id)
