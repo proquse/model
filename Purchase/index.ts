@@ -14,7 +14,8 @@ export interface Purchase {
 	purpose: string
 	buyer: string
 	amount?: Amount
-	receipt?: Receipt | { to: string }
+	email: string
+	receipt: Receipt[]
 }
 
 export namespace Purchase {
@@ -28,23 +29,29 @@ export namespace Purchase {
 			isoly.DateTime.is(value.modified) &&
 			Payment.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
-			(Receipt.is(value.receipt) ||
-				(typeof value.receipt == "object" && typeof value.receipt.to == "string") ||
-				typeof value.receipt == "undefined")
+			typeof value.email == "string" &&
+			Array.isArray(value.receipt) &&
+			value.receipt.every((receipt: unknown) => Receipt.is(receipt))
 		)
 	}
 	export function create(
 		purchase: Purchase.Creatable,
 		token: string,
+		organizationId: string,
+		to: string,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
+		const id = cryptly.Identifier.generate(idLength)
+		const [recipient, domain] = to.split("@")
 		return {
-			id: cryptly.Identifier.generate(idLength),
+			id: id,
 			created: now,
 			modified: now,
 			...purchase,
 			payment: Payment.create(purchase.payment, token),
+			email: `${recipient}+${organizationId}|${id}@${domain}`,
+			receipt: [],
 		}
 	}
 	export function find(roots: Delegation[], id: string): { root: Delegation; found: Purchase } | undefined {
@@ -90,9 +97,8 @@ export namespace Purchase {
 			value.modified <= isoly.DateTime.now() &&
 			Payment.validate(value.payment, limit) &&
 			(!value.amount || Amount.validate(value.amount, value.payment.limit)) &&
-			(!value.receipt ||
-				(Receipt.is(value.receipt) && Receipt.validate(value.receipt)) ||
-				!!(value.receipt as { to?: string }).to)
+			!!value.email &&
+			value.receipt.every(receipt => Receipt.validate(receipt))
 		)
 	}
 	export type Creatable = PurchaseCreatable

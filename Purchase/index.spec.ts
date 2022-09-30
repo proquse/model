@@ -8,16 +8,20 @@ describe("Purchase", () => {
 		buyer: "richard@example.com",
 		amount: [9.5, "EUR"],
 		purpose: "Production Workers",
+		email: "receipt@example.com",
 		payment: {
 			type: "card",
 			limit: [10, "EUR"],
 			value: "someToken",
 		},
-		receipt: {
-			amount: [10, "USD"],
-			vat: 0,
-			original: "https://example.com/receipt.pdf",
-		},
+		receipt: [
+			{
+				id: "id",
+				amount: [10, "USD"],
+				vat: 0,
+				original: "https://example.com/receipt.pdf",
+			},
+		],
 	}
 	const delegation: model.Delegation = {
 		id: "abcd0001",
@@ -52,6 +56,7 @@ describe("Purchase", () => {
 						purchases: [
 							{
 								id: "aoeu1234",
+								email: "receipt@example.com",
 								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
@@ -62,14 +67,18 @@ describe("Purchase", () => {
 									limit: [10, "EUR"],
 									value: "someToken",
 								},
-								receipt: {
-									amount: [10, "USD"],
-									vat: 0,
-									original: "https://example.com/receipt.pdf",
-								},
+								receipt: [
+									{
+										id: "id",
+										amount: [10, "USD"],
+										vat: 0,
+										original: "https://example.com/receipt.pdf",
+									},
+								],
 							},
 							{
 								id: "aoeu2345",
+								email: "receipt@example.com",
 								created: "2022-02-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
@@ -80,7 +89,7 @@ describe("Purchase", () => {
 									limit: [10, "EUR"],
 									value: "someToken",
 								},
-								receipt: { to: "receipt+aoeu1234@company.com" },
+								receipt: [],
 							},
 						],
 					},
@@ -88,6 +97,7 @@ describe("Purchase", () => {
 				purchases: [
 					{
 						id: "aoeu3456",
+						email: "receipt@example.com",
 						created: "2022-01-01T00:00:42Z",
 						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
@@ -98,11 +108,14 @@ describe("Purchase", () => {
 							limit: [5, "EUR"],
 							value: "someToken",
 						},
-						receipt: {
-							amount: [10, "USD"],
-							vat: 0,
-							original: "https://example.com/receipt.pdf",
-						},
+						receipt: [
+							{
+								id: "id",
+								amount: [10, "USD"],
+								vat: 0,
+								original: "https://example.com/receipt.pdf",
+							},
+						],
 					},
 				],
 			},
@@ -159,7 +172,9 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		expect(model.Purchase.is(model.Purchase.create(purchase, "someToken"))).toEqual(true)
+		const result = model.Purchase.create(purchase, "someToken", "organizationId", "receipt@example.com")
+		expect(model.Purchase.is(result))
+		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
 	})
 	it("find", () => {
 		expect(model.Purchase.find([delegation], "aoeu1234")).toEqual({
@@ -177,7 +192,9 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken"
+			"someToken",
+			"organizationId",
+			"receipt@example.com"
 		)
 		const updated: model.Purchase = {
 			...target,
@@ -221,7 +238,9 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken"
+			"someToken",
+			"organizationId",
+			"receipt@example.com"
 		)
 		const root: model.Delegation = {
 			id: "abcd0001",
@@ -249,7 +268,9 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken"
+			"someToken",
+			"organizationId",
+			"receipt@example.com"
 		)
 
 		expect(model.Purchase.validate(target)).toEqual(true)
@@ -264,7 +285,9 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken"
+					"someToken",
+					"organizationId",
+					"receipt@example.com"
 				)
 			)
 		).toEqual(false)
@@ -279,7 +302,9 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					"someToken"
+					"someToken",
+					"organizationId",
+					"receipt@example.com"
 				)
 			)
 		).toEqual(false)
@@ -294,7 +319,9 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken"
+					"someToken",
+					"organizationId",
+					"receipt@example.com"
 				),
 				[10, "EUR"]
 			)
@@ -311,7 +338,9 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						"someToken"
+						"someToken",
+						"organizationId",
+						"receipt@example.com"
 					),
 					amount: [2, "EUR"],
 				},
@@ -329,7 +358,9 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken"
+					"someToken",
+					"organizationId",
+					"receipt@example.com"
 				),
 				[10, "SEK"]
 			)
