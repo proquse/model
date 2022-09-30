@@ -31,7 +31,7 @@ export namespace Purchase {
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
 			typeof value.email == "string" &&
 			Array.isArray(value.receipt) &&
-			value.receipt.every((receipt: unknown) => typeof receipt == "object" && receipt && Receipt.is(receipt))
+			value.receipt.every((receipt: unknown) => Receipt.is(receipt))
 		)
 	}
 	export function create(
