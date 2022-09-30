@@ -59,28 +59,32 @@ describe("Delegation", () => {
 						purchases: [
 							{
 								id: "aoeu1234",
+								email: "receipt@example.com",
 								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
 								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
-								receipt: {
-									id: "id",
-									amount: [10, "USD"],
-									vat: 0,
-									original: "https://example.com/receipt.pdf",
-								},
+								receipt: [
+									{
+										id: "id",
+										amount: [10, "USD"],
+										vat: 0,
+										original: "https://example.com/receipt.pdf",
+									},
+								],
 							},
 							{
 								id: "aoeu1234",
+								email: "receipt@example.com",
 								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
 								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
-								receipt: { to: "receipt+aoeu1234@company.com" },
+								receipt: [],
 							},
 						],
 					},
@@ -88,18 +92,21 @@ describe("Delegation", () => {
 				purchases: [
 					{
 						id: "aoeu2345",
+						email: "receipt@example.com",
 						created: "2022-01-01T00:00:42Z",
 						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
 						payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
-						receipt: {
-							id: "id",
-							amount: [10, "USD"],
-							vat: 0,
-							original: "https://example.com/receipt.pdf",
-						},
+						receipt: [
+							{
+								id: "id",
+								amount: [10, "USD"],
+								vat: 0,
+								original: "https://example.com/receipt.pdf",
+							},
+						],
 					},
 				],
 			},
