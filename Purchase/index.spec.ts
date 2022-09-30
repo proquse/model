@@ -14,6 +14,7 @@ describe("Purchase", () => {
 			value: "someToken",
 		},
 		receipt: {
+			id: "id",
 			amount: [10, "USD"],
 			vat: 0,
 			original: "https://example.com/receipt.pdf",
@@ -63,6 +64,7 @@ describe("Purchase", () => {
 									value: "someToken",
 								},
 								receipt: {
+									id: "id",
 									amount: [10, "USD"],
 									vat: 0,
 									original: "https://example.com/receipt.pdf",
@@ -99,6 +101,7 @@ describe("Purchase", () => {
 							value: "someToken",
 						},
 						receipt: {
+							id: "id",
 							amount: [10, "USD"],
 							vat: 0,
 							original: "https://example.com/receipt.pdf",

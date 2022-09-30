@@ -66,6 +66,7 @@ describe("Delegation", () => {
 								purpose: "Production Workers",
 								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
 								receipt: {
+									id: "id",
 									amount: [10, "USD"],
 									vat: 0,
 									original: "https://example.com/receipt.pdf",
@@ -94,6 +95,7 @@ describe("Delegation", () => {
 						purpose: "Production Workers",
 						payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
 						receipt: {
+							id: "id",
 							amount: [10, "USD"],
 							vat: 0,
 							original: "https://example.com/receipt.pdf",
