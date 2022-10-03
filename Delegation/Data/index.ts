@@ -32,18 +32,18 @@ export namespace Data {
 			Object.entries(delegation).filter(([key, _]: [keyof Delegation, any]) => key != "delegations")
 		) as Data
 	}
-	export function validate(value: Data, limit?: Amount) {
+	export function validate(delegation: Data, limit?: Amount): boolean {
 		return (
-			Creatable.validate(value, limit) &&
-			!!value.id &&
-			!!value.costCenter &&
-			value.created <= value.modified &&
-			value.modified <= isoly.DateTime.now() &&
-			!!value.from &&
-			value.purchases.every(purchase => Purchase.validate(purchase)) &&
-			value.purchases.reduce((aggregate, current) => {
+			Creatable.validate(delegation, limit) &&
+			!!delegation.id &&
+			!!delegation.costCenter &&
+			delegation.created <= delegation.modified &&
+			delegation.modified <= isoly.DateTime.now() &&
+			!!delegation.from &&
+			delegation.purchases.every(purchase => Purchase.validate(purchase)) &&
+			delegation.purchases.reduce((aggregate, current) => {
 				return aggregate + (current.amount?.[0] ?? 0)
-			}, 0) <= value.amount[0]
+			}, 0) <= delegation.amount[0]
 		)
 	}
 }

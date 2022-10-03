@@ -16,9 +16,12 @@ export namespace Creatable {
 			typeof value.buyer == "string"
 		)
 	}
-	export function validate(value: Creatable, limit?: Amount) {
+	export function validate(purchase: Creatable, limit?: Amount): boolean {
 		return (
-			!!value.buyer && !!value.purpose && Amount.validate(value.payment.limit, limit) && value.payment.type == "card"
+			!!purchase.buyer &&
+			!!purchase.purpose &&
+			Amount.validate(purchase.payment.limit, limit) &&
+			purchase.payment.type == "card"
 		)
 	}
 }

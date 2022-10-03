@@ -14,14 +14,16 @@ describe("Purchase", () => {
 			limit: [10, "EUR"],
 			value: "someToken",
 		},
-		receipt: [
+		receipts: [
 			{
 				id: "id",
 				amount: [10, "USD"],
 				vat: 0,
+				date: "2022-01-01T00:00:42Z",
 				original: "https://example.com/receipt.pdf",
 			},
 		],
+		transactions: [],
 	}
 	const delegation: model.Delegation = {
 		id: "abcd0001",
@@ -67,14 +69,16 @@ describe("Purchase", () => {
 									limit: [10, "EUR"],
 									value: "someToken",
 								},
-								receipt: [
+								receipts: [
 									{
 										id: "id",
 										amount: [10, "USD"],
 										vat: 0,
+										date: "2022-01-01T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
 								],
+								transactions: [],
 							},
 							{
 								id: "aoeu2345",
@@ -89,7 +93,8 @@ describe("Purchase", () => {
 									limit: [10, "EUR"],
 									value: "someToken",
 								},
-								receipt: [],
+								receipts: [],
+								transactions: [],
 							},
 						],
 					},
@@ -108,14 +113,16 @@ describe("Purchase", () => {
 							limit: [5, "EUR"],
 							value: "someToken",
 						},
-						receipt: [
+						receipts: [
 							{
 								id: "id",
 								amount: [10, "USD"],
 								vat: 0,
+								date: "2022-01-01T00:00:42Z",
 								original: "https://example.com/receipt.pdf",
 							},
 						],
+						transactions: [],
 					},
 				],
 			},

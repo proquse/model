@@ -100,19 +100,19 @@ export namespace Delegation {
 			)
 		)
 	}
-	export function validate(value: Delegation, limit?: Amount): boolean {
-		const equity = balance(value)
+	export function validate(delegation: Delegation, limit?: Amount): boolean {
+		const equity = balance(delegation)
 		return (
-			!!value.id &&
-			value.created <= value.modified &&
-			value.modified <= isoly.DateTime.now() &&
-			!!value.from &&
-			!!value.costCenter &&
-			Delegation.Creatable.validate(value, limit) &&
+			!!delegation.id &&
+			delegation.created <= delegation.modified &&
+			delegation.modified <= isoly.DateTime.now() &&
+			!!delegation.from &&
+			!!delegation.costCenter &&
+			Delegation.Creatable.validate(delegation, limit) &&
 			0 <= equity &&
 			(!limit || equity <= limit[0]) &&
-			balance(value) >= 0 &&
-			value.delegations.every(delegation => Delegation.validate(delegation, value.amount))
+			balance(delegation) >= 0 &&
+			delegation.delegations.every(delegation => Delegation.validate(delegation, delegation.amount))
 		)
 	}
 }

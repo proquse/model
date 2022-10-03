@@ -12,8 +12,8 @@ export namespace Token {
 	export function create(token: Creatable, value: string): Token {
 		return { ...token, value: value }
 	}
-	export function validate(value: Token, limit?: Amount) {
-		return CreatableToken.validate(value, limit) && !!value.value
+	export function validate(token: Token, limit?: Amount): boolean {
+		return CreatableToken.validate(token, limit) && !!token.value
 	}
 	export type Creatable = CreatableToken
 	export namespace Creatable {
