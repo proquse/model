@@ -6,10 +6,10 @@ export interface Creatable {
 }
 
 export namespace Creatable {
-	export function is(value: Creatable | any): value is Creatable & Record<string, any> {
-		return typeof value == "object" && value.type == "card" && Amount.is(value.limit)
+	export function is(token: Creatable | any): token is Creatable & Record<string, any> {
+		return typeof token == "object" && token.type == "card" && Amount.is(token.limit)
 	}
-	export function validate(value: Creatable, limit?: Amount) {
+	export function validate(value: Creatable, limit?: Amount): boolean {
 		return Amount.validate(value.limit, limit)
 	}
 }

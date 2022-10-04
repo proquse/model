@@ -66,14 +66,16 @@ describe("Delegation", () => {
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
 								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
-								receipt: [
+								receipts: [
 									{
 										id: "id",
 										amount: [10, "USD"],
+										date: "2022-01-01T00:00:42Z",
 										vat: 0,
 										original: "https://example.com/receipt.pdf",
 									},
 								],
+								transactions: [],
 							},
 							{
 								id: "aoeu1234",
@@ -84,7 +86,8 @@ describe("Delegation", () => {
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
 								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
-								receipt: [],
+								receipts: [],
+								transactions: [],
 							},
 						],
 					},
@@ -99,14 +102,16 @@ describe("Delegation", () => {
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
 						payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
-						receipt: [
+						receipts: [
 							{
 								id: "id",
 								amount: [10, "USD"],
+								date: "2022-01-01T00:00:42Z",
 								vat: 0,
 								original: "https://example.com/receipt.pdf",
 							},
 						],
+						transactions: [],
 					},
 				],
 			},

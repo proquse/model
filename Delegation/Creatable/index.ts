@@ -37,13 +37,13 @@ export namespace Creatable {
 			costCenter: costCenter ?? "",
 		}
 	}
-	export function validate(value: Creatable, limit?: Amount): boolean {
+	export function validate(delegation: Creatable, limit?: Amount): boolean {
 		return (
-			value.to.length > 0 &&
-			!value.to.some(to => !to) &&
-			!!value.purpose &&
-			Amount.validate(value.amount, limit) &&
-			!!value.costCenter
+			delegation.to.length > 0 &&
+			!delegation.to.some(to => !to) &&
+			!!delegation.purpose &&
+			Amount.validate(delegation.amount, limit) &&
+			!!delegation.costCenter
 		)
 	}
 }

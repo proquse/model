@@ -4,6 +4,7 @@ import { Amount } from "../Amount"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
+import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
 export interface Purchase {
@@ -15,7 +16,8 @@ export interface Purchase {
 	buyer: string
 	amount?: Amount
 	email: string
-	receipt: Receipt[]
+	receipts: Receipt[]
+	transactions: Transaction[]
 }
 
 export namespace Purchase {
@@ -30,8 +32,10 @@ export namespace Purchase {
 			Payment.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
 			typeof value.email == "string" &&
-			Array.isArray(value.receipt) &&
-			value.receipt.every((receipt: unknown) => Receipt.is(receipt))
+			Array.isArray(value.receipts) &&
+			value.receipts.every((receipt: unknown) => Receipt.is(receipt)) &&
+			Array.isArray(value.transactions) &&
+			value.transactions.every((transaction: unknown) => Transaction.is(transaction))
 		)
 	}
 	export function create(
@@ -51,7 +55,8 @@ export namespace Purchase {
 			...purchase,
 			payment: Payment.create(purchase.payment, token),
 			email: `${recipient}+${organizationId}|${id}@${domain}`,
-			receipt: [],
+			receipts: [],
+			transactions: [],
 		}
 	}
 	export function find(roots: Delegation[], id: string): { root: Delegation; found: Purchase } | undefined {
@@ -88,17 +93,18 @@ export namespace Purchase {
 		)
 		return result ?? (roots.find(root => (result = remove(root.delegations, id))) && result)
 	}
-	export function validate(value: Purchase, limit?: Amount) {
+	export function validate(purchase: Purchase, limit?: Amount): boolean {
 		return (
-			!!value.id &&
-			!!value.purpose &&
-			!!value.buyer &&
-			value.created <= value.modified &&
-			value.modified <= isoly.DateTime.now() &&
-			Payment.validate(value.payment, limit) &&
-			(!value.amount || Amount.validate(value.amount, value.payment.limit)) &&
-			!!value.email &&
-			value.receipt.every(receipt => Receipt.validate(receipt))
+			!!purchase.id &&
+			!!purchase.purpose &&
+			!!purchase.buyer &&
+			purchase.created <= purchase.modified &&
+			purchase.modified <= isoly.DateTime.now() &&
+			Payment.validate(purchase.payment, limit) &&
+			(!purchase.amount || Amount.validate(purchase.amount, purchase.payment.limit)) &&
+			!!purchase.email &&
+			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&
+			purchase.transactions.every(transaction => Transaction.validate(transaction))
 		)
 	}
 	export type Creatable = PurchaseCreatable
