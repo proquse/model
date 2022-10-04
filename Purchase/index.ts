@@ -64,11 +64,17 @@ export namespace Purchase {
 		roots.find(root => root.purchases.find(purchase => purchase.id == id && (result = { root: root, found: purchase })))
 		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
 	}
-	export function list(roots: Delegation[], filter?: (purchase: Purchase) => boolean | any): Purchase[] {
-		function* list(roots: Delegation[], filter?: (purchase: Purchase) => boolean | any): Generator<Purchase> {
+	export function list(
+		roots: Iterable<Delegation>,
+		filter?: (purchase: Purchase, parentDelegation: Delegation) => boolean | any
+	): Purchase[] {
+		function* list(
+			roots: Iterable<Delegation>,
+			filter?: (purchase: Purchase, parentDelegation: Delegation) => boolean | any
+		): Generator<Purchase> {
 			for (const root of roots) {
 				for (const purchase of root.purchases) {
-					;(!filter || filter(purchase)) && (yield purchase)
+					;(!filter || filter(purchase, root)) && (yield purchase)
 				}
 				yield* list(root.delegations, filter)
 			}

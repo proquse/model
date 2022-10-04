@@ -374,7 +374,6 @@ describe("Purchase", () => {
 		).toEqual(false)
 	})
 	it("list", () => {
-		console.log(model.Purchase.list(delegation.delegations, p => p))
 		expect(model.Purchase.list(delegation.delegations).length).toEqual(3)
 		expect(
 			model.Purchase.list(delegation.delegations, purchase => purchase.amount && purchase.amount[0] < 10).length
