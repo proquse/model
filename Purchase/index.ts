@@ -64,6 +64,17 @@ export namespace Purchase {
 		roots.find(root => root.purchases.find(purchase => purchase.id == id && (result = { root: root, found: purchase })))
 		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
 	}
+	export function list(roots: Delegation[], filter?: (purchase: Purchase) => boolean | any): Purchase[] {
+		function* list(roots: Delegation[], filter?: (purchase: Purchase) => boolean | any): Generator<Purchase> {
+			for (const root of roots) {
+				for (const purchase of root.purchases) {
+					;(!filter || filter(purchase)) && (yield purchase)
+				}
+				yield* list(root.delegations, filter)
+			}
+		}
+		return Array.from(list(roots, filter))
+	}
 	export function change(roots: Delegation[], updated: Purchase): { root: Delegation; changed: Purchase } | undefined
 	export function change(old: Purchase, updated: Purchase): Purchase
 	export function change(
