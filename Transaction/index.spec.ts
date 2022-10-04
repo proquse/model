@@ -53,21 +53,21 @@ describe("Transaction", () => {
 			],
 			transactions: [
 				{
-					id: "3",
+					id: "c",
 					reference: "someid",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: {},
 				},
 				{
-					id: "2",
+					id: "b",
 					reference: "someid",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: {},
 				},
 				{
-					id: "1",
+					id: "a",
 					reference: "someid",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
@@ -77,18 +77,18 @@ describe("Transaction", () => {
 		}
 		const remainder = model.Transaction.link(
 			[
-				{ receiptId: "1", transactionId: "1" },
-				{ receiptId: "2", transactionId: "2" },
-				{ receiptId: "4", transactionId: "4" },
+				{ receiptId: "1", transactionId: "a" },
+				{ receiptId: "2", transactionId: "b" },
+				{ receiptId: "4", transactionId: "d" },
 			],
 			purchase
 		)
-		expect(remainder).toEqual([{ receiptId: "4", transactionId: "4" }])
+		expect(remainder).toEqual([{ receiptId: "4", transactionId: "d" }])
 		expect(purchase.transactions[0].receipt).toEqual(undefined)
 		expect(purchase.transactions[1].receipt).toEqual("2")
 		expect(purchase.transactions[2].receipt).toEqual("1")
-		expect(purchase.receipts[0].transaction).toEqual("1")
-		expect(purchase.receipts[1].transaction).toEqual("2")
+		expect(purchase.receipts[0].transaction).toEqual("a")
+		expect(purchase.receipts[1].transaction).toEqual("b")
 		expect(purchase.receipts[2].transaction).toEqual(undefined)
 	})
 })
