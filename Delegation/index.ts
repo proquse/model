@@ -23,7 +23,6 @@ export namespace Delegation {
 	export function create(
 		creatable: DelegationCreatable,
 		from: string,
-		costCenter: string,
 		idLength: cryptly.Identifier.Length = 8
 	): Delegation {
 		const now = isoly.DateTime.now()
@@ -31,7 +30,6 @@ export namespace Delegation {
 			...creatable,
 			id: cryptly.Identifier.generate(idLength),
 			from: from,
-			costCenter: costCenter,
 			created: now,
 			modified: now,
 			purchases: [],

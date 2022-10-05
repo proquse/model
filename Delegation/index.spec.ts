@@ -316,7 +316,7 @@ describe("Delegation", () => {
 	})
 	it("create", () => {
 		expect(
-			model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create(), "mary@example.com", "IT"))
+			model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create(), "mary@example.com"))
 		).toEqual(true)
 	})
 	it("findParents", () => {
