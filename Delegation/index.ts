@@ -20,13 +20,18 @@ export namespace Delegation {
 			value.delegations.every(delegation => Delegation.is(delegation))
 		)
 	}
-	export function create(creatable: DelegationCreatable, idLength: cryptly.Identifier.Length = 8): Delegation {
+	export function create(
+		creatable: DelegationCreatable,
+		from: string,
+		costCenter: string,
+		idLength: cryptly.Identifier.Length = 8
+	): Delegation {
 		const now = isoly.DateTime.now()
 		return {
 			...creatable,
 			id: cryptly.Identifier.generate(idLength),
-			from: "jane@example.com",
-			costCenter: "budget",
+			from: from,
+			costCenter: costCenter,
 			created: now,
 			modified: now,
 			purchases: [],

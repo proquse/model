@@ -315,7 +315,9 @@ describe("Delegation", () => {
 		expect(model.Delegation.balance(topLevelDelegation.delegations[1].delegations[0].delegations[0])).toEqual(1000)
 	})
 	it("create", () => {
-		expect(model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create()))).toEqual(true)
+		expect(
+			model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create(), "mary@example.com", "IT"))
+		).toEqual(true)
 	})
 	it("findParents", () => {
 		expect(model.Delegation.findParents([topLevelDelegation], "abcd0003")).toEqual([
