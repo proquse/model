@@ -10,6 +10,7 @@ describe("Transaction", () => {
 			payment: "2021-12-22T13:37:42Z",
 		},
 		receipt: "qwe",
+		balance: [-10, "EUR"],
 	}
 	const delegation: model.Delegation = {
 		id: "abcd0001",
@@ -74,6 +75,7 @@ describe("Transaction", () => {
 										descriptor: "something",
 										reference: "someId",
 										amount: [10, "USD"],
+										balance: [-10, "EUR"],
 									},
 								],
 							},
@@ -109,6 +111,7 @@ describe("Transaction", () => {
 										descriptor: "something",
 										reference: "someId",
 										amount: [9, "USD"],
+										balance: [-9, "EUR"],
 									},
 								],
 							},
@@ -148,6 +151,7 @@ describe("Transaction", () => {
 								descriptor: "something",
 								reference: "someId",
 								amount: [10, "USD"],
+								balance: [-10, "EUR"],
 							},
 						],
 					},
@@ -241,6 +245,7 @@ describe("Transaction", () => {
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: {},
+					balance: [-10, "EUR"],
 				},
 				{
 					id: "b",
@@ -248,6 +253,7 @@ describe("Transaction", () => {
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: {},
+					balance: [-10, "EUR"],
 				},
 				{
 					id: "a",
@@ -255,6 +261,7 @@ describe("Transaction", () => {
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: {},
+					balance: [-10, "EUR"],
 				},
 			],
 		}

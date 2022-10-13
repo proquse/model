@@ -14,6 +14,7 @@ export interface Transaction {
 		payment?: isoly.DateTime
 	}
 	receipt?: string
+	balance: Amount
 }
 
 export namespace Transaction {
@@ -26,7 +27,8 @@ export namespace Transaction {
 			typeof value.date == "object" &&
 			(value.date.transaction == undefined || isoly.DateTime.is(value.date.transaction)) &&
 			(value.date.payment == undefined || isoly.DateTime.is(value.date.payment)) &&
-			(value.receipt == undefined || typeof value.receipt == "string")
+			(value.receipt == undefined || typeof value.receipt == "string") &&
+			Amount.is(value.balance)
 		)
 	}
 
