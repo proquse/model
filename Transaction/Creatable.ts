@@ -11,6 +11,7 @@ export interface Creatable {
 		payment?: isoly.DateTime
 	}
 	receiptId?: string
+	balance: Amount
 }
 
 export namespace Creatable {
@@ -23,7 +24,8 @@ export namespace Creatable {
 			isoly.DateTime.is(value.date.transaction) &&
 			(value.date.payment == undefined || isoly.DateTime.is(value.date.payment)) &&
 			(value.receiptId == undefined || typeof value.receiptId == "string") &&
-			typeof value.purchaseId == "string"
+			typeof value.purchaseId == "string" &&
+			Amount.is(value.balance)
 		)
 	}
 }
