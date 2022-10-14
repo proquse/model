@@ -74,9 +74,8 @@ export namespace Transaction {
 			!!transaction.id &&
 			!!transaction.reference &&
 			!!transaction.descriptor &&
-			(transaction.date.payment && transaction.date.transaction
-				? transaction.date.payment <= transaction.date.transaction
-				: true) &&
+			(!(transaction.date.payment && transaction.date.transaction) ||
+				transaction.date.payment <= transaction.date.transaction) &&
 			transaction.receipt != ""
 		)
 	}
