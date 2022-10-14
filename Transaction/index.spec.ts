@@ -1,5 +1,12 @@
 import * as model from "../index"
 describe("Transaction", () => {
+	const creatable: model.Transaction.Creatable = {
+		amount: [10, "EUR"],
+		descriptor: "hello world",
+		date: {
+			transaction: "2021-12-22T13:37:42Z",
+		},
+	}
 	const transaction: model.Transaction = {
 		id: "asd",
 		reference: "123",
@@ -201,6 +208,14 @@ describe("Transaction", () => {
 	it("is", () => {
 		expect(model.Transaction.is(transaction)).toEqual(true)
 	})
+	it("create", () => {
+		let result: model.Transaction = model.Transaction.create(creatable, "id", [-10, "EUR"])
+		expect(model.Transaction.Creatable.is(result)).toEqual(true)
+		expect(result.id == result.reference).toEqual(true)
+		result = model.Transaction.create({ ...creatable, reference: "reference" }, "id", [-10, "EUR"])
+		expect(model.Transaction.Creatable.is(result)).toEqual(true)
+		expect(result.id == result.reference).toEqual(false)
+	})
 	it("linking", () => {
 		const purchase: model.Purchase = {
 			id: "aoeu1234",
@@ -244,7 +259,7 @@ describe("Transaction", () => {
 					reference: "someid",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
-					date: {},
+					date: { transaction: "2022-01-01T00:00:42Z" },
 					balance: [-10, "EUR"],
 				},
 				{
@@ -252,7 +267,7 @@ describe("Transaction", () => {
 					reference: "someid",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
-					date: {},
+					date: { transaction: "2022-01-01T00:00:42Z" },
 					balance: [-10, "EUR"],
 				},
 				{
@@ -260,7 +275,7 @@ describe("Transaction", () => {
 					reference: "someid",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
-					date: {},
+					date: { transaction: "2022-01-01T00:00:42Z" },
 					balance: [-10, "EUR"],
 				},
 			],
