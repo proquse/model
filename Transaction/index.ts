@@ -2,6 +2,7 @@ import * as isoly from "isoly"
 import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
+import { Creatable as TransactionCreatable } from "./Creatable"
 import { Link as TransactionLink } from "./Link"
 
 export interface Transaction {
@@ -10,7 +11,7 @@ export interface Transaction {
 	descriptor: string
 	amount: Amount
 	date: {
-		transaction?: isoly.DateTime
+		transaction: isoly.DateTime
 		payment?: isoly.DateTime
 	}
 	receipt?: string
@@ -31,7 +32,9 @@ export namespace Transaction {
 			Amount.is(value.balance)
 		)
 	}
-
+	export function create(transaction: Creatable, id: string, balance: Amount): Transaction {
+		return { ...transaction, id: id, balance: balance, reference: transaction.reference ?? id }
+	}
 	function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
 		let result: S | undefined
 		elements.find(single => (result = finder(single)))
@@ -92,4 +95,6 @@ export namespace Transaction {
 	}
 	export const Link = TransactionLink
 	export type Link = TransactionLink
+	export const Creatable = TransactionCreatable
+	export type Creatable = TransactionCreatable
 }
