@@ -32,10 +32,10 @@ export namespace Transaction {
 			Amount.is(value.balance)
 		)
 	}
-	export function create(transaction: Creatable, id: string, balance: Amount): Transaction {
+	export function create(transaction: Creatable, id: string): Transaction {
 		return {
 			id: id,
-			balance: balance,
+			balance: transaction.balance,
 			reference: transaction.reference ?? id,
 			descriptor: transaction.descriptor,
 			amount: transaction.amount,

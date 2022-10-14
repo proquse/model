@@ -7,6 +7,7 @@ describe("Transaction", () => {
 			transaction: "2021-12-22T13:37:42Z",
 		},
 		purchaseId: "purchaseId",
+		balance: [-10, "EUR"],
 	}
 	const transaction: model.Transaction = {
 		id: "asd",
@@ -210,10 +211,10 @@ describe("Transaction", () => {
 		expect(model.Transaction.is(transaction)).toEqual(true)
 	})
 	it("create", () => {
-		let result: model.Transaction = model.Transaction.create(creatable, "id", [-10, "EUR"])
+		let result: model.Transaction = model.Transaction.create(creatable, "id")
 		expect(model.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(true)
-		result = model.Transaction.create({ ...creatable, reference: "reference" }, "id", [-10, "EUR"])
+		result = model.Transaction.create({ ...creatable, reference: "reference" }, "id")
 		expect(model.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(false)
 	})

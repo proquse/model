@@ -8,6 +8,7 @@ describe("Transaction.Creatable", () => {
 			transaction: "2021-12-22T13:37:42Z",
 		},
 		purchaseId: "purchaseId",
+		balance: [-10, "EUR"],
 	}
 	it("is", () => {
 		expect(model.Transaction.Creatable.is(transaction)).toEqual(true)
