@@ -14,7 +14,7 @@ export interface Transaction {
 		transaction: isoly.DateTime
 		payment?: isoly.DateTime
 	}
-	receipt?: string
+	receiptId?: string
 	balance: Amount
 }
 
@@ -33,7 +33,15 @@ export namespace Transaction {
 		)
 	}
 	export function create(transaction: Creatable, id: string, balance: Amount): Transaction {
-		return { ...transaction, id: id, balance: balance, reference: transaction.reference ?? id }
+		return {
+			id: id,
+			balance: balance,
+			reference: transaction.reference ?? id,
+			descriptor: transaction.descriptor,
+			amount: transaction.amount,
+			date: transaction.date,
+			receiptId: transaction.receiptId,
+		}
 	}
 	function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
 		let result: S | undefined
@@ -79,7 +87,7 @@ export namespace Transaction {
 			!!transaction.descriptor &&
 			(!(transaction.date.payment && transaction.date.transaction) ||
 				transaction.date.payment <= transaction.date.transaction) &&
-			transaction.receipt != ""
+			transaction.receiptId != ""
 		)
 	}
 	export function link(links: TransactionLink[], purchase: Purchase): TransactionLink[] {
@@ -88,7 +96,7 @@ export namespace Transaction {
 			const transaction = purchase.transactions.find(transaction => transaction.id == link.transactionId)
 			if (transaction) {
 				const receipt = purchase.receipts.find(receipt => receipt.id == link.receiptId)
-				receipt && ((transaction.receipt = receipt.id), (receipt.transaction = transaction.id), (result = false))
+				receipt && ((transaction.receiptId = receipt.id), (receipt.transactionId = transaction.id), (result = false))
 			}
 			return result
 		})

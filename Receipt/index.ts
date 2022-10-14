@@ -11,7 +11,7 @@ export interface Receipt {
 	amount: Amount
 	date: isoly.DateTime
 	vat: number
-	transaction?: string
+	transactionId?: string
 }
 
 export namespace Receipt {
@@ -22,7 +22,8 @@ export namespace Receipt {
 			cryptly.Identifier.is(value.id) &&
 			typeof value.original == "string" &&
 			Amount.is(value.amount) &&
-			typeof value.vat == "number"
+			typeof value.vat == "number" &&
+			(value.transactionId == undefined || typeof value.transactionId == "string")
 		)
 	}
 	function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
@@ -70,7 +71,8 @@ export namespace Receipt {
 			Amount.validate(receipt.amount, limit) &&
 			receipt.amount[0] > 0 &&
 			receipt.vat >= 0 &&
-			receipt.vat <= 1
+			receipt.vat <= 1 &&
+			receipt.transactionId != ""
 		)
 	}
 	export const link = Transaction.link

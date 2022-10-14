@@ -7,13 +7,14 @@ describe("Transaction.Creatable", () => {
 		date: {
 			transaction: "2021-12-22T13:37:42Z",
 		},
+		purchaseId: "purchaseId",
 	}
 	it("is", () => {
 		expect(model.Transaction.Creatable.is(transaction)).toEqual(true)
 		expect(
 			model.Transaction.Creatable.is({ ...transaction, date: { ...transaction.date, payment: "2021-12-22T13:37:42Z" } })
 		).toEqual(true)
-		expect(model.Transaction.Creatable.is({ ...transaction, receipt: "receiptId" })).toEqual(true)
+		expect(model.Transaction.Creatable.is({ ...transaction, receiptId: "receiptId" })).toEqual(true)
 		expect(model.Transaction.is({ ...transaction, reference: "referenceId" }))
 	})
 })

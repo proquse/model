@@ -6,6 +6,7 @@ describe("Transaction", () => {
 		date: {
 			transaction: "2021-12-22T13:37:42Z",
 		},
+		purchaseId: "purchaseId",
 	}
 	const transaction: model.Transaction = {
 		id: "asd",
@@ -16,7 +17,7 @@ describe("Transaction", () => {
 			transaction: "2021-12-22T13:37:42Z",
 			payment: "2021-12-22T13:37:42Z",
 		},
-		receipt: "qwe",
+		receiptId: "qwe",
 		balance: [-10, "EUR"],
 	}
 	const delegation: model.Delegation = {
@@ -210,10 +211,10 @@ describe("Transaction", () => {
 	})
 	it("create", () => {
 		let result: model.Transaction = model.Transaction.create(creatable, "id", [-10, "EUR"])
-		expect(model.Transaction.Creatable.is(result)).toEqual(true)
+		expect(model.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(true)
 		result = model.Transaction.create({ ...creatable, reference: "reference" }, "id", [-10, "EUR"])
-		expect(model.Transaction.Creatable.is(result)).toEqual(true)
+		expect(model.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(false)
 	})
 	it("linking", () => {
@@ -289,12 +290,12 @@ describe("Transaction", () => {
 			purchase
 		)
 		expect(remainder).toEqual([{ receiptId: "4", transactionId: "d" }])
-		expect(purchase.transactions[0].receipt).toEqual(undefined)
-		expect(purchase.transactions[1].receipt).toEqual("2")
-		expect(purchase.transactions[2].receipt).toEqual("1")
-		expect(purchase.receipts[0].transaction).toEqual("a")
-		expect(purchase.receipts[1].transaction).toEqual("b")
-		expect(purchase.receipts[2].transaction).toEqual(undefined)
+		expect(purchase.transactions[0].receiptId).toEqual(undefined)
+		expect(purchase.transactions[1].receiptId).toEqual("2")
+		expect(purchase.transactions[2].receiptId).toEqual("1")
+		expect(purchase.receipts[0].transactionId).toEqual("a")
+		expect(purchase.receipts[1].transactionId).toEqual("b")
+		expect(purchase.receipts[2].transactionId).toEqual(undefined)
 	})
 	it("find", () => {
 		expect(model.Transaction.find(delegation.delegations, "3")).toEqual({
