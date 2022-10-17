@@ -4,6 +4,8 @@ import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
+import { Creatable as ReceiptCreatable } from "./Creatable"
+import { Request as ReceiptRequest } from "./Request"
 
 export interface Receipt {
 	id: cryptly.Identifier
@@ -77,4 +79,8 @@ export namespace Receipt {
 	}
 	export const link = Transaction.link
 	export type Link = Transaction.Link
+	export const Creatable = ReceiptCreatable
+	export type Creatable = ReceiptCreatable
+	export const Request = ReceiptRequest
+	export type Request = ReceiptRequest
 }
