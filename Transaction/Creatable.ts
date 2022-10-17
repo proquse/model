@@ -3,7 +3,7 @@ import { Amount } from "../Amount"
 
 export interface Creatable {
 	reference?: string
-	purchaseId: string
+	purchaseId?: string
 	descriptor: string
 	amount: Amount
 	date: {
@@ -24,7 +24,7 @@ export namespace Creatable {
 			isoly.DateTime.is(value.date.transaction) &&
 			(value.date.payment == undefined || isoly.DateTime.is(value.date.payment)) &&
 			(value.receiptId == undefined || typeof value.receiptId == "string") &&
-			typeof value.purchaseId == "string" &&
+			(typeof value.purchaseId == "string" || value.purchaseId == undefined) &&
 			Amount.is(value.balance)
 		)
 	}
