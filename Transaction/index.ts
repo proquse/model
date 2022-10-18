@@ -8,6 +8,7 @@ import { Link as TransactionLink } from "./Link"
 export interface Transaction {
 	id: string
 	reference: string
+	purchaseId?: string
 	descriptor: string
 	amount: Amount
 	date: {
@@ -37,6 +38,7 @@ export namespace Transaction {
 			id: id,
 			balance: transaction.balance,
 			reference: transaction.reference ?? id,
+			purchaseId: transaction.purchaseId,
 			descriptor: transaction.descriptor,
 			amount: transaction.amount,
 			date: transaction.date,
