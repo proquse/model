@@ -15,17 +15,17 @@ export interface Creatable {
 }
 
 export namespace Creatable {
-	export function is(creatable: Creatable | any): creatable is Creatable {
+	export function is(value: Creatable | any): value is Creatable {
 		return (
-			typeof creatable == "object" &&
-			(creatable.reference == undefined || typeof creatable.reference == "string") &&
-			typeof creatable.descriptor == "string" &&
-			typeof creatable.date == "object" &&
-			isoly.DateTime.is(creatable.date.transaction) &&
-			(creatable.date.payment == undefined || isoly.DateTime.is(creatable.date.payment)) &&
-			(creatable.receiptId == undefined || typeof creatable.receiptId == "string") &&
-			(typeof creatable.purchaseId == "string" || creatable.purchaseId == undefined) &&
-			Amount.is(creatable.balance)
+			typeof value == "object" &&
+			(value.reference == undefined || typeof value.reference == "string") &&
+			typeof value.descriptor == "string" &&
+			typeof value.date == "object" &&
+			isoly.DateTime.is(value.date.transaction) &&
+			(value.date.payment == undefined || isoly.DateTime.is(value.date.payment)) &&
+			(value.receiptId == undefined || typeof value.receiptId == "string") &&
+			(typeof value.purchaseId == "string" || value.purchaseId == undefined) &&
+			Amount.is(value.balance)
 		)
 	}
 }
