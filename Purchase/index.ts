@@ -124,13 +124,11 @@ export namespace Purchase {
 			purchase.transactions.every(transaction => Transaction.validate(transaction))
 		)
 	}
-	export function spent(purchase: Purchase): number {
-		return (
-			purchase.transactions.reduce(
-				(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
-				0
-			) * -1
-		) //flip the sign
+	export function spent(purchase: Purchase): Amount {
+		return (purchase.amount = [
+			purchase.transactions.reduce((aggregate, current) => aggregate + current.amount[0], 0) * -1,
+			purchase.amount?.[1] ?? purchase.payment.limit[1],
+		])
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
