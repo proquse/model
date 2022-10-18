@@ -64,6 +64,7 @@ describe("Receipt", () => {
 								transactions: [
 									{
 										id: "1",
+										purchaseId: "y",
 										date: {
 											payment: "2022-01-01T00:00:42Z",
 											transaction: "2022-01-02T00:00:42Z",
@@ -100,6 +101,7 @@ describe("Receipt", () => {
 								transactions: [
 									{
 										id: "2",
+										purchaseId: "y",
 										date: {
 											payment: "2022-01-01T00:00:42Z",
 											transaction: "2022-01-02T00:00:42Z",
@@ -140,6 +142,7 @@ describe("Receipt", () => {
 						transactions: [
 							{
 								id: "3",
+								purchaseId: "y",
 								date: {
 									payment: "2022-01-01T00:00:42Z",
 									transaction: "2022-01-02T00:00:42Z",
