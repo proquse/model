@@ -126,10 +126,7 @@ export namespace Purchase {
 	}
 	export function spent(purchase: Purchase): Amount {
 		return (purchase.amount = [
-			purchase.transactions.reduce(
-				(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
-				0
-			) * -1,
+			purchase.transactions.reduce((aggregate, current) => aggregate + current.amount[0], 0) * -1,
 			purchase.amount?.[1] ?? purchase.payment.limit[1],
 		])
 	}
