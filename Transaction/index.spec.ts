@@ -12,6 +12,7 @@ describe("Transaction", () => {
 	const transaction: model.Transaction = {
 		id: "asd",
 		reference: "123",
+		purchaseId: "y",
 		descriptor: "jest test",
 		amount: [10, "EUR"],
 		date: {
@@ -77,6 +78,7 @@ describe("Transaction", () => {
 								transactions: [
 									{
 										id: "1",
+										purchaseId: "y",
 										date: {
 											payment: "2022-01-01T00:00:42Z",
 											transaction: "2022-01-02T00:00:42Z",
@@ -113,6 +115,7 @@ describe("Transaction", () => {
 								transactions: [
 									{
 										id: "2",
+										purchaseId: "y",
 										date: {
 											payment: "2022-01-01T00:00:42Z",
 											transaction: "2022-01-02T00:00:42Z",
@@ -153,6 +156,7 @@ describe("Transaction", () => {
 						transactions: [
 							{
 								id: "3",
+								purchaseId: "y",
 								date: {
 									payment: "2022-01-01T00:00:42Z",
 									transaction: "2022-01-02T00:00:42Z",
@@ -259,6 +263,7 @@ describe("Transaction", () => {
 				{
 					id: "c",
 					reference: "someid",
+					purchaseId: "y",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: { transaction: "2022-01-01T00:00:42Z" },
@@ -267,6 +272,7 @@ describe("Transaction", () => {
 				{
 					id: "b",
 					reference: "someid",
+					purchaseId: "y",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: { transaction: "2022-01-01T00:00:42Z" },
@@ -275,6 +281,7 @@ describe("Transaction", () => {
 				{
 					id: "a",
 					reference: "someid",
+					purchaseId: "y",
 					amount: [10, "EUR"],
 					descriptor: "irelevant",
 					date: { transaction: "2022-01-01T00:00:42Z" },

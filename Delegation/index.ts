@@ -67,14 +67,23 @@ export namespace Delegation {
 			? result
 			: roots.find(root => (result = path(root.delegations, id)) && (result = [root, ...result])) && result
 	}
+	function changeCostCenter(root: Delegation, costCenter: string): string {
+		root.delegations.forEach(delegation => changeCostCenter(delegation, costCenter))
+		return (root.costCenter = costCenter)
+	}
 	export function change(
 		roots: Delegation[],
 		updated: Delegation
-	): { root: Delegation; changed: Delegation } | undefined {
+	): { root: Delegation; changed: Delegation } | false | undefined {
 		const search = find(roots, updated.id)
-		const result = !search ? undefined : { root: search.root, changed: search.found }
+		let result: { root: Delegation; changed: Delegation } | false | undefined = search && {
+			root: search.root,
+			changed: search.found,
+		}
+		!(result && updated.costCenter != result.changed.costCenter) ||
+			(result.root == result.changed ? changeCostCenter(result.root, updated.costCenter) : (result = false))
 		result &&
-			(Object.keys(result.changed).forEach((key: keyof Delegation) => delete result.changed[key]),
+			(Object.keys(result.changed).forEach((key: keyof Delegation) => result && delete result.changed[key]),
 			Object.assign(result.changed, updated))
 		return result
 	}

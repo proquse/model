@@ -198,7 +198,7 @@ describe("Delegation", () => {
 		expect(model.Delegation.findParent([topLevelDelegation.delegations[0]], "abcd0006")).toEqual(undefined)
 	})
 	it("change", () => {
-		const before: model.Delegation = {
+		let before: model.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -223,7 +223,7 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		const updated: model.Delegation = {
+		let updated: model.Delegation = {
 			id: "abcd0002",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -235,7 +235,7 @@ describe("Delegation", () => {
 			delegations: [],
 			purchases: [],
 		}
-		const after: model.Delegation = {
+		let after: model.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -254,6 +254,62 @@ describe("Delegation", () => {
 		result = model.Delegation.change([before], final)
 		expect(before).toEqual(final)
 		expect(result).toEqual({ root: before, changed: final })
+
+		before = {
+			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "budget",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [
+				{
+					id: "abcd0002",
+					from: "jane@example.com",
+					costCenter: "budget",
+					created: "2021-12-20T13:37:42Z",
+					modified: "2021-12-20T13:37:42Z",
+					to: ["jane@example.com"],
+					purpose: "Partial company Budget",
+					amount: [2000, "EUR"],
+					delegations: [],
+					purchases: [],
+				},
+			],
+			purchases: [],
+		}
+		updated = {
+			id: "abcd0002",
+			from: "jane@example.com",
+			costCenter: "changed",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["jane@example.com"],
+			purpose: "Partial company Budget",
+			amount: [3000, "EUR"],
+			delegations: [],
+			purchases: [],
+		}
+		after = {
+			id: "abcd0001",
+			from: "jane@example.com",
+			costCenter: "changed",
+			created: "2021-12-20T13:37:42Z",
+			modified: "2021-12-20T13:37:42Z",
+			to: ["john@example.com"],
+			purpose: "Total company Budget",
+			amount: [20000, "EUR"],
+			delegations: [{ ...updated }],
+			purchases: [],
+		}
+		result = model.Delegation.change([before], updated)
+		expect(result).toEqual(false)
+		updated = { ...updated, id: "abcd0001" }
+		after = { ...updated }
+		result = model.Delegation.change([before], updated)
+		expect(result).toEqual({ root: after, changed: after })
 	})
 	it("remove", () => {
 		const toBeRemoved: model.Delegation = {
