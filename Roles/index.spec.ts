@@ -52,7 +52,13 @@ describe("Financial Controller with App permissions", () => {
 		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
 	})
 	it("satisfies", () => {
+		expect(model.Roles.satisfies("financialController", key.permissions)).toEqual(false)
+	})
+	it("satisfies", () => {
 		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+	})
+	it("satisfies", () => {
+		expect(model.Roles.satisfies("user", key.permissions)).toEqual(false)
 	})
 })
 
@@ -78,6 +84,39 @@ describe("user", () => {
 		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
 	})
 	it("satisfies", () => {
+		expect(model.Roles.satisfies("financialController", key.permissions)).toEqual(false)
+	})
+	it("satisfies", () => {
 		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+	})
+	it("satisfies", () => {
+		expect(model.Roles.satisfies("user", key.permissions)).toEqual(false)
+	})
+})
+
+describe("user with app permissions", () => {
+	const key: userModel.User.Key = {
+		issuer: "",
+		audience: "",
+		issued: "",
+		expires: "",
+		token: "",
+		name: { first: "", last: "" },
+		email: "",
+		permissions: {
+			["*"]: { user: { write: true } },
+		},
+	}
+	it("satisfies", () => {
+		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
+	})
+	it("satisfies", () => {
+		expect(model.Roles.satisfies("financialController", key.permissions)).toEqual(false)
+	})
+	it("satisfies", () => {
+		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+	})
+	it("satisfies", () => {
+		expect(model.Roles.satisfies("user", key.permissions)).toEqual(true)
 	})
 })
