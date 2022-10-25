@@ -64,7 +64,7 @@ export namespace Purchase {
 		roots.find(root => root.purchases.find(purchase => purchase.id == id && (result = { root: root, found: purchase })))
 		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
 	}
-	export function list<T extends Purchase>(
+	export function list<T = Purchase>(
 		roots: Iterable<Delegation>,
 		filter?: (purchase: Purchase, delegation: Delegation) => boolean | any,
 		map?: (purchase: Purchase, delegation: Delegation) => T

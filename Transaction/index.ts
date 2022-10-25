@@ -63,7 +63,7 @@ export namespace Transaction {
 			return result ?? ((result = find(root.delegations, id)) && { ...result, root: root })
 		})
 	}
-	export function list<T extends Transaction>(
+	export function list<T = Transaction>(
 		roots: Iterable<Delegation>,
 		filter?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => any,
 		map?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => T
