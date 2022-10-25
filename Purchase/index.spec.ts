@@ -381,5 +381,12 @@ describe("Purchase", () => {
 		expect(
 			model.Purchase.list(delegation.delegations, purchase => purchase.buyer == "mary@example.com").length
 		).toEqual(1)
+		const result = model.Purchase.list(
+			[delegation],
+			p => p.buyer == "mary@example.com",
+			(p, d) => ({ ...p, delegationId: d.id })
+		)
+		expect(result.length).toEqual(1)
+		expect(result.every(purchase => model.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
 })
