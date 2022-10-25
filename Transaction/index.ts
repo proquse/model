@@ -63,24 +63,23 @@ export namespace Transaction {
 			return result ?? ((result = find(root.delegations, id)) && { ...result, root: root })
 		})
 	}
-	export function list(
+	export function list<T extends Transaction>(
 		roots: Iterable<Delegation>,
-		filter?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => any
-	): Transaction[] {
-		function* list(
-			roots: Iterable<Delegation>,
-			filter?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => any
-		): Generator<Transaction> {
+		filter?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => any,
+		map?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => T
+	): T[] {
+		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
 				for (const purchase of root.purchases) {
 					for (const transaction of purchase.transactions) {
-						;(!filter || filter(transaction, purchase, root)) && (yield transaction)
+						;(!filter || filter(transaction, purchase, root)) &&
+							(yield map ? map(transaction, purchase, root) : (transaction as T))
 					}
 				}
-				yield* list(root.delegations, filter)
+				yield* list(root.delegations)
 			}
 		}
-		return Array.from(list(roots, filter))
+		return Array.from(list(roots))
 	}
 	export function validate(transaction: Transaction): boolean {
 		return (

@@ -317,5 +317,16 @@ describe("Transaction", () => {
 		expect(model.Transaction.list([delegation], (_, __, d) => d.costCenter == "IT").length).toEqual(3)
 		expect(model.Transaction.list([delegation], t => t.amount[0] < 10).length).toEqual(1)
 		expect(model.Transaction.list([delegation], (_, p) => p.buyer == "richard@example.com").length).toEqual(2)
+		const result = model.Transaction.list(
+			[delegation],
+			(_, p) => p.buyer == "richard@example.com",
+			(t, p, d) => ({ ...t, purchaseId: p.id, delegationId: d.id })
+		)
+		expect(result.length).toEqual(2)
+		expect(
+			result.every(
+				transaction => model.Transaction.is(transaction) && transaction.purchaseId && transaction.delegationId
+			)
+		)
 	})
 })

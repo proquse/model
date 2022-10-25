@@ -245,5 +245,14 @@ describe("Receipt", () => {
 		expect(model.Receipt.list(delegation.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(3)
 		expect(model.Receipt.list([delegation], (_, p) => p.buyer == "mary@example.com").length).toEqual(1)
 		expect(model.Receipt.list([delegation], r => r.amount[0] >= 10).length).toEqual(2)
+		const result = model.Receipt.list(
+			[delegation],
+			r => r.amount[0] >= 10,
+			(r, p, d) => ({ ...r, purchaseId: p.id, delegationId: d.id })
+		)
+		expect(result.length).toEqual(2)
+		expect(result.every(receipt => model.Receipt.is(receipt) && receipt.purchaseId && receipt.delegationId)).toEqual(
+			true
+		)
 	})
 })
