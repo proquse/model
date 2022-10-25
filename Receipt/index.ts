@@ -1,12 +1,12 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
+import * as PDFLib from "pdf-lib"
 import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
 import { Creatable as ReceiptCreatable } from "./Creatable"
 import { Request as ReceiptRequest } from "./Request"
-
 export interface Receipt {
 	id: cryptly.Identifier
 	original: string
@@ -49,7 +49,7 @@ export namespace Receipt {
 	export function list(
 		roots: Iterable<Delegation>,
 		filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any
-	) {
+	): Receipt[] {
 		function* list(
 			roots: Iterable<Delegation>,
 			filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any
@@ -76,6 +76,32 @@ export namespace Receipt {
 			receipt.vat <= 1 &&
 			receipt.transactionId != ""
 		)
+	}
+
+	export async function compile(receipts: { details: Receipt; file: Uint8Array }[]): Promise<Uint8Array | any> {
+		let result: Uint8Array | undefined = undefined
+		const pdfDoc = await PDFLib.PDFDocument.create()
+		pdfDoc.setAuthor("Issuefab AB")
+		//pdfDoc.setCreationDate()
+		const indexPage = pdfDoc.addPage(PDFLib.PageSizes.A4)
+		const { width, height } = indexPage.getSize()
+		const fontsize = 12
+		const font = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman)
+		indexPage.moveTo(20, height - 4 * fontsize)
+		receipts.map(async receipt => {
+			indexPage.drawText(
+				`${receipt.details.vat}\t 
+				${receipt.details.amount[0] * receipt.details.vat}\t 
+				${receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat}\t 
+				${receipt.details.amount}\n`,
+				{ size: fontsize, font: font }
+			)
+			indexPage.moveDown(13)
+			const newPages = await PDFLib.PDFDocument.load(receipt.file)
+			pdfDoc.copyPages(newPages, newPages.getPageIndices())
+		})
+		result = await pdfDoc.save()
+		return result
 	}
 	export const link = Transaction.link
 	export type Link = Transaction.Link
