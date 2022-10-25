@@ -64,22 +64,20 @@ export namespace Purchase {
 		roots.find(root => root.purchases.find(purchase => purchase.id == id && (result = { root: root, found: purchase })))
 		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
 	}
-	export function list(
+	export function list<T extends Purchase>(
 		roots: Iterable<Delegation>,
-		filter?: (purchase: Purchase, parentDelegation: Delegation) => boolean | any
-	): Purchase[] {
-		function* list(
-			roots: Iterable<Delegation>,
-			filter?: (purchase: Purchase, parentDelegation: Delegation) => boolean | any
-		): Generator<Purchase> {
+		filter?: (purchase: Purchase, delegation: Delegation) => boolean | any,
+		map?: (purchase: Purchase, delegation: Delegation) => T
+	): T[] {
+		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
 				for (const purchase of root.purchases) {
-					;(!filter || filter(purchase, root)) && (yield purchase)
+					;(!filter || filter(purchase, root)) && (yield map ? map(purchase, root) : (purchase as T))
 				}
-				yield* list(root.delegations, filter)
+				yield* list(root.delegations)
 			}
 		}
-		return Array.from(list(roots, filter))
+		return Array.from(list(roots))
 	}
 	export function change(roots: Delegation[], updated: Purchase): { root: Delegation; changed: Purchase } | undefined
 	export function change(old: Purchase, updated: Purchase): Purchase
@@ -92,11 +90,11 @@ export namespace Purchase {
 			const search = find(roots, updated.id)
 			search &&
 				(result = { root: search.root, changed: { ...search.found } }) &&
-				(Object.keys(search.found).forEach((key: keyof Purchase) => delete search.found[key]),
+				((Object.keys(search.found) as (keyof Purchase)[]).forEach(key => delete search.found[key]),
 				Object.assign(search.found, updated))
 		} else {
 			result = { ...roots }
-			Object.keys(roots).forEach((key: keyof Purchase) => delete roots[key])
+			;(Object.keys(roots) as (keyof Purchase)[]).forEach(key => delete roots[key])
 			Object.assign(roots, updated)
 		}
 		return result

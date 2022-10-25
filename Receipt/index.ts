@@ -46,24 +46,22 @@ export namespace Receipt {
 			return result ?? ((result = find(root.delegations, id)) && { ...result, root: root })
 		})
 	}
-	export function list(
+	export function list<T extends Receipt>(
 		roots: Iterable<Delegation>,
-		filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any
-	): Receipt[] {
-		function* list(
-			roots: Iterable<Delegation>,
-			filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any
-		): Generator<Receipt> {
+		filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any,
+		map?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => T
+	): T[] {
+		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
 				for (const purchase of root.purchases) {
 					for (const receipt of purchase.receipts) {
-						;(!filter || filter(receipt, purchase, root)) && (yield receipt)
+						;(!filter || filter(receipt, purchase, root)) && (yield map ? map(receipt, purchase, root) : (receipt as T))
 					}
 				}
-				yield* list(root.delegations, filter)
+				yield* list(root.delegations)
 			}
 		}
-		return Array.from(list(roots, filter))
+		return Array.from(list(roots))
 	}
 	export function validate(receipt: Receipt, limit?: Amount): boolean {
 		return (
