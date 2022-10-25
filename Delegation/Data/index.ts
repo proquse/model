@@ -28,9 +28,7 @@ export namespace Data {
 		)
 	}
 	export function to(delegation: Delegation): Data {
-		return Object.fromEntries(
-			Object.entries(delegation).filter(([key, _]: [keyof Delegation, any]) => key != "delegations")
-		) as Data
+		return Object.fromEntries(Object.entries(delegation).filter(([key, _]) => key != "delegations")) as Data
 	}
 	export function validate(delegation: Data, limit?: Amount): boolean {
 		return (

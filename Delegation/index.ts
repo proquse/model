@@ -83,7 +83,7 @@ export namespace Delegation {
 		!(result && updated.costCenter != result.changed.costCenter) ||
 			(result.root == result.changed ? changeCostCenter(result.root, updated.costCenter) : (result = false))
 		result &&
-			(Object.keys(result.changed).forEach((key: keyof Delegation) => result && delete result.changed[key]),
+			((Object.keys(result.changed) as (keyof Delegation)[]).forEach(key => result && delete result.changed[key]),
 			Object.assign(result.changed, updated))
 		return result
 	}

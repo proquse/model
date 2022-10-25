@@ -5,7 +5,7 @@ export namespace Roles {
 		"*"?: model.User.Permissions.Application
 		[organizationId: string]: model.User.Permissions.Organization | undefined
 	}
-	const functions: Record<string, (permissions: Permissions, organizationId?: string) => boolean> = {
+	const functions = {
 		user: satisfiesUser,
 		financialController: satisfiesFinancialController,
 	}

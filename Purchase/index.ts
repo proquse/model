@@ -92,11 +92,11 @@ export namespace Purchase {
 			const search = find(roots, updated.id)
 			search &&
 				(result = { root: search.root, changed: { ...search.found } }) &&
-				(Object.keys(search.found).forEach((key: keyof Purchase) => delete search.found[key]),
+				((Object.keys(search.found) as (keyof Purchase)[]).forEach(key => delete search.found[key]),
 				Object.assign(search.found, updated))
 		} else {
 			result = { ...roots }
-			Object.keys(roots).forEach((key: keyof Purchase) => delete roots[key])
+			;(Object.keys(roots) as (keyof Purchase)[]).forEach(key => delete roots[key])
 			Object.assign(roots, updated)
 		}
 		return result
