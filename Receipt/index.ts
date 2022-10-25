@@ -78,28 +78,35 @@ export namespace Receipt {
 		)
 	}
 
-	export async function compile(receipts: { details: Receipt; file: Uint8Array }[]): Promise<Uint8Array | any> {
+	export async function compile(receipts: { details: Receipt; file: Uint8Array }[]): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
 		const pdfDoc = await PDFLib.PDFDocument.create()
 		pdfDoc.setAuthor("Issuefab AB")
 		pdfDoc.setCreationDate(new Date())
+
 		const indexPage = pdfDoc.addPage(PDFLib.PageSizes.A4)
 		const { width, height } = indexPage.getSize()
 		const fontsize = 12
 		const font = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman)
 		indexPage.moveTo(20, height - 4 * fontsize)
-		receipts.map(async receipt => {
+
+		for (const receipt of receipts) {
+			console.log("receipt.details.id: ", receipt.details.id)
 			indexPage.drawText(
-				`${receipt.details.vat}\t 
-				${receipt.details.amount[0] * receipt.details.vat}\t 
-				${receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat}\t 
-				${receipt.details.amount}\n`,
+				`${receipt.details.vat}\t` +
+					`${receipt.details.amount[0] * receipt.details.vat}\t` +
+					` ${receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat}\t` +
+					` ${receipt.details.amount}\n`,
 				{ size: fontsize, font: font }
 			)
 			indexPage.moveDown(13)
-			const newPages = await PDFLib.PDFDocument.load(receipt.file)
-			pdfDoc.copyPages(newPages, newPages.getPageIndices())
-		})
+
+			const newFile = await PDFLib.PDFDocument.load(receipt.file)
+			const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
+			copiedPages.forEach(page => pdfDoc.addPage(page))
+			console.log(receipt.details.id, " finished")
+		}
+
 		result = await pdfDoc.save()
 		return result
 	}
