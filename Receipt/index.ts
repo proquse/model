@@ -82,7 +82,7 @@ export namespace Receipt {
 		let result: Uint8Array | undefined = undefined
 		const pdfDoc = await PDFLib.PDFDocument.create()
 		pdfDoc.setAuthor("Issuefab AB")
-		//pdfDoc.setCreationDate()
+		pdfDoc.setCreationDate(new Date())
 		const indexPage = pdfDoc.addPage(PDFLib.PageSizes.A4)
 		const { width, height } = indexPage.getSize()
 		const fontsize = 12
