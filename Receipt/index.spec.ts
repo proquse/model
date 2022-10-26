@@ -281,7 +281,7 @@ describe("Receipt", () => {
 				file: receiptB,
 			},
 		]
-		const receiptResult = await model.Receipt.compile(receipts)
+		const receiptResult = await model.Receipt.compile(receipts, delegation, { start: "2022-09-19", end: "2022-09-21" })
 		await fs.writeFile("./Receipt/receiptResult.pdf", receiptResult)
 	})
 })

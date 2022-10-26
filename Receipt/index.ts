@@ -76,34 +76,124 @@ export namespace Receipt {
 		)
 	}
 
-	export async function compile(receipts: { details: Receipt; file: Uint8Array }[]): Promise<Uint8Array> {
+	export async function compile(
+		receipts: { details: Receipt; file: Uint8Array }[],
+		delegation: Delegation.Data,
+		dateRange: isoly.DateRange
+	): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
 		const pdfDoc = await PDFLib.PDFDocument.create()
+		const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier)
 		pdfDoc.setAuthor("Issuefab AB")
 		pdfDoc.setCreationDate(new Date())
+		const [width, height] = PDFLib.PageSizes.A4
+		const fontSize = 12
+		const headerSize = Math.round(fontSize * 1.33)
+		const xMargin = 30
+		const yMargin = 4 * fontSize
+		const cellWidth = 100
+		const lineHeight = 15
+		const lineThickness = 1
+		const lineMargin = 1
+		const headers = ["Page", "Vat", "Vat total", "Net", "Gross"]
+		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
 
-		const indexPage = pdfDoc.addPage(PDFLib.PageSizes.A4)
-		const { width, height } = indexPage.getSize()
-		const fontsize = 12
-		const font = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman)
-		indexPage.moveTo(20, height - 4 * fontsize)
+		const frontPage = pdfDoc.addPage()
 
-		for (const receipt of receipts) {
-			console.log("receipt.details.id: ", receipt.details.id)
-			indexPage.drawText(
-				`${receipt.details.vat}\t` +
-					`${receipt.details.amount[0] * receipt.details.vat}\t` +
-					` ${receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat}\t` +
-					` ${receipt.details.amount}\n`,
-				{ size: fontsize, font: font }
+		const indexPages = Array.from({ length: Math.ceil(receipts.length / receiptsPerIndexPage) }).map((_, pageNumber) =>
+			receipts.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
+		)
+
+		// totals
+		let totalVat = 0
+		let totalVatTotal = 0
+		let totalNet = 0
+		let totalGross = 0
+
+		for (const [i, indexPage] of indexPages.entries()) {
+			const page = pdfDoc.insertPage(1 + i)
+			headers.forEach((header, index) =>
+				page.drawText(header, {
+					x: xMargin + index * cellWidth,
+					y: height - yMargin,
+					size: headerSize,
+				})
 			)
-			indexPage.moveDown(13)
+			page.moveTo(xMargin, height - yMargin - fontSize / 2)
+			page.drawLine({
+				start: { x: xMargin, y: height - yMargin - lineThickness - lineMargin },
+				end: { x: width - xMargin, y: height - yMargin - lineThickness - lineMargin },
+				thickness: lineThickness,
+			})
+			for (const receipt of indexPage) {
+				const cellText = [
+					`${pdfDoc.getPageCount() + indexPages.length - i}`,
+					`${receipt.details.vat * 100}%`,
+					`${receipt.details.amount[0] * receipt.details.vat}`,
+					`${receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat}`,
+					`${receipt.details.amount[0]}    ${receipt.details.amount[1]}`,
+				]
+				page.moveDown(lineHeight)
+				cellText.forEach((text, index) => {
+					page.drawText(text, {
+						x: xMargin + index * cellWidth,
+						size: fontSize,
+						font: font,
+					})
+				})
+				const newFile = await PDFLib.PDFDocument.load(receipt.file)
+				const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
+				copiedPages.forEach(page => pdfDoc.addPage(page))
 
-			const newFile = await PDFLib.PDFDocument.load(receipt.file)
-			const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
-			copiedPages.forEach(page => pdfDoc.addPage(page))
-			console.log(receipt.details.id, " finished")
+				// totals
+				totalVat = totalVat + receipt.details.vat
+				totalVatTotal = totalVatTotal + receipt.details.amount[0] * receipt.details.vat
+				totalNet = totalNet + receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat
+				totalGross = totalGross + receipt.details.amount[0]
+			}
 		}
+
+		// frontPage
+		frontPage.drawText(`Invoice summary: ${delegation.costCenter}`, {
+			x: xMargin,
+			y: (height * 2) / 3,
+			size: headerSize,
+		})
+
+		frontPage.drawText(`${dateRange.start} - ${dateRange.end}`, {
+			x: xMargin,
+			y: (height * 2) / 3 - lineHeight,
+			size: fontSize,
+		})
+		frontPage.moveDown(lineHeight * 50)
+		;["Pages", "Vat", "Vat total", "Net", "Gross"].forEach((header, index) =>
+			frontPage.drawText(header, {
+				x: xMargin + index * cellWidth,
+				y: height / 2,
+				size: 16,
+			})
+		)
+		frontPage.moveTo(xMargin, height / 2 - fontSize / 2)
+		frontPage.drawLine({
+			start: { x: xMargin, y: height / 2 - lineThickness - lineMargin },
+			end: { x: width - xMargin, y: height / 2 - lineThickness - lineMargin },
+			thickness: lineThickness,
+		})
+		const cellText = [
+			`${pdfDoc.getPageCount()}`,
+			`${(totalVat / receipts.length) * 100}%`,
+			`${totalVatTotal}`,
+			`${totalNet}`,
+			`${totalGross}    ${delegation.amount[1]}`,
+		]
+		frontPage.moveDown(lineHeight)
+		cellText.forEach((text, index) => {
+			frontPage.drawText(text, {
+				x: xMargin + index * cellWidth,
+				size: fontSize,
+				font: font,
+			})
+		})
 
 		result = await pdfDoc.save()
 		return result
