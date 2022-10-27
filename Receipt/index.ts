@@ -104,7 +104,6 @@ export namespace Receipt {
 			receipts.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
 		)
 
-		// totals
 		let totalVat = 0
 		let totalVatTotal = 0
 		let totalNet = 0
@@ -145,7 +144,6 @@ export namespace Receipt {
 				const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
 				copiedPages.forEach(page => pdfDoc.addPage(page))
 
-				// totals
 				totalVat = totalVat + receipt.details.vat
 				totalVatTotal = totalVatTotal + receipt.details.amount[0] * receipt.details.vat
 				totalNet = totalNet + receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat
@@ -153,7 +151,6 @@ export namespace Receipt {
 			}
 		}
 
-		// frontPage
 		frontPage.drawText(`Invoice summary: ${delegation.costCenter}`, {
 			x: xMargin,
 			y: (height * 2) / 3,
