@@ -98,7 +98,7 @@ export namespace Receipt {
 		const headers = ["Page", "Vat", "Vat total", "Net", "Gross"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
 
-		const frontPage = pdfDoc.addPage()
+		const frontPage = pdfDoc.addPage([width, height])
 
 		const indexPages = Array.from({ length: Math.ceil(receipts.length / receiptsPerIndexPage) }).map((_, pageNumber) =>
 			receipts.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
@@ -111,7 +111,7 @@ export namespace Receipt {
 		let totalGross = 0
 
 		for (const [i, indexPage] of indexPages.entries()) {
-			const page = pdfDoc.insertPage(1 + i)
+			const page = pdfDoc.insertPage(1 + i, [width, height])
 			headers.forEach((header, index) =>
 				page.drawText(header, {
 					x: xMargin + index * cellWidth,
