@@ -104,8 +104,8 @@ export namespace Receipt {
 			receipts.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
 		)
 
+		let vat = 0
 		let totalVat = 0
-		let totalVatTotal = 0
 		let totalNet = 0
 		let totalGross = 0
 
@@ -144,10 +144,18 @@ export namespace Receipt {
 				const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
 				copiedPages.forEach(page => pdfDoc.addPage(page))
 
-				totalVat = totalVat + receipt.details.vat
-				totalVatTotal = totalVatTotal + receipt.details.amount[0] * receipt.details.vat
-				totalNet = totalNet + receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat
-				totalGross = totalGross + receipt.details.amount[0]
+				vat = vat + receipt.details.vat
+				totalVat = isoly.Currency.add(
+					receipt.details.amount[1],
+					totalVat,
+					isoly.Currency.multiply(receipt.details.amount[1], receipt.details.amount[0], receipt.details.vat)
+				)
+				;(totalNet = isoly.Currency.subtract(
+					receipt.details.amount[1],
+					isoly.Currency.add(receipt.details.amount[1], totalNet, receipt.details.amount[0]),
+					isoly.Currency.multiply(receipt.details.amount[1], receipt.details.amount[0], receipt.details.vat)
+				)),
+					(totalGross = isoly.Currency.add(receipt.details.amount[1], totalGross, receipt.details.amount[0]))
 			}
 		}
 
@@ -178,8 +186,8 @@ export namespace Receipt {
 		})
 		const cellText = [
 			`${pdfDoc.getPageCount()}`,
-			`${(totalVat / receipts.length) * 100}%`,
-			`${totalVatTotal}`,
+			`${(vat / receipts.length) * 100}%`,
+			`${totalVat}`,
 			`${totalNet}`,
 			`${totalGross}    ${delegation.amount[1]}`,
 		]
