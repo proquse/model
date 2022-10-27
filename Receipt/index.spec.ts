@@ -1,3 +1,4 @@
+import * as fs from "fs/promises"
 import * as model from "../index"
 
 describe("Receipt", () => {
@@ -254,5 +255,33 @@ describe("Receipt", () => {
 		expect(result.every(receipt => model.Receipt.is(receipt) && receipt.purchaseId && receipt.delegationId)).toEqual(
 			true
 		)
+	})
+	it("compile", async () => {
+		const receiptA = new Uint8Array(await fs.readFile("./Receipt/receiptA.pdf"))
+		const receiptB = new Uint8Array(await fs.readFile("./Receipt/receiptB.pdf"))
+		const receipts: { details: model.Receipt; file: Uint8Array }[] = [
+			{
+				details: {
+					id: "AAAA",
+					original: "placeholder",
+					amount: [1000, "EUR"],
+					date: "2022-09-20T13:37:42Z",
+					vat: 0.12,
+				},
+				file: receiptA,
+			},
+			{
+				details: {
+					id: "BBBB",
+					original: "placeholder",
+					amount: [1337, "EUR"],
+					date: "2022-09-20T13:37:42Z",
+					vat: 0.25,
+				},
+				file: receiptB,
+			},
+		]
+		const receiptResult = await model.Receipt.compile(receipts, delegation, { start: "2022-09-19", end: "2022-09-21" })
+		await fs.writeFile("./Receipt/receiptResult.pdf", receiptResult)
 	})
 })
