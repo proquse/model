@@ -163,7 +163,12 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		const result = model.Purchase.create(purchase, "someToken", "organizationId", "receipt@example.com")
+		const result = model.Purchase.create(
+			purchase,
+			{ type: "card", limit: [10, "EUR"] },
+			"organizationId",
+			"receipt@example.com"
+		)
 		expect(model.Purchase.is(result))
 		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
 	})
@@ -183,7 +188,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -229,7 +234,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -259,7 +264,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -276,7 +281,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -293,7 +298,7 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -310,7 +315,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),
@@ -329,7 +334,7 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						"someToken",
+						{ type: "card", limit: [10, "EUR"] },
 						"organizationId",
 						"receipt@example.com"
 					),
@@ -349,7 +354,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),

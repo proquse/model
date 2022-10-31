@@ -42,7 +42,10 @@ describe("Delegation.Data", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{
+				type: "card",
+				limit: [10, "EUR"],
+			},
 			"organizationId",
 			"receipt@example.com"
 		)

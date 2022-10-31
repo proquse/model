@@ -25,9 +25,6 @@ export namespace Card {
 			(value.details == undefined || Details.is(value.details))
 		)
 	}
-	export function create(card: Card, details: Details) {
-		return { ...card, details: details }
-	}
 	export function validate(card: Card, limit?: Amount): boolean {
 		return Amount.validate(card.limit, limit)
 	}
