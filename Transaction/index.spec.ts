@@ -61,11 +61,7 @@ describe("Transaction", () => {
 								buyer: "richard@example.com",
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
-								payment: {
-									type: "card",
-									limit: [10, "EUR"],
-									value: "someToken",
-								},
+								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [
 									{
 										id: "q",
@@ -98,11 +94,7 @@ describe("Transaction", () => {
 								buyer: "richard@example.com",
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
-								payment: {
-									type: "card",
-									limit: [10, "EUR"],
-									value: "someToken",
-								},
+								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [
 									{
 										id: "w",
@@ -139,11 +131,7 @@ describe("Transaction", () => {
 						buyer: "mary@example.com",
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
-						payment: {
-							type: "card",
-							limit: [5, "EUR"],
-							value: "someToken",
-						},
+						payment: { type: "card", limit: [5, "EUR"] },
 						receipts: [
 							{
 								id: "e",
@@ -231,11 +219,7 @@ describe("Transaction", () => {
 			amount: [30, "EUR"],
 			purpose: "Production Workers",
 			email: "receipt@example.com",
-			payment: {
-				type: "card",
-				limit: [100, "EUR"],
-				value: "someToken",
-			},
+			payment: { type: "card", limit: [100, "EUR"] },
 			receipts: [
 				{
 					id: "1",

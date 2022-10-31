@@ -65,7 +65,7 @@ describe("Delegation", () => {
 								buyer: "richard@example.com",
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
-								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
+								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [
 									{
 										id: "id",
@@ -85,7 +85,7 @@ describe("Delegation", () => {
 								buyer: "richard@example.com",
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
-								payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
+								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [],
 								transactions: [],
 							},
@@ -101,7 +101,7 @@ describe("Delegation", () => {
 						buyer: "mary@example.com",
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
-						payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
+						payment: { type: "card", limit: [10, "EUR"] },
 						receipts: [
 							{
 								id: "id",

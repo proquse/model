@@ -11,7 +11,7 @@ export interface Purchase {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	payment: Payment
+	payment: Payment.Card
 	purpose: string
 	buyer: string
 	amount?: Amount
@@ -29,7 +29,7 @@ export namespace Purchase {
 			cryptly.Identifier.is(value.id) &&
 			isoly.DateTime.is(value.created) &&
 			isoly.DateTime.is(value.modified) &&
-			Payment.is(value.payment) &&
+			Payment.Card.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
 			typeof value.email == "string" &&
 			Array.isArray(value.receipts) &&
@@ -53,7 +53,15 @@ export namespace Purchase {
 			created: now,
 			modified: now,
 			...purchase,
-			payment: Payment.create(purchase.payment, token),
+			payment: Payment.Card.create(purchase.payment, {
+				csc: "969",
+				pan: "0123456789101112",
+				holder: "jessie@example.com",
+				expire: {
+					month: "12",
+					year: "22",
+				},
+			}),
 			email: `${recipient}+${organizationId}|${id}@${domain}`,
 			receipts: [],
 			transactions: [],
