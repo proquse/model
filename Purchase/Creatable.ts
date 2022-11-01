@@ -3,7 +3,7 @@ import { Payment } from "../Payment"
 
 export interface Creatable {
 	purpose: string
-	payment: Payment.Creatable
+	payment: Payment.Card
 	buyer: string
 }
 
@@ -12,7 +12,7 @@ export namespace Creatable {
 		return (
 			typeof value == "object" &&
 			typeof value.purpose == "string" &&
-			Payment.Creatable.is(value.payment) &&
+			Payment.is(value.payment) &&
 			typeof value.buyer == "string"
 		)
 	}

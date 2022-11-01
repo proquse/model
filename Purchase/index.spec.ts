@@ -9,11 +9,7 @@ describe("Purchase", () => {
 		amount: [9.5, "EUR"],
 		purpose: "Production Workers",
 		email: "receipt@example.com",
-		payment: {
-			type: "card",
-			limit: [10, "EUR"],
-			value: "someToken",
-		},
+		payment: { type: "card", limit: [10, "EUR"] },
 		receipts: [
 			{
 				id: "id",
@@ -64,11 +60,7 @@ describe("Purchase", () => {
 								buyer: "richard@example.com",
 								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
-								payment: {
-									type: "card",
-									limit: [10, "EUR"],
-									value: "someToken",
-								},
+								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [
 									{
 										id: "id",
@@ -88,11 +80,7 @@ describe("Purchase", () => {
 								buyer: "richard@example.com",
 								amount: [10, "EUR"],
 								purpose: "Production Workers",
-								payment: {
-									type: "card",
-									limit: [10, "EUR"],
-									value: "someToken",
-								},
+								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [],
 								transactions: [],
 							},
@@ -108,11 +96,7 @@ describe("Purchase", () => {
 						buyer: "mary@example.com",
 						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
-						payment: {
-							type: "card",
-							limit: [5, "EUR"],
-							value: "someToken",
-						},
+						payment: { type: "card", limit: [5, "EUR"] },
 						receipts: [
 							{
 								id: "id",
@@ -179,7 +163,12 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		const result = model.Purchase.create(purchase, "someToken", "organizationId", "receipt@example.com")
+		const result = model.Purchase.create(
+			purchase,
+			{ type: "card", limit: [10, "EUR"] },
+			"organizationId",
+			"receipt@example.com"
+		)
 		expect(model.Purchase.is(result))
 		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
 	})
@@ -199,20 +188,20 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
 		const updated: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
+			payment: { type: "card", limit: [10, "EUR"] },
 			buyer: "john@example.com",
 		}
 		const after: model.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { type: "card", limit: [10, "EUR"], value: "someToken" },
+			payment: { type: "card", limit: [10, "EUR"] },
 			buyer: "john@example.com",
 		}
 		const root: model.Delegation = {
@@ -245,7 +234,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -275,7 +264,7 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			"someToken",
+			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -292,7 +281,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -309,7 +298,7 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -326,7 +315,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),
@@ -345,7 +334,7 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						"someToken",
+						{ type: "card", limit: [10, "EUR"] },
 						"organizationId",
 						"receipt@example.com"
 					),
@@ -365,7 +354,7 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					"someToken",
+					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),

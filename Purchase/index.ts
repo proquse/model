@@ -40,7 +40,7 @@ export namespace Purchase {
 	}
 	export function create(
 		purchase: Purchase.Creatable,
-		token: string,
+		payment: Payment,
 		organizationId: string,
 		to: string,
 		idLength: cryptly.Identifier.Length = 8
@@ -53,7 +53,7 @@ export namespace Purchase {
 			created: now,
 			modified: now,
 			...purchase,
-			payment: Payment.create(purchase.payment, token),
+			payment: payment,
 			email: `${recipient}+${organizationId}|${id}@${domain}`,
 			receipts: [],
 			transactions: [],
