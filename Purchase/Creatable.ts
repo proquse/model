@@ -3,7 +3,7 @@ import { Payment } from "../Payment"
 
 export interface Creatable {
 	purpose: string
-	payment: Payment.Card
+	payment: Payment
 	buyer: string
 }
 
