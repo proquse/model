@@ -29,7 +29,7 @@ export namespace Purchase {
 			cryptly.Identifier.is(value.id) &&
 			isoly.DateTime.is(value.created) &&
 			isoly.DateTime.is(value.modified) &&
-			Payment.Card.is(value.payment) &&
+			Payment.is(value.payment) &&
 			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
 			typeof value.email == "string" &&
 			Array.isArray(value.receipts) &&
