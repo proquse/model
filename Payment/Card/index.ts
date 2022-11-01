@@ -5,15 +5,7 @@ import { Details } from "./Details"
 export interface Card {
 	type: "card"
 	limit: Amount
-	details?: {
-		csc: string
-		pan: string
-		holder: string
-		expire: {
-			year: string
-			month: string
-		}
-	}
+	details?: Details
 }
 export namespace Card {
 	export function is(value: Card | any): value is Card & Record<string, any> {

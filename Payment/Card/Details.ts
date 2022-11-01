@@ -23,7 +23,7 @@ export namespace Details {
 			typeof value.expire.year == "string" &&
 			value.expire.year.match(/^\d\d$/) &&
 			typeof value.expire.month == "string" &&
-			value.expire.month.match(/^0[1-9]|1[012]$/)
+			value.expire.month.match(/^(0[1-9]|1[012])$/)
 		)
 	}
 }
