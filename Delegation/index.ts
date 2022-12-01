@@ -74,14 +74,14 @@ export namespace Delegation {
 	export function change(
 		roots: Delegation[],
 		updated: Delegation
-	): { root: Delegation; changed: Delegation } | false | undefined {
+	): { root: Delegation; changed: Delegation } | undefined {
 		const search = find(roots, updated.id)
-		let result: { root: Delegation; changed: Delegation } | false | undefined = search && {
+		let result: { root: Delegation; changed: Delegation } | undefined = search && {
 			root: search.root,
 			changed: search.found,
 		}
 		!(result && updated.costCenter != result.changed.costCenter) ||
-			(result.root == result.changed ? changeCostCenter(result.root, updated.costCenter) : (result = false))
+			(result.root == result.changed ? changeCostCenter(result.root, updated.costCenter) : (result = undefined))
 		result &&
 			((Object.keys(result.changed) as (keyof Delegation)[]).forEach(key => result && delete result.changed[key]),
 			Object.assign(result.changed, updated))
