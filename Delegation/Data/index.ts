@@ -30,9 +30,9 @@ export namespace Data {
 	export function to(delegation: Delegation): Data {
 		return Object.fromEntries(Object.entries(delegation).filter(([key, _]) => key != "delegations")) as Data
 	}
-	export function validate(delegation: Data, limit?: Amount): boolean {
+	export function validate(delegation: Data, limit?: Amount, costCenter = false): boolean {
 		return (
-			Creatable.validate(delegation, limit) &&
+			Creatable.validate(delegation, limit, costCenter) &&
 			!!delegation.id &&
 			!!delegation.costCenter &&
 			delegation.created <= delegation.modified &&

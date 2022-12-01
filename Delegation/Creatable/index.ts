@@ -40,7 +40,7 @@ export namespace Creatable {
 	export function validate(delegation: Creatable, limit?: Amount, costCenter = false): boolean {
 		return (
 			!!delegation.purpose &&
-			Amount.validate(delegation.amount, limit, costCenter) && //innocent
+			Amount.validate(delegation.amount, limit, costCenter) &&
 			!!delegation.costCenter &&
 			(!costCenter ? delegation.to.length > 0 && !delegation.to.some(to => !to) : delegation.to.length == 0)
 		)
