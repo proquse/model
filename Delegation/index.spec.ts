@@ -7,9 +7,9 @@ describe("Delegation", () => {
 		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
-		to: ["john@example.com"],
+		to: [],
 		purpose: "Total company Budget",
-		amount: [20000, "EUR"],
+		amount: [0, "EUR"],
 		delegations: [],
 		purchases: [],
 	}
@@ -19,7 +19,7 @@ describe("Delegation", () => {
 		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
-		to: ["john@example.com"],
+		to: [],
 		purpose: "Total company Budget",
 		amount: [20000, "EUR"],
 		delegations: [
@@ -164,7 +164,6 @@ describe("Delegation", () => {
 
 	it("findUser", () => {
 		expect(model.Delegation.findUser([topLevelDelegation], "john@example.com")).toEqual([
-			topLevelDelegation,
 			topLevelDelegation.delegations[0].delegations[0].delegations[0],
 			topLevelDelegation.delegations[1].delegations[0],
 		])
@@ -431,11 +430,11 @@ describe("Delegation", () => {
 		}
 		const testCostCenter: model.Delegation = {
 			id: "abcd0001",
-			from: "jane@example.com",
+			from: "",
 			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
-			to: ["john@example.com"],
+			to: [],
 			purpose: "Total company Budget",
 			amount: [20000, "EUR"],
 			delegations: [
@@ -454,9 +453,9 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		expect(model.Delegation.validate(topLevelDelegation)).toEqual(true)
-		expect(model.Delegation.validate(initialDelegation)).toEqual(true)
+		expect(model.Delegation.validate(topLevelDelegation, undefined, true)).toEqual(true)
+		expect(model.Delegation.validate(initialDelegation, undefined, true)).toEqual(true)
 		expect(model.Delegation.validate(testFrom)).toEqual(false)
-		expect(model.Delegation.validate(testCostCenter)).toEqual(false)
+		expect(model.Delegation.validate(testCostCenter, undefined, true)).toEqual(false)
 	})
 })
