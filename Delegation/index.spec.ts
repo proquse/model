@@ -304,7 +304,7 @@ describe("Delegation", () => {
 			purchases: [],
 		}
 		result = model.Delegation.change([before], updated)
-		expect(result).toEqual(false)
+		expect(result).toEqual(undefined)
 		updated = { ...updated, id: "abcd0001" }
 		after = { ...updated }
 		result = model.Delegation.change([before], updated)
