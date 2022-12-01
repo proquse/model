@@ -11,7 +11,10 @@ export namespace Amount {
 			isoly.Currency.is(value[1])
 		)
 	}
-	export function validate(amount: Amount, limit?: Amount): boolean {
-		return amount[0] > 0 && (limit == undefined || (amount[0] <= limit[0] && amount[1] == limit[1]))
+	export function validate(amount: Amount, limit?: Amount, costCenter = false): boolean {
+		return (
+			(!costCenter ? amount[0] > 0 : amount[0] >= 0) &&
+			(limit == undefined || (amount[0] <= limit[0] && amount[1] == limit[1]))
+		)
 	}
 }

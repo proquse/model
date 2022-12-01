@@ -57,6 +57,34 @@ describe("Delegation.Creatable", () => {
 	})
 	it("validate", () => {
 		expect(
+			model.Delegation.Creatable.validate(
+				model.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], "testCostCenter"),
+				undefined,
+				true
+			)
+		).toEqual(true)
+		expect(
+			model.Delegation.Creatable.validate(
+				model.Delegation.Creatable.create([""], "testPurpose", [0, "EUR"], "testCostCenter"),
+				undefined,
+				true
+			)
+		).toEqual(false)
+		expect(
+			model.Delegation.Creatable.validate(
+				model.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], ""),
+				undefined,
+				true
+			)
+		).toEqual(false)
+		expect(
+			model.Delegation.Creatable.validate(
+				model.Delegation.Creatable.create([], "", [0, "EUR"], "testCostCenter"),
+				undefined,
+				true
+			)
+		).toEqual(false)
+		expect(
 			model.Delegation.Creatable.validate(model.Delegation.Creatable.create([""], "", [0, "SEK"]), [10, "EUR"])
 		).toEqual(false)
 		expect(
