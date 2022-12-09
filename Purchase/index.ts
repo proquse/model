@@ -111,7 +111,6 @@ export namespace Purchase {
 	export function validate(purchase: Purchase, limit?: Amount): boolean {
 		return (
 			!!purchase.id &&
-			!!purchase.purpose &&
 			!!purchase.buyer &&
 			purchase.created <= purchase.modified &&
 			purchase.modified <= isoly.DateTime.now() &&

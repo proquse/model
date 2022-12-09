@@ -286,7 +286,7 @@ describe("Purchase", () => {
 					"receipt@example.com"
 				)
 			)
-		).toEqual(false)
+		).toEqual(true)
 		expect(
 			model.Purchase.validate(
 				model.Purchase.create(

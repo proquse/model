@@ -19,7 +19,7 @@ describe("Purchase.Creatable", () => {
 		).toEqual(false)
 		expect(
 			model.Purchase.Creatable.validate({ purpose: "", payment: { type: "card", limit: [10, "EUR"] }, buyer: "sasd" })
-		).toEqual(false)
+		).toEqual(true)
 		expect(model.Purchase.Creatable.validate(creatable, [20, "EUR"])).toEqual(true)
 		expect(model.Purchase.Creatable.validate(creatable, [5, "EUR"])).toEqual(false)
 	})
