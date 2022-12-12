@@ -4,7 +4,8 @@
 		"module": "es2020",
 		"lib": [
 			"es2021",
-			"dom"
+			"dom",
+			"DOM.Iterable"
 		],
 		"allowJs": true,
 		"allowSyntheticDefaultImports": true,
