@@ -65,8 +65,7 @@ describe("Transaction", () => {
 								receipts: [
 									{
 										id: "q",
-										amount: [10, "USD"],
-										vat: 0,
+										total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 										date: "2022-01-01T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
@@ -98,8 +97,7 @@ describe("Transaction", () => {
 								receipts: [
 									{
 										id: "w",
-										amount: [9, "USD"],
-										vat: 0,
+										total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 										date: "2022-01-01T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
@@ -135,8 +133,7 @@ describe("Transaction", () => {
 						receipts: [
 							{
 								id: "e",
-								amount: [10, "USD"],
-								vat: 0,
+								total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 								date: "2022-01-01T00:00:42Z",
 								original: "https://example.com/receipt.pdf",
 							},
@@ -223,22 +220,19 @@ describe("Transaction", () => {
 			receipts: [
 				{
 					id: "1",
-					amount: [10, "USD"],
-					vat: 0,
+					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 					date: "2022-01-01T00:00:42Z",
 					original: "https://example.com/receipt.pdf",
 				},
 				{
 					id: "2",
-					amount: [10, "USD"],
-					vat: 0,
+					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 					date: "2022-01-01T00:00:42Z",
 					original: "https://example.com/receipt.pdf",
 				},
 				{
 					id: "3",
-					amount: [10, "USD"],
-					vat: 0,
+					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 					date: "2022-01-01T00:00:42Z",
 					original: "https://example.com/receipt.pdf",
 				},

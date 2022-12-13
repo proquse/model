@@ -69,9 +69,10 @@ describe("Delegation", () => {
 								receipts: [
 									{
 										id: "id",
-										amount: [10, "USD"],
+										total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+
 										date: "2022-01-01T00:00:42Z",
-										vat: 0,
+
 										original: "https://example.com/receipt.pdf",
 									},
 								],
@@ -105,9 +106,8 @@ describe("Delegation", () => {
 						receipts: [
 							{
 								id: "id",
-								amount: [10, "USD"],
+								total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 								date: "2022-01-01T00:00:42Z",
-								vat: 0,
 								original: "https://example.com/receipt.pdf",
 							},
 						],

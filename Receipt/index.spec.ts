@@ -4,10 +4,9 @@ import * as model from "../index"
 describe("Receipt", () => {
 	const receipt: model.Receipt = {
 		id: "asd",
-		amount: [10, "USD"],
-		date: "2022-01-01T00:00:42Z",
-		vat: 0,
 		original: "https://example.com/receipt.pdf",
+		total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+		date: "2022-01-01T00:00:42Z",
 	}
 	const delegation: model.Delegation = {
 		id: "abcd0001",
@@ -52,8 +51,7 @@ describe("Receipt", () => {
 								receipts: [
 									{
 										id: "q",
-										amount: [10, "USD"],
-										vat: 0,
+										total: [{ net: [10, "USD"], vat: [0, "USD"] }],
 										date: "2022-01-01T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
@@ -85,8 +83,7 @@ describe("Receipt", () => {
 								receipts: [
 									{
 										id: "w",
-										amount: [9, "USD"],
-										vat: 0,
+										total: [{ net: [6, "USD"], vat: [3, "USD"] }],
 										date: "2022-01-01T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
@@ -122,8 +119,7 @@ describe("Receipt", () => {
 						receipts: [
 							{
 								id: "e",
-								amount: [10, "USD"],
-								vat: 0,
+								total: [{ net: [7.5, "USD"], vat: [2.5, "USD"] }],
 								date: "2022-01-01T00:00:42Z",
 								original: "https://example.com/receipt.pdf",
 							},
@@ -192,33 +188,44 @@ describe("Receipt", () => {
 	it("validate", () => {
 		const now = "2022-01-01T00:00:42Z"
 		expect(
-			model.Receipt.validate({
-				id: "id",
-				amount: [10, "EUR"],
-				date: now,
-				vat: 0.2,
-				original: "https://example.com/receipt.pdf",
-			})
+			model.Receipt.validate(
+				{
+					id: "id",
+					total: [{ net: [10, "EUR"], vat: [2, "EUR"] }],
+					date: now,
+					original: "https://example.com/receipt.pdf",
+				},
+				"EUR"
+			)
 		).toEqual(true)
 		expect(
-			model.Receipt.validate({
-				id: "id",
-				amount: [0, "EUR"],
-				date: now,
-				vat: 0.2,
-				original: "https://example.com/receipt.pdf",
-			})
+			model.Receipt.validate(
+				{
+					id: "id",
+					total: [{ net: [10, "EUR"], vat: [2, "EUR"] }],
+					date: now,
+					original: "https://example.com/receipt.pdf",
+				},
+				"USD"
+			)
 		).toEqual(false)
 		expect(
-			model.Receipt.validate({
-				id: "id",
-				amount: [10, "EUR"],
-				date: now,
-				vat: -0.2,
-				original: "https://example.com/receipt.pdf",
-			})
+			model.Receipt.validate(
+				{
+					id: "id",
+					total: [{ net: [10, "EUR"], vat: [2, "USD"] }],
+					date: now,
+					original: "https://example.com/receipt.pdf",
+				},
+				"EUR"
+			)
 		).toEqual(false)
-		expect(model.Receipt.validate({ id: "id", amount: [10, "EUR"], date: now, vat: 0.2, original: "" })).toEqual(false)
+		expect(
+			model.Receipt.validate(
+				{ id: "id", total: [{ net: [10, "EUR"], vat: [2, "EUR"] }], date: now, original: "" },
+				"EUR"
+			)
+		).toEqual(false)
 	})
 	it("find", () => {
 		expect(model.Receipt.find([delegation], "w")).toEqual({
@@ -233,13 +240,18 @@ describe("Receipt", () => {
 		expect(model.Receipt.list([delegation]).length).toEqual(3)
 		expect(model.Receipt.list(delegation.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(3)
 		expect(model.Receipt.list([delegation], (_, p) => p.buyer == "mary@example.com").length).toEqual(1)
-		expect(model.Receipt.list([delegation], r => r.amount[0] >= 10).length).toEqual(2)
+		expect(
+			model.Receipt.list(
+				[delegation],
+				r => r.total.reduce((total, { net: [net], vat: [vat] }) => total + net + vat, 0) >= 10
+			).length
+		).toEqual(2)
 		const result = model.Receipt.list(
 			[delegation],
-			r => r.amount[0] >= 10,
+			r => r.total.reduce((total, { net: [net], vat: [vat] }) => total + net + vat, 0) < 10,
 			(r, p, d) => ({ ...r, purchaseId: p.id, delegationId: d.id })
 		)
-		expect(result.length).toEqual(2)
+		expect(result.length).toEqual(1)
 		expect(result.every(receipt => model.Receipt.is(receipt) && receipt.purchaseId && receipt.delegationId)).toEqual(
 			true
 		)
@@ -252,9 +264,8 @@ describe("Receipt", () => {
 				details: {
 					id: "AAAA",
 					original: "placeholder",
-					amount: [1000, "EUR"],
+					total: [{ net: [990, "EUR"], vat: [10, "EUR"] }],
 					date: "2022-09-20T13:37:42Z",
-					vat: 0.12,
 				},
 				file: receiptA,
 			},
@@ -262,9 +273,8 @@ describe("Receipt", () => {
 				details: {
 					id: "BBBB",
 					original: "placeholder",
-					amount: [1337, "EUR"],
+					total: [{ net: [1327, "EUR"], vat: [10, "EUR"] }],
 					date: "2022-09-20T13:37:42Z",
-					vat: 0.25,
 				},
 				file: receiptB,
 			},

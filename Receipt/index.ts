@@ -1,18 +1,16 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import * as PDFLib from "pdf-lib"
-import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
-import { Creatable as ReceiptCreatable } from "./Creatable"
-import { Request as ReceiptRequest } from "./Request"
+import { Creatable as CreatableRequest } from "./Creatable"
+import { Total as ReceiptTotal } from "./Total"
 export interface Receipt {
 	id: cryptly.Identifier
 	original: string
-	amount: Amount
+	total: ReceiptTotal[]
 	date: isoly.DateTime
-	vat: number
 	transactionId?: string
 }
 
@@ -23,8 +21,8 @@ export namespace Receipt {
 			isoly.DateTime.is(value.date) &&
 			cryptly.Identifier.is(value.id) &&
 			typeof value.original == "string" &&
-			Amount.is(value.amount) &&
-			typeof value.vat == "number" &&
+			Array.isArray(value.total) &&
+			value.total.every(ReceiptTotal.is) &&
 			(value.transactionId == undefined || typeof value.transactionId == "string")
 		)
 	}
@@ -63,19 +61,15 @@ export namespace Receipt {
 		}
 		return Array.from(list(roots))
 	}
-	export function validate(receipt: Receipt, limit?: Amount): boolean {
+	export function validate(receipt: Receipt, currency?: isoly.Currency): boolean {
 		return (
 			!!receipt.id &&
 			!!receipt.original &&
 			receipt.date < isoly.DateTime.now() &&
-			Amount.validate(receipt.amount, limit) &&
-			receipt.amount[0] > 0 &&
-			receipt.vat >= 0 &&
-			receipt.vat <= 1 &&
+			(!receipt.total.length || !currency || receipt.total.every(total => Total.validate(total, currency))) &&
 			receipt.transactionId != ""
 		)
 	}
-
 	export async function compile(
 		receipts: { details: Receipt; file: Uint8Array }[],
 		delegation: Delegation.Data,
@@ -95,7 +89,7 @@ export namespace Receipt {
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
-		const headers = ["Page", "Vat", "Vat total", "Net", "Gross"]
+		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
 
 		const frontPage = pdfDoc.addPage([width, height])
@@ -103,12 +97,8 @@ export namespace Receipt {
 		const indexPages = Array.from({ length: Math.ceil(receipts.length / receiptsPerIndexPage) }).map((_, pageNumber) =>
 			receipts.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
 		)
-
-		let vat = 0
 		let totalVat = 0
 		let totalNet = 0
-		let totalGross = 0
-
 		for (const [i, indexPage] of indexPages.entries()) {
 			const page = pdfDoc.insertPage(1 + i, [width, height])
 			headers.forEach((header, index) =>
@@ -125,12 +115,17 @@ export namespace Receipt {
 				thickness: lineThickness,
 			})
 			for (const receipt of indexPage) {
+				const currency = receipt.details.total[0].net[1]
+				const [net, vat] = receipt.details.total.reduce<[number, number]>(
+					([n, v], { net: [net], vat: [vat] }) => [n + net, v + vat],
+					[0, 0]
+				)
 				const cellText = [
 					`${pdfDoc.getPageCount() + indexPages.length - i}`,
-					`${receipt.details.vat * 100}%`,
-					`${receipt.details.amount[0] * receipt.details.vat}`,
-					`${receipt.details.amount[0] - receipt.details.amount[0] * receipt.details.vat}`,
-					`${receipt.details.amount[0]}    ${receipt.details.amount[1]}`,
+					`${vat}`,
+					`${net}`,
+					`${net + vat}`,
+					currency,
 				]
 				page.moveDown(lineHeight)
 				cellText.forEach((text, index) => {
@@ -144,18 +139,8 @@ export namespace Receipt {
 				const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
 				copiedPages.forEach(page => pdfDoc.addPage(page))
 
-				vat = vat + receipt.details.vat
-				totalVat = isoly.Currency.add(
-					receipt.details.amount[1],
-					totalVat,
-					isoly.Currency.multiply(receipt.details.amount[1], receipt.details.amount[0], receipt.details.vat)
-				)
-				;(totalNet = isoly.Currency.subtract(
-					receipt.details.amount[1],
-					isoly.Currency.add(receipt.details.amount[1], totalNet, receipt.details.amount[0]),
-					isoly.Currency.multiply(receipt.details.amount[1], receipt.details.amount[0], receipt.details.vat)
-				)),
-					(totalGross = isoly.Currency.add(receipt.details.amount[1], totalGross, receipt.details.amount[0]))
+				totalVat = isoly.Currency.add(currency, totalVat, vat)
+				totalNet = isoly.Currency.add(currency, totalNet, net)
 			}
 		}
 
@@ -171,7 +156,7 @@ export namespace Receipt {
 			size: fontSize,
 		})
 		frontPage.moveDown(lineHeight * 50)
-		;["Pages", "Vat", "Vat total", "Net", "Gross"].forEach((header, index) =>
+		;["Pages", "Vat", "Net", "Gross", "Currency"].forEach((header, index) =>
 			frontPage.drawText(header, {
 				x: xMargin + index * cellWidth,
 				y: height / 2,
@@ -186,10 +171,10 @@ export namespace Receipt {
 		})
 		const cellText = [
 			`${pdfDoc.getPageCount()}`,
-			`${(vat / receipts.length) * 100}%`,
 			`${totalVat}`,
 			`${totalNet}`,
-			`${totalGross}    ${delegation.amount[1]}`,
+			`${totalNet + totalVat}`,
+			`${delegation.amount[1]}`,
 		]
 		frontPage.moveDown(lineHeight)
 		cellText.forEach((text, index) => {
@@ -203,10 +188,10 @@ export namespace Receipt {
 		result = await pdfDoc.save()
 		return result
 	}
-	export const link = Transaction.link
 	export type Link = Transaction.Link
-	export const Creatable = ReceiptCreatable
-	export type Creatable = ReceiptCreatable
-	export const Request = ReceiptRequest
-	export type Request = ReceiptRequest
+	export const link = Transaction.link
+	export type Creatable = CreatableRequest
+	export const Creatable = CreatableRequest
+	export type Total = ReceiptTotal
+	export const Total = ReceiptTotal
 }
