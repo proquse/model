@@ -20,13 +20,13 @@ export namespace Creatable {
 		return form
 	}
 	export function parse(form: { data: string; file: { data: Uint8Array } } | any): Creatable | undefined {
-		let result: Creatable | undefined
+		let r: Creatable | undefined
 		if (typeof form != "object" || !form || typeof form.data != "string" || typeof form.file != "object" || !form.file)
-			result = undefined
+			r = undefined
 		else {
-			const parsed = JSON.parse(form.data)
-			result = typeof parsed != "object" || !parsed ? undefined : Object.assign(parsed, { file: form.file.data })
+			const parsed = JSON.parse(JSON.parse(form.data))
+			r = typeof parsed != "object" || !parsed ? undefined : Object.assign(parsed, { file: form.file.data })
 		}
-		return !is(result) ? undefined : result
+		return !is(r) ? undefined : r
 	}
 }
