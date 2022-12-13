@@ -20,8 +20,13 @@ export namespace Creatable {
 		return form
 	}
 	export function parse(form: { data: string; file: Uint8Array } | any): Creatable | undefined {
-		return typeof form != "object" && !form
-			? undefined
-			: Object.assign({ total: JSON.parse(form.data) }, { file: form.file })
+		let result: Creatable | undefined
+		if (typeof form != "object" || !form || typeof form.data != "string")
+			result = undefined
+		else {
+			const parsed = Object.assign({ total: JSON.parse(form.data) }, { file: form.file })
+			result = !is(parsed) ? undefined : parsed
+		}
+		return result
 	}
 }
