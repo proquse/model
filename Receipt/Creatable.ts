@@ -1,18 +1,27 @@
-import { Amount } from "../Amount"
-
+import { Total } from "./Total"
 export interface Creatable {
-	amount: Amount
-	vat: number
-	file: Uint8Array | ArrayBuffer
+	total: Total[]
+	file: Uint8Array
 }
-
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
 		return (
 			typeof value == "object" &&
-			Amount.is(value.amount) &&
-			typeof value.vat == "number" &&
-			(value.file instanceof ArrayBuffer || ArrayBuffer.isView(value.file))
+			value &&
+			Array.isArray(value.total) &&
+			value.total.every(Total.is) &&
+			value.file instanceof Uint8Array
 		)
+	}
+	export function formData(receipt: Creatable & { file: ArrayBuffer | Uint8Array | Blob | File }): FormData {
+		const form = new FormData()
+		form.append("data", JSON.stringify((({ file, ...data }) => data)(receipt)))
+		form.append("file", receipt.file instanceof Blob ? receipt.file : new Blob([receipt.file]))
+		return form
+	}
+	export function parse(form: { data: string; file: Uint8Array } | any): Creatable | undefined {
+		return typeof form != "object" && !form
+			? undefined
+			: Object.assign({ total: JSON.parse(form.data) }, { file: form.file })
 	}
 }

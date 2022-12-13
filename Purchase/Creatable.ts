@@ -17,11 +17,6 @@ export namespace Creatable {
 		)
 	}
 	export function validate(purchase: Creatable, limit?: Amount): boolean {
-		return (
-			!!purchase.buyer &&
-			!!purchase.purpose &&
-			Amount.validate(purchase.payment.limit, limit) &&
-			purchase.payment.type == "card"
-		)
+		return !!purchase.buyer && Amount.validate(purchase.payment.limit, limit) && purchase.payment.type == "card"
 	}
 }

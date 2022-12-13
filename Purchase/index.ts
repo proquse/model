@@ -24,6 +24,7 @@ export namespace Purchase {
 	export function is(value: Purchase | any): value is Purchase & Record<string, any> {
 		return (
 			typeof value == "object" &&
+			value &&
 			typeof value.purpose == "string" &&
 			typeof value.buyer == "string" &&
 			cryptly.Identifier.is(value.id) &&
@@ -111,7 +112,6 @@ export namespace Purchase {
 	export function validate(purchase: Purchase, limit?: Amount): boolean {
 		return (
 			!!purchase.id &&
-			!!purchase.purpose &&
 			!!purchase.buyer &&
 			purchase.created <= purchase.modified &&
 			purchase.modified <= isoly.DateTime.now() &&
@@ -119,6 +119,11 @@ export namespace Purchase {
 			(!purchase.amount || Amount.validate(purchase.amount, purchase.payment.limit)) &&
 			!!purchase.email &&
 			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&
+			(limit == undefined ||
+				purchase.receipts.reduce(
+					(total, receipt) => total + receipt.total.reduce((total, { net: [net], vat: [vat] }) => total + net + vat, 0),
+					0
+				) <= limit[0]) &&
 			purchase.transactions.every(transaction => Transaction.validate(transaction))
 		)
 	}

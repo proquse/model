@@ -1,12 +1,42 @@
+import { FormData } from "formdata-polyfill/esm.min.js"
+import { Blob } from "web-file-polyfill"
 import * as model from "../index"
+globalThis.Blob = Blob
+globalThis.FormData = FormData
 
 describe("Receipt.Creatable", () => {
-	const creatable: model.Receipt.Creatable = {
-		amount: [10, "EUR"],
-		vat: 0.25,
-		file: new Uint8Array(),
-	}
 	it("is", () => {
-		expect(model.Receipt.Creatable.is(creatable)).toEqual(true)
+		const receipt: model.Receipt.Creatable = {
+			total: [{ net: [10, "EUR"], vat: [2.5, "EUR"] }],
+			file: new Uint8Array([97]),
+		}
+		expect(model.Receipt.Creatable.is(receipt)).toEqual(true)
+	})
+	it("formData", () => {
+		const form = model.Receipt.Creatable.formData({
+			total: [{ net: [10, "EUR"], vat: [2.5, "EUR"] }],
+			file: new Uint8Array([97]),
+		})
+		const jsonString = form.get("data") as string
+		expect(typeof jsonString).toEqual("string")
+		const json = JSON.parse(jsonString)
+		expect(json.total).toBeTruthy()
+		expect(Array.isArray(json.total)).toEqual(true)
+		expect(json.total.every((total: unknown) => model.Receipt.Total.is(total)))
+		const file = form.get("file") as File
+		expect(file.constructor.name).toEqual("File")
+		expect(file.size).toEqual(1)
+		expect(file.type).toEqual("")
+		expect(typeof file.lastModified).toEqual("number")
+	})
+	it("parse", () => {
+		const form = {
+			data: JSON.stringify([{ net: [10, "EUR"], vat: [2.5, "EUR"] }]),
+			file: new Uint8Array([97]),
+		}
+		expect(model.Receipt.Creatable.parse(form)).toEqual({
+			total: [{ net: [10, "EUR"], vat: [2.5, "EUR"] }],
+			file: new Uint8Array([97]),
+		})
 	})
 })

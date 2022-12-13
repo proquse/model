@@ -13,8 +13,7 @@ describe("Purchase", () => {
 		receipts: [
 			{
 				id: "id",
-				amount: [10, "USD"],
-				vat: 0,
+				total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 				date: "2022-01-01T00:00:42Z",
 				original: "https://example.com/receipt.pdf",
 			},
@@ -64,8 +63,7 @@ describe("Purchase", () => {
 								receipts: [
 									{
 										id: "id",
-										amount: [10, "USD"],
-										vat: 0,
+										total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 										date: "2022-01-01T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
@@ -100,8 +98,7 @@ describe("Purchase", () => {
 						receipts: [
 							{
 								id: "id",
-								amount: [10, "USD"],
-								vat: 0,
+								total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 								date: "2022-01-01T00:00:42Z",
 								original: "https://example.com/receipt.pdf",
 							},
@@ -286,7 +283,7 @@ describe("Purchase", () => {
 					"receipt@example.com"
 				)
 			)
-		).toEqual(false)
+		).toEqual(true)
 		expect(
 			model.Purchase.validate(
 				model.Purchase.create(
