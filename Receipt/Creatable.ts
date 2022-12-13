@@ -19,13 +19,13 @@ export namespace Creatable {
 		form.append("file", receipt.file instanceof Blob ? receipt.file : new Blob([receipt.file]))
 		return form
 	}
-	export function parse(form: { data: string; file: Uint8Array } | any): Creatable | undefined {
+	export function parse(form: { data: string; file: { data: Uint8Array } } | any): Creatable | undefined {
 		let result: Creatable | undefined
-		if (typeof form != "object" || !form || typeof form.data != "string")
+		if (typeof form != "object" || !form || typeof form.data != "string" || typeof form.file != "object" || !form.file)
 			result = undefined
 		else {
 			const parsed = JSON.parse(form.data)
-			result = typeof parsed != "object" || !parsed ? undefined : Object.assign(parsed, { file: form.file })
+			result = typeof parsed != "object" || !parsed ? undefined : Object.assign(parsed, { file: form.file.data })
 		}
 		return !is(result) ? undefined : result
 	}
