@@ -31,7 +31,7 @@ describe("Receipt.Creatable", () => {
 	})
 	it("parse", () => {
 		let form: any = {
-			data: JSON.stringify([{ net: [10, "EUR"], vat: [2.5, "EUR"] }]),
+			data: JSON.stringify({ total: [{ net: [10, "EUR"], vat: [2.5, "EUR"] }] }),
 			file: new Uint8Array([97]),
 		}
 		expect(model.Receipt.Creatable.parse(form)).toEqual({
@@ -41,6 +41,11 @@ describe("Receipt.Creatable", () => {
 		form = {
 			amount: [1, "EUR"],
 			vat: 1,
+			file: form.file,
+		}
+		expect(model.Receipt.Creatable.parse(form)).toEqual(undefined)
+		form = {
+			data: JSON.stringify([]),
 			file: form.file,
 		}
 		expect(model.Receipt.Creatable.parse(form)).toEqual(undefined)
