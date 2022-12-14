@@ -54,4 +54,13 @@ describe("Receipt.Creatable", () => {
 			file: form.file.data,
 		})
 	})
+	it("validate", () => {
+		const creatable: model.Receipt.Creatable = {
+			file: new Uint8Array([97]),
+			total: [{ net: [1, "EUR"], vat: [1, "EUR"] }],
+		}
+		expect(model.Receipt.Creatable.validate(creatable, "EUR")).toEqual(true)
+		expect(model.Receipt.Creatable.validate(creatable, "USD")).toEqual(false)
+		expect(model.Receipt.Creatable.validate({ ...creatable, total: [] }, "EUR")).toEqual(false)
+	})
 })
