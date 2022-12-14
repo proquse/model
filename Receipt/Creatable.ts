@@ -1,3 +1,4 @@
+import * as isoly from "isoly"
 import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
@@ -11,6 +12,13 @@ export namespace Creatable {
 			Array.isArray(value.total) &&
 			value.total.every(Total.is) &&
 			value.file instanceof Uint8Array
+		)
+	}
+	export function validate(receipt: Creatable, currency: isoly.Currency): boolean {
+		return !!(
+			receipt.total.length &&
+			receipt.total.every(total => Total.validate(total, currency)) &&
+			receipt.file instanceof Uint8Array
 		)
 	}
 	export function formData(receipt: Creatable & { file: ArrayBuffer | Uint8Array | Blob | File }): FormData {
