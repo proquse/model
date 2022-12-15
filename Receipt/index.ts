@@ -91,7 +91,7 @@ export namespace Receipt {
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
-		const headers = ["Page", "Vat", "Net", "Gross", "Currency"] //Cost center summary
+		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
 		const ccStartPage: Record<string, number> = {}
 
@@ -134,7 +134,6 @@ export namespace Receipt {
 						[0, 0]
 					)
 
-					// vCostcenter summary
 					const cellText = [
 						`${pdfDoc.getPageCount() + indexPages.length - i}`,
 						`${vat} `,
@@ -185,10 +184,6 @@ export namespace Receipt {
 			thickness: lineThickness,
 		})
 
-		/**
-		 * Frontpage summary, works.
-		 * Need to count length per costcenter
-		 */
 		for (const costCenter of receiptData) {
 			const costCenterCurrency = costCenter.receipts[0].details.total[0].net[1]
 			const [totalVat, totalNet] = costCenter.receipts.reduce(
@@ -197,7 +192,6 @@ export namespace Receipt {
 				[0, 0]
 			)
 
-			//Frontpage summary
 			const cellText = [
 				`${costCenter.costCenter}`,
 				`${ccStartPage[costCenter.costCenter]}`,
@@ -214,6 +208,9 @@ export namespace Receipt {
 					font: font,
 				})
 			})
+		}
+		for (let i = 1; i <= pdfDoc.getPageCount(); i++) {
+			pdfDoc.getPage(i).drawText(`${i}/${pdfDoc.getPageCount()}`, { x: 20, y: 20, size: 12 })
 		}
 		result = await pdfDoc.save()
 		return result
