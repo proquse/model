@@ -259,27 +259,99 @@ describe("Receipt", () => {
 	it("compile", async () => {
 		const receiptA = new Uint8Array(await fs.readFile("./Receipt/receiptA.pdf"))
 		const receiptB = new Uint8Array(await fs.readFile("./Receipt/receiptB.pdf"))
-		const receipts: { details: model.Receipt; file: Uint8Array }[] = [
+		const receipts: { costCenter: string; receipts: { details: model.Receipt; file: Uint8Array }[] }[] = [
 			{
-				details: {
-					id: "AAAA",
-					original: "placeholder",
-					total: [{ net: [990, "EUR"], vat: [10, "EUR"] }],
-					date: "2022-09-20T13:37:42Z",
-				},
-				file: receiptA,
+				costCenter: "Sales",
+				receipts: [
+					{
+						details: {
+							id: "AAAA",
+							original: "placeholder",
+							total: [{ net: [990, "EUR"], vat: [10, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptA,
+					},
+					{
+						details: {
+							id: "BBBB",
+							original: "placeholder",
+							total: [{ net: [1327, "EUR"], vat: [10, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptB,
+					},
+				],
 			},
 			{
-				details: {
-					id: "BBBB",
-					original: "placeholder",
-					total: [{ net: [1327, "EUR"], vat: [10, "EUR"] }],
-					date: "2022-09-20T13:37:42Z",
-				},
-				file: receiptB,
+				costCenter: "Marketing",
+				receipts: [
+					{
+						details: {
+							id: "AAAA",
+							original: "placeholder",
+							total: [{ net: [11110, "EUR"], vat: [1000, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptA,
+					},
+					{
+						details: {
+							id: "BBBB",
+							original: "placeholder",
+							total: [{ net: [1327000, "EUR"], vat: [10, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptB,
+					},
+				],
+			},
+			{
+				costCenter: "Cars",
+				receipts: [
+					{
+						details: {
+							id: "AAAA",
+							original: "placeholder",
+							total: [{ net: [111101, "EUR"], vat: [1000, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptA,
+					},
+					{
+						details: {
+							id: "BBBB",
+							original: "placeholder",
+							total: [{ net: [13200, "EUR"], vat: [10, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptB,
+					},
+					{
+						details: {
+							id: "BBBB",
+							original: "placeholder",
+							total: [{ net: [130, "EUR"], vat: [10, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptB,
+					},
+					{
+						details: {
+							id: "BBBB",
+							original: "placeholder",
+							total: [{ net: [15500, "EUR"], vat: [10, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptB,
+					},
+				],
 			},
 		]
-		const receiptResult = await model.Receipt.compile(receipts, delegation, { start: "2022-09-19", end: "2022-09-21" })
+		const receiptResult = await model.Receipt.compile(receipts, "Issuefab AB", {
+			start: "2022-09-19",
+			end: "2022-09-21",
+		})
 		await fs.writeFile("./Receipt/receiptResult.pdf", receiptResult)
 	})
 })
