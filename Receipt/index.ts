@@ -1,7 +1,6 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import * as PDFLib from "pdf-lib"
-import { rotateAndSkewTextDegreesAndTranslate } from "pdf-lib"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
