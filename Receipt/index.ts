@@ -92,7 +92,7 @@ export namespace Receipt {
 		const lineMargin = 1
 		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
-		const ccStartPage: Record<string, number> = {}
+		const costCenterIndex: Record<string, number> = {}
 		const frontPage = pdfDoc.addPage([width, height])
 		const indexPages = Array.from({
 			length: Math.ceil(
@@ -106,7 +106,7 @@ export namespace Receipt {
 			for (const CostCenter of indexPage) {
 				const page = pdfDoc.addPage([width, height])
 				page.drawText(`Summary for cost center: ${CostCenter.costCenter}`, { x: xMargin, y: height - yMargin })
-				ccStartPage[CostCenter.costCenter] = pdfDoc.getPageCount()
+				costCenterIndex[CostCenter.costCenter] = pdfDoc.getPageCount()
 				height -= 20
 				headers.forEach((header, index) =>
 					page.drawText(header, {
@@ -187,7 +187,7 @@ export namespace Receipt {
 			)
 			const cellText = [
 				`${costCenter.costCenter}`,
-				`${ccStartPage[costCenter.costCenter]}`,
+				`${costCenterIndex[costCenter.costCenter]}`,
 				`${totalVat}`,
 				`${totalNet}`,
 				`${totalNet + totalVat}`,
