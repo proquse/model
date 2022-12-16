@@ -1,6 +1,7 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import * as PDFLib from "pdf-lib"
+import { rotateAndSkewTextDegreesAndTranslate } from "pdf-lib"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
@@ -202,8 +203,8 @@ export namespace Receipt {
 				})
 			})
 		}
-		for (let i = 1; i <= pdfDoc.getPageCount(); i++) {
-			pdfDoc.getPage(i).drawText(`${i}/${pdfDoc.getPageCount()}`, { x: 20, y: 20, size: 12 })
+		for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+			pdfDoc.getPage(i).drawText(`${i + 1}/${pdfDoc.getPageCount()}`, { x: 20, y: 20, size: 12 })
 		}
 		result = await pdfDoc.save()
 		return result
