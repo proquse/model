@@ -71,8 +71,8 @@ export namespace Receipt {
 		)
 	}
 	export async function compile(
-		receipts: { details: Receipt; file: Uint8Array }[],
-		delegation: Delegation.Data,
+		receiptData: { costCenter: string; receipts: { details: Receipt; file: Uint8Array }[] }[],
+		organisation: string,
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
@@ -80,71 +80,79 @@ export namespace Receipt {
 		const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier)
 		pdfDoc.setAuthor("Issuefab AB")
 		pdfDoc.setCreationDate(new Date())
-		const [width, height] = PDFLib.PageSizes.A4
+		const width = PDFLib.PageSizes.A4[0]
+		let height = PDFLib.PageSizes.A4[1]
 		const fontSize = 12
 		const headerSize = Math.round(fontSize * 1.33)
 		const xMargin = 30
 		const yMargin = 4 * fontSize
-		const cellWidth = 100
+		const cellWidth = 90
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
 		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
-
+		const costCenterIndex: Record<string, number> = {}
 		const frontPage = pdfDoc.addPage([width, height])
-
-		const indexPages = Array.from({ length: Math.ceil(receipts.length / receiptsPerIndexPage) }).map((_, pageNumber) =>
-			receipts.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
+		const indexPages = Array.from({
+			length: Math.ceil(
+				receiptData.reduce((total, costCenter) => total + costCenter.receipts.length, 0) / receiptsPerIndexPage
+			),
+		}).map((_, pageNumber) =>
+			receiptData.slice(pageNumber * receiptsPerIndexPage, (pageNumber + 1) * receiptsPerIndexPage)
 		)
-		let totalVat = 0
-		let totalNet = 0
-		for (const [i, indexPage] of indexPages.entries()) {
-			const page = pdfDoc.insertPage(1 + i, [width, height])
-			headers.forEach((header, index) =>
-				page.drawText(header, {
-					x: xMargin + index * cellWidth,
-					y: height - yMargin,
-					size: headerSize,
-				})
-			)
-			page.moveTo(xMargin, height - yMargin - fontSize / 2)
-			page.drawLine({
-				start: { x: xMargin, y: height - yMargin - lineThickness - lineMargin },
-				end: { x: width - xMargin, y: height - yMargin - lineThickness - lineMargin },
-				thickness: lineThickness,
-			})
-			for (const receipt of indexPage) {
-				const currency = receipt.details.total[0].net[1]
-				const [net, vat] = receipt.details.total.reduce<[number, number]>(
-					([n, v], { net: [net], vat: [vat] }) => [n + net, v + vat],
-					[0, 0]
-				)
-				const cellText = [
-					`${pdfDoc.getPageCount() + indexPages.length - i}`,
-					`${vat}`,
-					`${net}`,
-					`${net + vat}`,
-					currency,
-				]
-				page.moveDown(lineHeight)
-				cellText.forEach((text, index) => {
-					page.drawText(text, {
-						x: xMargin + index * cellWidth,
-						size: fontSize,
-						font: font,
-					})
-				})
-				const newFile = await PDFLib.PDFDocument.load(receipt.file)
-				const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
-				copiedPages.forEach(page => pdfDoc.addPage(page))
 
-				totalVat = isoly.Currency.add(currency, totalVat, vat)
-				totalNet = isoly.Currency.add(currency, totalNet, net)
+		for (const [i, indexPage] of indexPages.entries()) {
+			for (const CostCenter of indexPage) {
+				const page = pdfDoc.addPage([width, height])
+				page.drawText(`Summary for cost center: ${CostCenter.costCenter}`, { x: xMargin, y: height - yMargin })
+				costCenterIndex[CostCenter.costCenter] = pdfDoc.getPageCount()
+				height -= 20
+				headers.forEach((header, index) =>
+					page.drawText(header, {
+						x: xMargin + index * cellWidth,
+						y: height - yMargin,
+						size: headerSize,
+					})
+				)
+				page.moveTo(xMargin, height - yMargin - fontSize / 2)
+				page.drawLine({
+					start: { x: xMargin, y: height - yMargin - lineThickness - lineMargin },
+					end: { x: width - xMargin, y: height - yMargin - lineThickness - lineMargin },
+					thickness: lineThickness,
+				})
+
+				for (const receipt of CostCenter.receipts) {
+					const currency = receipt.details.total[0].net[1]
+					const [net, vat] = receipt.details.total.reduce<[number, number]>(
+						([n, v], { net: [net], vat: [vat] }) => [n + net, v + vat],
+						[0, 0]
+					)
+					const cellText = [
+						`${pdfDoc.getPageCount() + indexPages.length - i}`,
+						`${vat} `,
+						`${net}`,
+						`${net + vat}`,
+						currency,
+					]
+					page.moveDown(lineHeight)
+					cellText.forEach((text, index) => {
+						page.drawText(text, {
+							x: xMargin + index * cellWidth,
+							size: fontSize,
+							font: font,
+						})
+					})
+					const newFile = await PDFLib.PDFDocument.load(receipt.file)
+					const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
+					copiedPages.forEach(page => {
+						pdfDoc.addPage(page)
+					})
+				}
 			}
 		}
 
-		frontPage.drawText(`Invoice summary: ${delegation.costCenter}`, {
+		frontPage.drawText(`Invoice summary: ${organisation}`, {
 			x: xMargin,
 			y: (height * 2) / 3,
 			size: headerSize,
@@ -156,7 +164,7 @@ export namespace Receipt {
 			size: fontSize,
 		})
 		frontPage.moveDown(lineHeight * 50)
-		;["Pages", "Vat", "Net", "Gross", "Currency"].forEach((header, index) =>
+		;["Cost center", "Pages", "Vat", "Net", "Gross", "Currency"].forEach((header, index) =>
 			frontPage.drawText(header, {
 				x: xMargin + index * cellWidth,
 				y: height / 2,
@@ -169,22 +177,34 @@ export namespace Receipt {
 			end: { x: width - xMargin, y: height / 2 - lineThickness - lineMargin },
 			thickness: lineThickness,
 		})
-		const cellText = [
-			`${pdfDoc.getPageCount()}`,
-			`${totalVat}`,
-			`${totalNet}`,
-			`${totalNet + totalVat}`,
-			`${delegation.amount[1]}`,
-		]
-		frontPage.moveDown(lineHeight)
-		cellText.forEach((text, index) => {
-			frontPage.drawText(text, {
-				x: xMargin + index * cellWidth,
-				size: fontSize,
-				font: font,
-			})
-		})
 
+		for (const costCenter of receiptData) {
+			const costCenterCurrency = costCenter.receipts[0].details.total[0].net[1]
+			const [totalVat, totalNet] = costCenter.receipts.reduce(
+				([vat, net], receipt) =>
+					receipt.details.total.reduce(([v, n], { net: [net], vat: [vat] }) => [net + v, vat + n], [vat, net]),
+				[0, 0]
+			)
+			const cellText = [
+				`${costCenter.costCenter}`,
+				`${costCenterIndex[costCenter.costCenter]}`,
+				`${totalVat}`,
+				`${totalNet}`,
+				`${totalNet + totalVat}`,
+				`${costCenterCurrency}`,
+			]
+			frontPage.moveDown(lineHeight)
+			cellText.forEach((text, index) => {
+				frontPage.drawText(text, {
+					x: xMargin + index * cellWidth,
+					size: fontSize,
+					font: font,
+				})
+			})
+		}
+		for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+			pdfDoc.getPage(i).drawText(`${i + 1}/${pdfDoc.getPageCount()}`, { x: 20, y: 20, size: 12 })
+		}
 		result = await pdfDoc.save()
 		return result
 	}
