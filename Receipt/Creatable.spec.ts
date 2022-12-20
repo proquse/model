@@ -31,7 +31,7 @@ describe("Receipt.Creatable", () => {
 	})
 	it("parse", () => {
 		let form: any = {
-			data: '"{\\"total\\":[]}" ',
+			data: '{"total":[]}',
 			file: { data: new Uint8Array([97]) },
 		}
 		expect(model.Receipt.Creatable.parse(form)).toEqual({
@@ -49,7 +49,7 @@ describe("Receipt.Creatable", () => {
 			file: form.file,
 		}
 		expect(model.Receipt.Creatable.parse(form)).toEqual(undefined)
-		expect(model.Receipt.Creatable.parse({ data: '"{\\"total\\":[]}" ', file: form.file })).toEqual({
+		expect(model.Receipt.Creatable.parse({ data: '{"total":[]}', file: form.file })).toEqual({
 			total: [],
 			file: form.file.data,
 		})

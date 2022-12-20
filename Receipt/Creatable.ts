@@ -32,7 +32,7 @@ export namespace Creatable {
 		if (typeof form != "object" || !form || typeof form.data != "string" || typeof form.file != "object" || !form.file)
 			r = undefined
 		else {
-			const parsed = JSON.parse(JSON.parse(form.data))
+			const parsed = JSON.parse(form.data)
 			r = typeof parsed != "object" || !parsed ? undefined : Object.assign(parsed, { file: form.file.data })
 		}
 		return !is(r) ? undefined : r
