@@ -1,14 +1,11 @@
 import { Amount } from "../Amount"
 import { Card as CardPayment } from "./Card"
 
-export interface Payment {
-	type: string
-	limit: Amount
-}
+export type Payment = CardPayment
 
 export namespace Payment {
 	export function is(value: Payment | any): value is Payment {
-		return typeof value == "object" && value && typeof value.type == "string" && Amount.is(value.limit)
+		return CardPayment.is(value)
 	}
 
 	export function validate(payment: Payment, limit?: Amount): boolean {
