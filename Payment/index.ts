@@ -1,19 +1,18 @@
 import { Amount } from "../Amount"
-import { Card as CardPayment } from "./Card"
+import { Card as PaymentCard } from "./Card"
+import { PrePaid as PaymentPrePaid } from "./PrePaid"
 
-export interface Payment {
-	type: string
-	limit: Amount
-}
-
+export type Payment = Payment.Card | Payment.PrePaid
 export namespace Payment {
 	export function is(value: Payment | any): value is Payment {
-		return typeof value == "object" && value && typeof value.type == "string" && Amount.is(value.limit)
+		return Card.is(value) || PrePaid.is(value)
 	}
 
 	export function validate(payment: Payment, limit?: Amount): boolean {
 		return Amount.validate(payment.limit, limit)
 	}
-	export type Card = CardPayment
-	export const Card = CardPayment
+	export type Card = PaymentCard
+	export const Card = PaymentCard
+	export type PrePaid = PaymentPrePaid
+	export const PrePaid = PaymentPrePaid
 }

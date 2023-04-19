@@ -1,11 +1,11 @@
 import { Amount } from "../../Amount"
 import { Creatable as CardCreatable } from "./Creatable"
-import { Details } from "./Details"
+import { Details as CardDetails } from "./Details"
 
 export interface Card {
 	type: "card"
 	limit: Amount
-	details?: Details
+	details?: Card.Details
 }
 export namespace Card {
 	export function is(value: Card | any): value is Card & Record<string, any> {
@@ -22,4 +22,6 @@ export namespace Card {
 	}
 	export type Creatable = CardCreatable
 	export const Creatable = CardCreatable
+	export type Details = CardDetails
+	export const Details = CardDetails
 }
