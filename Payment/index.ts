@@ -1,5 +1,6 @@
 import { Amount } from "../Amount"
 import { Card as PaymentCard } from "./Card"
+import { Creatable as PaymentCreatable } from "./Creatable"
 import { PrePaid as PaymentPrePaid } from "./PrePaid"
 
 export type Payment = Payment.Card | Payment.PrePaid
@@ -15,4 +16,10 @@ export namespace Payment {
 	export const Card = PaymentCard
 	export type PrePaid = PaymentPrePaid
 	export const PrePaid = PaymentPrePaid
+	export type Creatable = PaymentCreatable
+	export const Creatable = PaymentCreatable
+	export namespace Creatable {
+		export type PrePaid = PaymentCreatable.PrePaid
+		export type Card = PaymentCreatable.Card
+	}
 }
