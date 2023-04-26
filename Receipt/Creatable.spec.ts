@@ -29,12 +29,12 @@ describe("Receipt.Creatable", () => {
 		expect(file.type).toEqual("")
 		expect(typeof file.lastModified).toEqual("number")
 	})
-	it("parse", () => {
+	it("parse", async () => {
 		let form: any = {
 			data: '{"total":[]}',
-			file: { data: new Uint8Array([97]) },
+			file: new Blob([new Uint8Array([97])]),
 		}
-		expect(model.Receipt.Creatable.parse(form)).toEqual({
+		expect(await model.Receipt.Creatable.parse(form)).toEqual({
 			total: [],
 			file: new Uint8Array([97]),
 		})
@@ -43,15 +43,15 @@ describe("Receipt.Creatable", () => {
 			vat: 1,
 			file: form.file,
 		}
-		expect(model.Receipt.Creatable.parse(form)).toEqual(undefined)
+		expect(await model.Receipt.Creatable.parse(form)).toEqual(undefined)
 		form = {
 			data: JSON.stringify(JSON.stringify([])),
 			file: form.file,
 		}
-		expect(model.Receipt.Creatable.parse(form)).toEqual(undefined)
-		expect(model.Receipt.Creatable.parse({ data: '{"total":[]}', file: form.file })).toEqual({
+		expect(await model.Receipt.Creatable.parse(form)).toEqual(undefined)
+		expect(await model.Receipt.Creatable.parse({ data: '{"total":[]}', file: form.file })).toEqual({
 			total: [],
-			file: form.file.data,
+			file: new Uint8Array([97]),
 		})
 	})
 	it("validate", () => {
