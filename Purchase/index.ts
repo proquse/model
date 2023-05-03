@@ -55,7 +55,7 @@ export namespace Purchase {
 			modified: now,
 			...purchase,
 			payment: payment,
-			email: `${recipient}+${organizationId}|${id}@${domain}`,
+			email: `${recipient}+${organizationId}_${id}@${domain}`,
 			receipts: [],
 			transactions: [],
 		}
