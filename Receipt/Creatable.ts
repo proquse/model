@@ -6,7 +6,13 @@ export interface Creatable {
 }
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
-		return typeof value == "object" && value && value.total.every(Total.is) && value.file instanceof Uint8Array
+		return (
+			typeof value == "object" &&
+			value &&
+			Array.isArray(value.total) &&
+			value.total.every(Total.is) &&
+			value.file instanceof Uint8Array
+		)
 	}
 	export function validate(receipt: Creatable, currency: isoly.Currency): boolean {
 		return !!(
