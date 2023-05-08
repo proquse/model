@@ -8,7 +8,7 @@ export interface Card {
 	details?: Card.Details
 }
 export namespace Card {
-	export function is(value: Card | any): value is Card & Record<string, any> {
+	export function is(value: Card | any): value is Card {
 		return (
 			typeof value == "object" &&
 			value &&
