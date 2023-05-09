@@ -7,7 +7,7 @@ export type Creatable = Creatable.Card | Creatable.PrePaid | Creatable.Expense
 
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
-		return Card.is(value) || PrePaid.is(value)
+		return Card.is(value) || PrePaid.is(value) || Expense.is(value)
 	}
 
 	export function validate(payment: Creatable, limit?: Amount): boolean {
