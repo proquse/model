@@ -62,6 +62,7 @@
 		"eslint": "^8.37.0",
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-0.19.1-utily.2",
 		"eslint-plugin-simple-import-sort": "^10.0.0",
+		"formdata-polyfill": "^4.0.10",
 		"jest": "^29.5.0",
 		"prettierx": "github:utily/prettierx#utily-0.19.1-utily.2",
 		"rimraf": "^4.4.1",
@@ -73,7 +74,6 @@
 		"@userwidgets/model": "^0.0.31",
 		"authly": "^3.0.3",
 		"cryptly": "^3.0.2",
-		"formdata-polyfill": "^4.0.10",
 		"isoly": "^2.0.16",
 		"pdf-lib": "^1.17.1",
 		"web-file-polyfill": "^1.0.4"
