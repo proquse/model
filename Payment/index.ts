@@ -4,7 +4,7 @@ import { Creatable as PaymentCreatable } from "./Creatable"
 import { Expense as PaymentExpense } from "./Expense"
 import { PrePaid as PaymentPrePaid } from "./PrePaid"
 
-export type Payment = Payment.Card | Payment.PrePaid
+export type Payment = Payment.Card | Payment.PrePaid | Payment.Expense
 export namespace Payment {
 	export function is(value: Payment | any): value is Payment {
 		return Card.is(value) || PrePaid.is(value) || Expense.is(value)
