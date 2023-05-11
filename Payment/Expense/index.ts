@@ -8,7 +8,7 @@ export interface Expense {
 
 export namespace Expense {
 	export function is(value: Expense | any): value is Expense {
-		return value == "object" && value && value.type == "expense" && Amount.is(value.limit)
+		return typeof value == "object" && value && value.type == "expense" && Amount.is(value.limit)
 	}
 	export const validate = ExpenseCreatable.validate
 	export type Creatable = ExpenseCreatable

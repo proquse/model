@@ -6,7 +6,7 @@ describe("Payment.Expense", () => {
 		limit: [10, "EUR"],
 	}
 	it("is", () => {
-		expect(issuefab.Payment.Expense.Creatable.is(expense)).toEqual(true)
+		expect(issuefab.Payment.Expense.is(expense)).toEqual(true)
 		expect(issuefab.Payment.Expense.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
 	})
 })
