@@ -1,6 +1,6 @@
 import { issuefab } from "../../index"
 
-describe("Payment.Card.Creatable", () => {
+describe("Payment.Prepaid", () => {
 	const prePaid: issuefab.Payment.PrePaid = {
 		type: "pre-paid",
 		limit: [10, "EUR"],
