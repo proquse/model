@@ -71,8 +71,8 @@ export namespace Receipt {
 		)
 	}
 	export async function compile(
-		receiptData: { costCenter: string; receipts: { details: Receipt; file: Uint8Array }[] }[],
-		organisation: string,
+		receiptData: { costCenter: string; receipts: { details: Receipt; file: File }[] }[],
+		organization: string,
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
@@ -82,6 +82,7 @@ export namespace Receipt {
 		pdfDoc.setCreationDate(new Date())
 		const width = PDFLib.PageSizes.A4[0]
 		let height = PDFLib.PageSizes.A4[1]
+
 		const fontSize = 12
 		const headerSize = Math.round(fontSize * 1.33)
 		const xMargin = 30
@@ -90,10 +91,12 @@ export namespace Receipt {
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
-		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
+		const headers = ["Page", "Vat", "Net", "Gross", "Currency"] //Cost center summary
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
-		const costCenterIndex: Record<string, number> = {}
+		const ccStartPage: Record<string, number> = {}
+
 		const frontPage = pdfDoc.addPage([width, height])
+
 		const indexPages = Array.from({
 			length: Math.ceil(
 				receiptData.reduce((total, costCenter) => total + costCenter.receipts.length, 0) / receiptsPerIndexPage
@@ -105,8 +108,9 @@ export namespace Receipt {
 		for (const [i, indexPage] of indexPages.entries()) {
 			for (const CostCenter of indexPage) {
 				const page = pdfDoc.addPage([width, height])
+
 				page.drawText(`Summary for cost center: ${CostCenter.costCenter}`, { x: xMargin, y: height - yMargin })
-				costCenterIndex[CostCenter.costCenter] = pdfDoc.getPageCount()
+				ccStartPage[CostCenter.costCenter] = pdfDoc.getPageCount()
 				height -= 20
 				headers.forEach((header, index) =>
 					page.drawText(header, {
@@ -116,6 +120,7 @@ export namespace Receipt {
 					})
 				)
 				page.moveTo(xMargin, height - yMargin - fontSize / 2)
+
 				page.drawLine({
 					start: { x: xMargin, y: height - yMargin - lineThickness - lineMargin },
 					end: { x: width - xMargin, y: height - yMargin - lineThickness - lineMargin },
@@ -128,6 +133,8 @@ export namespace Receipt {
 						([n, v], { net: [net], vat: [vat] }) => [n + net, v + vat],
 						[0, 0]
 					)
+
+					// vCostcenter summary
 					const cellText = [
 						`${pdfDoc.getPageCount() + indexPages.length - i}`,
 						`${vat} `,
@@ -143,7 +150,31 @@ export namespace Receipt {
 							font: font,
 						})
 					})
-					const newFile = await PDFLib.PDFDocument.load(receipt.file)
+
+					const newFile = await PDFLib.PDFDocument.create()
+					if (receipt.file.type == "application/pdf") {
+						const [embedPdf] = await newFile.embedPdf(await receipt.file.arrayBuffer())
+						const page = newFile.addPage()
+						page.drawPage(embedPdf)
+					}
+
+					if (receipt.file.type == "image/jpeg") {
+						const image = await newFile.embedJpg(await receipt.file.arrayBuffer())
+						let dims = image.scale(1)
+						const page = newFile.addPage()
+						const pageDim = page.getSize()
+						if (pageDim.width < dims.width || pageDim.height < dims.height) {
+							dims = image.scale(Math.min(pageDim.width / dims.width, pageDim.height / dims.height))
+						}
+
+						page.drawImage(image, {
+							x: page.getWidth() / 2 - dims.width / 2,
+							y: page.getHeight() / 2 - dims.height / 2,
+							width: dims.width,
+							height: dims.height,
+						})
+					}
+					newFile.save()
 					const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
 					copiedPages.forEach(page => {
 						pdfDoc.addPage(page)
@@ -152,7 +183,7 @@ export namespace Receipt {
 			}
 		}
 
-		frontPage.drawText(`Invoice summary: ${organisation}`, {
+		frontPage.drawText(`Invoice summary: ${organization}`, {
 			x: xMargin,
 			y: (height * 2) / 3,
 			size: headerSize,
@@ -178,6 +209,10 @@ export namespace Receipt {
 			thickness: lineThickness,
 		})
 
+		/**
+		 * Frontpage summary, works.
+		 * Need to count length per costcenter
+		 */
 		for (const costCenter of receiptData) {
 			const costCenterCurrency = costCenter.receipts[0].details.total[0].net[1]
 			const [totalVat, totalNet] = costCenter.receipts.reduce(
@@ -185,9 +220,11 @@ export namespace Receipt {
 					receipt.details.total.reduce(([v, n], { net: [net], vat: [vat] }) => [net + v, vat + n], [vat, net]),
 				[0, 0]
 			)
+
+			//Frontpage summary
 			const cellText = [
 				`${costCenter.costCenter}`,
-				`${costCenterIndex[costCenter.costCenter]}`,
+				`${ccStartPage[costCenter.costCenter]}`,
 				`${totalVat}`,
 				`${totalNet}`,
 				`${totalNet + totalVat}`,
@@ -201,9 +238,6 @@ export namespace Receipt {
 					font: font,
 				})
 			})
-		}
-		for (let i = 0; i < pdfDoc.getPageCount(); i++) {
-			pdfDoc.getPage(i).drawText(`${i + 1}/${pdfDoc.getPageCount()}`, { x: 20, y: 20, size: 12 })
 		}
 		result = await pdfDoc.save()
 		return result
