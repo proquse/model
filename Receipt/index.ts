@@ -164,7 +164,7 @@ export namespace Receipt {
 						const page = newFile.addPage()
 						const pageDim = page.getSize()
 						if (pageDim.width < dims.width || pageDim.height < dims.height) {
-							dims = image.scale(Math.min(pageDim.width / dims.width, pageDim.height / dims.height))
+							dims = image.scale(Math.min((pageDim.width - 150) / dims.width, (pageDim.height - 150) / dims.height))
 						}
 
 						page.drawImage(image, {
