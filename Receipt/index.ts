@@ -169,6 +169,23 @@ export namespace Receipt {
 							height: dims.height,
 						})
 					}
+
+					if (receipt.file.type == "image/png") {
+						const image = await newFile.embedPng(await receipt.file.arrayBuffer())
+						let dims = image.scale(1)
+						const page = newFile.addPage()
+						const pageDim = page.getSize()
+						if (pageDim.width < dims.width || pageDim.height < dims.height) {
+							dims = image.scale(Math.min((pageDim.width - 150) / dims.width, (pageDim.height - 150) / dims.height))
+						}
+
+						page.drawImage(image, {
+							x: page.getWidth() / 2 - dims.width / 2,
+							y: page.getHeight() / 2 - dims.height / 2,
+							width: dims.width,
+							height: dims.height,
+						})
+					}
 					newFile.save()
 					const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
 					copiedPages.forEach(page => {
