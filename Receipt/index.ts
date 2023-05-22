@@ -76,10 +76,10 @@ export namespace Receipt {
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
-		const pdfDoc = await PDFLib.PDFDocument.create()
-		const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Courier)
-		pdfDoc.setAuthor("Issuefab AB")
-		pdfDoc.setCreationDate(new Date())
+		const pdfDocument = await PDFLib.PDFDocument.create()
+		const font = await pdfDocument.embedFont(PDFLib.StandardFonts.Courier)
+		pdfDocument.setAuthor("Issuefab AB")
+		pdfDocument.setCreationDate(new Date())
 		const width = PDFLib.PageSizes.A4[0]
 		let height = PDFLib.PageSizes.A4[1]
 
@@ -94,7 +94,7 @@ export namespace Receipt {
 		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
 		const costCenterStartPage: Record<string, number> = {}
-		const frontPage = pdfDoc.addPage([width, height])
+		const frontPage = pdfDocument.addPage([width, height])
 		const indexPages = Array.from({
 			length: Math.ceil(
 				receiptData.reduce((total, costCenter) => total + costCenter.receipts.length, 0) / receiptsPerIndexPage
@@ -105,9 +105,9 @@ export namespace Receipt {
 
 		for (const [i, indexPage] of indexPages.entries()) {
 			for (const CostCenter of indexPage) {
-				const page = pdfDoc.addPage([width, height])
+				const page = pdfDocument.addPage([width, height])
 				page.drawText(`Summary for cost center: ${CostCenter.costCenter}`, { x: xMargin, y: height - yMargin })
-				costCenterStartPage[CostCenter.costCenter] = pdfDoc.getPageCount()
+				costCenterStartPage[CostCenter.costCenter] = pdfDocument.getPageCount()
 				height -= 20
 				headers.forEach((header, index) =>
 					page.drawText(header, {
@@ -131,7 +131,7 @@ export namespace Receipt {
 					)
 					// Costcenter summary
 					const cellText = [
-						`${pdfDoc.getPageCount() + indexPages.length - i}`,
+						`${pdfDocument.getPageCount() + indexPages.length - i}`,
 						`${vat} `,
 						`${net}`,
 						`${net + vat}`,
@@ -179,9 +179,9 @@ export namespace Receipt {
 					}
 
 					newFile.save()
-					const copiedPages = await pdfDoc.copyPages(newFile, newFile.getPageIndices())
+					const copiedPages = await pdfDocument.copyPages(newFile, newFile.getPageIndices())
 					copiedPages.forEach(page => {
-						pdfDoc.addPage(page)
+						pdfDocument.addPage(page)
 					})
 				}
 			}
@@ -237,7 +237,7 @@ export namespace Receipt {
 				})
 			})
 		}
-		result = await pdfDoc.save()
+		result = await pdfDocument.save()
 		return result
 	}
 	export type Link = Transaction.Link
