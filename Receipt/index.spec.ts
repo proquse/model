@@ -280,7 +280,13 @@ describe("Receipt", () => {
 		const receiptE = new File([await createBufferFromFile("./Receipt/receiptE.png")], "ReceiptE.png", {
 			type: "image/png",
 		})
-		const receipts: { costCenter: string; receipts: { details: model.Receipt; file: File }[] }[] = [
+		const receiptF = new File([await createBufferFromFile("./Receipt/receiptF.pdf")], "ReceiptF.pdf", {
+			type: "application/pdf",
+		})
+		const receiptsData: {
+			costCenter: string
+			receipts: { details: model.Receipt; file: File; purchase: { purchaseId: string; purchasePurpose: string } }[]
+		}[] = [
 			{
 				costCenter: "Sales",
 				receipts: [
@@ -291,7 +297,8 @@ describe("Receipt", () => {
 							total: [{ net: [990, "EUR"], vat: [10, "EUR"] }],
 							date: "2022-09-20T13:37:42Z",
 						},
-						file: receiptA,
+						file: receiptF,
+						purchase: { purchaseId: "1", purchasePurpose: "Something1" },
 					},
 					{
 						details: {
@@ -301,6 +308,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
+						purchase: { purchaseId: "2", purchasePurpose: "Something2" },
 					},
 					{
 						details: {
@@ -310,6 +318,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptC,
+						purchase: { purchaseId: "3", purchasePurpose: "Something3" },
 					},
 					{
 						details: {
@@ -319,6 +328,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptD,
+						purchase: { purchaseId: "4", purchasePurpose: "Something4" },
 					},
 				],
 			},
@@ -333,6 +343,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptA,
+						purchase: { purchaseId: "5", purchasePurpose: "Something5" },
 					},
 					{
 						details: {
@@ -342,6 +353,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
+						purchase: { purchaseId: "6", purchasePurpose: "Something6" },
 					},
 				],
 			},
@@ -356,6 +368,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptA,
+						purchase: { purchaseId: "7", purchasePurpose: "Something7" },
 					},
 					{
 						details: {
@@ -365,6 +378,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
+						purchase: { purchaseId: "8", purchasePurpose: "Something8" },
 					},
 					{
 						details: {
@@ -374,6 +388,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
+						purchase: { purchaseId: "9", purchasePurpose: "Something9" },
 					},
 					{
 						details: {
@@ -383,11 +398,12 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptE,
+						purchase: { purchaseId: "10", purchasePurpose: "Something10" },
 					},
 				],
 			},
 		]
-		const receiptResult = await model.Receipt.compile(receipts, "Issuefab AB", {
+		const receiptResult = await model.Receipt.compile(receiptsData, "Issuefab AB", {
 			start: "2022-09-19",
 			end: "2022-09-21",
 		})
