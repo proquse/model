@@ -277,6 +277,9 @@ describe("Receipt", () => {
 		const receiptD = new File([await createBufferFromFile("./Receipt/receiptD.jpg")], "ReceiptD.jpg", {
 			type: "image/jpeg",
 		})
+		const receiptE = new File([await createBufferFromFile("./Receipt/receiptE.png")], "ReceiptE.png", {
+			type: "image/png",
+		})
 		const receipts: { costCenter: string; receipts: { details: model.Receipt; file: File }[] }[] = [
 			{
 				costCenter: "Sales",
@@ -379,7 +382,7 @@ describe("Receipt", () => {
 							total: [{ net: [15500, "EUR"], vat: [10, "EUR"] }],
 							date: "2022-09-20T13:37:42Z",
 						},
-						file: receiptB,
+						file: receiptE,
 					},
 				],
 			},
