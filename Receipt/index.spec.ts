@@ -1,5 +1,8 @@
 import * as fs from "fs/promises"
+import { Blob, File } from "web-file-polyfill"
 import * as model from "../index"
+globalThis.Blob = Blob
+globalThis.File = File
 
 describe("Receipt", () => {
 	const receipt: model.Receipt = {
@@ -256,10 +259,28 @@ describe("Receipt", () => {
 			true
 		)
 	})
+
+	async function createBufferFromFile(filePath: string): Promise<Buffer> {
+		return await fs.readFile(filePath)
+	}
+
 	it("compile", async () => {
-		const receiptA = new Uint8Array(await fs.readFile("./Receipt/receiptA.pdf"))
-		const receiptB = new Uint8Array(await fs.readFile("./Receipt/receiptB.pdf"))
-		const receipts: { costCenter: string; receipts: { details: model.Receipt; file: Uint8Array }[] }[] = [
+		const receiptA = new File([await createBufferFromFile("./Receipt/receiptA.pdf")], "ReceiptA.pdf", {
+			type: "application/pdf",
+		})
+		const receiptB = new File([await createBufferFromFile("./Receipt/receiptB.pdf")], "ReceiptB.pdf", {
+			type: "application/pdf",
+		})
+		const receiptC = new File([await createBufferFromFile("./Receipt/receiptC.jpg")], "ReceiptC.jpg", {
+			type: "image/jpeg",
+		})
+		const receiptD = new File([await createBufferFromFile("./Receipt/receiptD.jpg")], "ReceiptD.jpg", {
+			type: "image/jpeg",
+		})
+		const receiptE = new File([await createBufferFromFile("./Receipt/receiptE.png")], "ReceiptE.png", {
+			type: "image/png",
+		})
+		const receipts: { costCenter: string; receipts: { details: model.Receipt; file: File }[] }[] = [
 			{
 				costCenter: "Sales",
 				receipts: [
@@ -276,10 +297,28 @@ describe("Receipt", () => {
 						details: {
 							id: "BBBB",
 							original: "placeholder",
-							total: [{ net: [1327, "EUR"], vat: [10, "EUR"] }],
+							total: [{ net: [1327, "EUR"], vat: [20, "EUR"] }],
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
+					},
+					{
+						details: {
+							id: "CCCC",
+							original: "placeholder",
+							total: [{ net: [1327, "EUR"], vat: [30, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptC,
+					},
+					{
+						details: {
+							id: "DDDD",
+							original: "placeholder",
+							total: [{ net: [1327, "EUR"], vat: [40, "EUR"] }],
+							date: "2022-09-20T13:37:42Z",
+						},
+						file: receiptD,
 					},
 				],
 			},
@@ -343,7 +382,7 @@ describe("Receipt", () => {
 							total: [{ net: [15500, "EUR"], vat: [10, "EUR"] }],
 							date: "2022-09-20T13:37:42Z",
 						},
-						file: receiptB,
+						file: receiptE,
 					},
 				],
 			},
