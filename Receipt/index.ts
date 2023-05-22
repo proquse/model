@@ -71,7 +71,10 @@ export namespace Receipt {
 		)
 	}
 	export async function compile(
-		receiptData: { costCenter: string; receipts: { details: Receipt; file: File }[] }[],
+		receiptData: {
+			costCenter: string
+			receipts: { details: Receipt; file: File; purchase: Purchase }[]
+		}[],
 		organization: string,
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
@@ -146,21 +149,50 @@ export namespace Receipt {
 						})
 					})
 
+					//Start printing receipts
 					const newFile = await PDFLib.PDFDocument.create()
+
+					let dimensions: { width: number; height: number }
+					let pageDimensions: { width: number; height: number }
+
 					if (receipt.file.type == "application/pdf") {
-						const [embedPdf] = await newFile.embedPdf(await receipt.file.arrayBuffer())
-						const page = newFile.addPage()
-						page.drawPage(embedPdf)
+						const pages = (await PDFLib.PDFDocument.load(await receipt.file.arrayBuffer())).getPages().length
+						const embeddedPdf = await newFile.embedPdf(await receipt.file.arrayBuffer(), [...Array(pages).keys()])
+
+						for (const embeddedPage of embeddedPdf) {
+							const receiptPage = newFile.addPage()
+							dimensions = embeddedPage.scale(1)
+							pageDimensions = page.getSize()
+							if (pageDimensions.width < dimensions.width || pageDimensions.height < dimensions.height) {
+								dimensions = embeddedPage.scale(
+									Math.min(
+										(pageDimensions.width - 150) / dimensions.width,
+										(pageDimensions.height - 150) / dimensions.height
+									)
+								)
+							}
+							receiptPage.drawText(`Purchase: ${receipt.purchase.purpose}`, {
+								x: 15,
+								y: page.getHeight() - 30,
+								size: 12,
+							})
+							receiptPage.drawPage(embeddedPage, {
+								x: page.getWidth() / 2 - dimensions.width / 2,
+								y: page.getHeight() / 2 - dimensions.height / 2,
+								width: dimensions.width,
+								height: dimensions.height,
+							})
+						}
 					}
 
 					if (receipt.file.type == "image/jpeg" || receipt.file.type == "image/png") {
+						const receiptPage = newFile.addPage()
 						const image =
 							receipt.file.type == "image/jpeg"
 								? await newFile.embedJpg(await receipt.file.arrayBuffer())
 								: await newFile.embedPng(await receipt.file.arrayBuffer())
-						let dimensions = image.scale(1)
-						const page = newFile.addPage()
-						const pageDimensions = page.getSize()
+						dimensions = image.scale(1)
+						pageDimensions = receiptPage.getSize()
 						if (pageDimensions.width < dimensions.width || pageDimensions.height < dimensions.height) {
 							dimensions = image.scale(
 								Math.min(
@@ -170,7 +202,12 @@ export namespace Receipt {
 							)
 						}
 
-						page.drawImage(image, {
+						receiptPage.drawText(`Purchase: ${receipt.purchase.purpose}`, {
+							x: 15,
+							y: page.getHeight() - 30,
+							size: 12,
+						})
+						receiptPage.drawImage(image, {
 							x: page.getWidth() / 2 - dimensions.width / 2,
 							y: page.getHeight() / 2 - dimensions.height / 2,
 							width: dimensions.width,
