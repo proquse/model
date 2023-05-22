@@ -93,7 +93,7 @@ export namespace Receipt {
 		const lineMargin = 1
 		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
-		const ccStartPage: Record<string, number> = {}
+		const costCenterStartPage: Record<string, number> = {}
 		const frontPage = pdfDoc.addPage([width, height])
 		const indexPages = Array.from({
 			length: Math.ceil(
@@ -107,7 +107,7 @@ export namespace Receipt {
 			for (const CostCenter of indexPage) {
 				const page = pdfDoc.addPage([width, height])
 				page.drawText(`Summary for cost center: ${CostCenter.costCenter}`, { x: xMargin, y: height - yMargin })
-				ccStartPage[CostCenter.costCenter] = pdfDoc.getPageCount()
+				costCenterStartPage[CostCenter.costCenter] = pdfDoc.getPageCount()
 				height -= 20
 				headers.forEach((header, index) =>
 					page.drawText(header, {
@@ -158,18 +158,23 @@ export namespace Receipt {
 							receipt.file.type == "image/jpeg"
 								? await newFile.embedJpg(await receipt.file.arrayBuffer())
 								: await newFile.embedPng(await receipt.file.arrayBuffer())
-						let dims = image.scale(1)
+						let dimensions = image.scale(1)
 						const page = newFile.addPage()
-						const pageDim = page.getSize()
-						if (pageDim.width < dims.width || pageDim.height < dims.height) {
-							dims = image.scale(Math.min((pageDim.width - 150) / dims.width, (pageDim.height - 150) / dims.height))
+						const pageDimensions = page.getSize()
+						if (pageDimensions.width < dimensions.width || pageDimensions.height < dimensions.height) {
+							dimensions = image.scale(
+								Math.min(
+									(pageDimensions.width - 150) / dimensions.width,
+									(pageDimensions.height - 150) / dimensions.height
+								)
+							)
 						}
 
 						page.drawImage(image, {
-							x: page.getWidth() / 2 - dims.width / 2,
-							y: page.getHeight() / 2 - dims.height / 2,
-							width: dims.width,
-							height: dims.height,
+							x: page.getWidth() / 2 - dimensions.width / 2,
+							y: page.getHeight() / 2 - dimensions.height / 2,
+							width: dimensions.width,
+							height: dimensions.height,
 						})
 					}
 
@@ -182,7 +187,7 @@ export namespace Receipt {
 			}
 		}
 
-		frontPage.drawText(`Invoice summary: ${organization}`, {
+		frontPage.drawText(`Receipt summary: ${organization}`, {
 			x: xMargin,
 			y: (height * 2) / 3,
 			size: headerSize,
@@ -217,7 +222,7 @@ export namespace Receipt {
 			//Frontpage summary
 			const cellText = [
 				`${costCenter.costCenter}`,
-				`${ccStartPage[costCenter.costCenter]}`,
+				`${costCenterStartPage[costCenter.costCenter]}`,
 				`${totalVat}`,
 				`${totalNet}`,
 				`${totalNet + totalVat}`,
