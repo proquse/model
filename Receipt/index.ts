@@ -73,7 +73,7 @@ export namespace Receipt {
 	export async function compile(
 		receiptData: {
 			costCenter: string
-			receipts: { details: Receipt; file: File; purchase: { purchaseId: string; purchasePurpose: string } }[]
+			receipts: { details: Receipt; file: File; purchase: Purchase }[]
 		}[],
 		organization: string,
 		dateRange: isoly.DateRange
@@ -152,8 +152,8 @@ export namespace Receipt {
 					//Start printing receipts
 					const newFile = await PDFLib.PDFDocument.create()
 
-					let dimensions = { width: 0, height: 0 }
-					let pageDimensions = { width: 0, height: 0 }
+					let dimensions: { width: number; height: number }
+					let pageDimensions: { width: number; height: number }
 
 					if (receipt.file.type == "application/pdf") {
 						const pages = (await PDFLib.PDFDocument.load(await receipt.file.arrayBuffer())).getPages().length
@@ -171,7 +171,7 @@ export namespace Receipt {
 									)
 								)
 							}
-							receiptPage.drawText(`Purchase: ${receipt.purchase.purchasePurpose}`, {
+							receiptPage.drawText(`Purchase: ${receipt.purchase.purpose}`, {
 								x: 15,
 								y: page.getHeight() - 30,
 								size: 12,
@@ -202,7 +202,7 @@ export namespace Receipt {
 							)
 						}
 
-						receiptPage.drawText(`Purchase: ${receipt.purchase.purchasePurpose}`, {
+						receiptPage.drawText(`Purchase: ${receipt.purchase.purpose}`, {
 							x: 15,
 							y: page.getHeight() - 30,
 							size: 12,

@@ -18,7 +18,7 @@ describe("Receipt", () => {
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
 		to: ["john@example.com"],
-		purpose: "Total company Budget",
+		purpose: "Purchase Total company Budget",
 		amount: [20000, "EUR"],
 		delegations: [
 			{
@@ -28,7 +28,7 @@ describe("Receipt", () => {
 				modified: "2021-12-22T13:37:42Z",
 				to: ["mary@example.com"],
 				costCenter: "IT",
-				purpose: "hosting costs",
+				purpose: "Purchase hosting costs",
 				amount: [2000, "EUR"],
 				delegations: [
 					{
@@ -38,7 +38,7 @@ describe("Receipt", () => {
 						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
 						costCenter: "IT",
-						purpose: "Cloudflare",
+						purpose: "Purchase Cloudflare",
 						amount: [120, "EUR"],
 						delegations: [],
 						purchases: [
@@ -49,7 +49,7 @@ describe("Receipt", () => {
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								amount: [9.5, "EUR"],
-								purpose: "Production Workers",
+								purpose: "Purchase Production Workers",
 								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [
 									{
@@ -81,7 +81,7 @@ describe("Receipt", () => {
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								amount: [10, "EUR"],
-								purpose: "Production Workers",
+								purpose: "Purchase Production Workers",
 								payment: { type: "card", limit: [10, "EUR"] },
 								receipts: [
 									{
@@ -117,7 +117,7 @@ describe("Receipt", () => {
 						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
 						amount: [9.5, "EUR"],
-						purpose: "Production Workers",
+						purpose: "Purchase Production Workers",
 						payment: { type: "card", limit: [5, "EUR"] },
 						receipts: [
 							{
@@ -151,7 +151,7 @@ describe("Receipt", () => {
 				modified: "2021-12-20T13:37:42Z",
 				to: ["richard@example.com"],
 				costCenter: "IT",
-				purpose: "Cloudflare",
+				purpose: "Purchase Cloudflare",
 				amount: [2000, "EUR"],
 				delegations: [
 					{
@@ -161,7 +161,7 @@ describe("Receipt", () => {
 						created: "2021-12-20T13:37:42Z",
 						modified: "2021-12-20T13:37:42Z",
 						to: ["john@example.com", "jane@example.com"],
-						purpose: "Partial company budget",
+						purpose: "Purchase Partial company budget",
 						amount: [1000, "EUR"],
 						delegations: [
 							{
@@ -171,7 +171,7 @@ describe("Receipt", () => {
 								created: "2021-12-20T13:37:42Z",
 								modified: "2021-12-20T13:37:42Z",
 								to: ["mary@example.com"],
-								purpose: "Partial company budget",
+								purpose: "Purchase Partial company budget",
 								amount: [1000, "EUR"],
 								delegations: [],
 								purchases: [],
@@ -283,9 +283,28 @@ describe("Receipt", () => {
 		const receiptF = new File([await createBufferFromFile("./Receipt/receiptF.pdf")], "ReceiptF.pdf", {
 			type: "application/pdf",
 		})
+		const purchase: model.Purchase = {
+			id: "aoeu1234",
+			created: "2022-01-01T00:00:42Z",
+			modified: "2022-01-01T00:00:42Z",
+			buyer: "richard@example.com",
+			amount: [9.5, "EUR"],
+			purpose: "Purchase Production Workers",
+			email: "receipt@example.com",
+			payment: { type: "card", limit: [10, "EUR"] },
+			receipts: [
+				{
+					id: "id",
+					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+					date: "2022-01-01T00:00:42Z",
+					original: "https://example.com/receipt.pdf",
+				},
+			],
+			transactions: [],
+		}
 		const receiptsData: {
 			costCenter: string
-			receipts: { details: model.Receipt; file: File; purchase: { purchaseId: string; purchasePurpose: string } }[]
+			receipts: { details: model.Receipt; file: File; purchase: model.Purchase }[]
 		}[] = [
 			{
 				costCenter: "Sales",
@@ -298,7 +317,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptF,
-						purchase: { purchaseId: "1", purchasePurpose: "Something1" },
+						purchase: { ...purchase, purpose: "Purchase 1" },
 					},
 					{
 						details: {
@@ -308,7 +327,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
-						purchase: { purchaseId: "2", purchasePurpose: "Something2" },
+						purchase: { ...purchase, purpose: "Purchase 2" },
 					},
 					{
 						details: {
@@ -318,7 +337,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptC,
-						purchase: { purchaseId: "3", purchasePurpose: "Something3" },
+						purchase: { ...purchase, purpose: "Purchase 3" },
 					},
 					{
 						details: {
@@ -328,7 +347,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptD,
-						purchase: { purchaseId: "4", purchasePurpose: "Something4" },
+						purchase: { ...purchase, purpose: "Purchase 4" },
 					},
 				],
 			},
@@ -343,7 +362,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptA,
-						purchase: { purchaseId: "5", purchasePurpose: "Something5" },
+						purchase: { ...purchase, purpose: "Purchase 5" },
 					},
 					{
 						details: {
@@ -353,7 +372,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
-						purchase: { purchaseId: "6", purchasePurpose: "Something6" },
+						purchase: { ...purchase, purpose: "Purchase 6" },
 					},
 				],
 			},
@@ -368,7 +387,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptA,
-						purchase: { purchaseId: "7", purchasePurpose: "Something7" },
+						purchase: { ...purchase, purpose: "Purchase 7" },
 					},
 					{
 						details: {
@@ -378,7 +397,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
-						purchase: { purchaseId: "8", purchasePurpose: "Something8" },
+						purchase: { ...purchase, purpose: "Purchase 8" },
 					},
 					{
 						details: {
@@ -388,7 +407,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptB,
-						purchase: { purchaseId: "9", purchasePurpose: "Something9" },
+						purchase: { ...purchase, purpose: "Purchase 9" },
 					},
 					{
 						details: {
@@ -398,7 +417,7 @@ describe("Receipt", () => {
 							date: "2022-09-20T13:37:42Z",
 						},
 						file: receiptE,
-						purchase: { purchaseId: "10", purchasePurpose: "Something10" },
+						purchase: { ...purchase, purpose: "Purchase 10" },
 					},
 				],
 			},
