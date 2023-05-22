@@ -94,9 +94,7 @@ export namespace Receipt {
 		const headers = ["Page", "Vat", "Net", "Gross", "Currency"]
 		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
 		const ccStartPage: Record<string, number> = {}
-
 		const frontPage = pdfDoc.addPage([width, height])
-
 		const indexPages = Array.from({
 			length: Math.ceil(
 				receiptData.reduce((total, costCenter) => total + costCenter.receipts.length, 0) / receiptsPerIndexPage
@@ -108,7 +106,6 @@ export namespace Receipt {
 		for (const [i, indexPage] of indexPages.entries()) {
 			for (const CostCenter of indexPage) {
 				const page = pdfDoc.addPage([width, height])
-
 				page.drawText(`Summary for cost center: ${CostCenter.costCenter}`, { x: xMargin, y: height - yMargin })
 				ccStartPage[CostCenter.costCenter] = pdfDoc.getPageCount()
 				height -= 20
@@ -120,7 +117,6 @@ export namespace Receipt {
 					})
 				)
 				page.moveTo(xMargin, height - yMargin - fontSize / 2)
-
 				page.drawLine({
 					start: { x: xMargin, y: height - yMargin - lineThickness - lineMargin },
 					end: { x: width - xMargin, y: height - yMargin - lineThickness - lineMargin },
@@ -133,7 +129,6 @@ export namespace Receipt {
 						([n, v], { net: [net], vat: [vat] }) => [n + net, v + vat],
 						[0, 0]
 					)
-
 					// Costcenter summary
 					const cellText = [
 						`${pdfDoc.getPageCount() + indexPages.length - i}`,
@@ -188,7 +183,6 @@ export namespace Receipt {
 			y: (height * 2) / 3,
 			size: headerSize,
 		})
-
 		frontPage.drawText(`${dateRange.start} - ${dateRange.end}`, {
 			x: xMargin,
 			y: (height * 2) / 3 - lineHeight,
@@ -216,7 +210,6 @@ export namespace Receipt {
 					receipt.details.total.reduce(([v, n], { net: [net], vat: [vat] }) => [net + v, vat + n], [vat, net]),
 				[0, 0]
 			)
-
 			//Frontpage summary
 			const cellText = [
 				`${costCenter.costCenter}`,
