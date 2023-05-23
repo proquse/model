@@ -1,5 +1,6 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
+import * as PDFLib from "pdf-lib"
 import { Amount } from "../Amount"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
@@ -132,6 +133,74 @@ export namespace Purchase {
 			purchase.transactions.reduce((aggregate, current) => aggregate + current.amount[0], 0) * -1,
 			purchase.amount?.[1] ?? purchase.payment.limit[1],
 		])
+	}
+
+	export async function compileExpense(
+		compileData: { purchases: { buyer: string; purpose: string; amount: Amount }[] },
+		organization: string,
+		dateRange: isoly.DateRange
+	): Promise<Uint8Array | undefined> {
+		let result: Uint8Array | undefined = undefined
+		const pdfDocument = await PDFLib.PDFDocument.create()
+		const font = await pdfDocument.embedFont(PDFLib.StandardFonts.Courier)
+		pdfDocument.setAuthor("Issuefab AB")
+		pdfDocument.setCreationDate(new Date())
+		const width = PDFLib.PageSizes.A4[0]
+		const height = PDFLib.PageSizes.A4[1]
+
+		const fontSize = 12
+		const headerSize = Math.round(fontSize * 1.33)
+		const xMargin = 30
+		const yMargin = 4 * fontSize
+		const cellWidth = 90
+		const lineHeight = 15
+		const lineThickness = 1
+		const lineMargin = 1
+		const headers = ["Buyer", "Purpose", "Amount"]
+		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
+		const costCenterStartPage: Record<string, number> = {}
+		const frontPage = pdfDocument.addPage([width, height])
+
+		frontPage.drawText(`Expense summary for: ${organization}`, {
+			x: xMargin,
+			y: (height * 2) / 3,
+			size: headerSize,
+		})
+		frontPage.drawText(`${dateRange.start} - ${dateRange.end}`, {
+			x: xMargin,
+			y: (height * 2) / 3 - lineHeight,
+			size: fontSize,
+		})
+
+		frontPage.moveTo(xMargin, height / 2 - fontSize / 2)
+		frontPage.drawLine({
+			start: { x: xMargin, y: height / 2 - lineThickness - lineMargin },
+			end: { x: width - xMargin, y: height / 2 - lineThickness - lineMargin },
+			thickness: lineThickness,
+		})
+		frontPage.moveDown(lineHeight * 5)
+		headers.forEach((header, index) =>
+			frontPage.drawText(header, {
+				x: xMargin + index * cellWidth,
+				y: height - yMargin,
+				size: headerSize,
+			})
+		)
+
+		for (const purchase of compileData.purchases) {
+			const cellText = [`${purchase.buyer}`, `${purchase.purpose}`, `${purchase.amount[0]} ${purchase.amount[1]} `]
+			frontPage.moveDown(lineHeight)
+			cellText.forEach((text, index) => {
+				frontPage.drawText(text, {
+					x: xMargin + index * cellWidth,
+					size: fontSize,
+					font: font,
+				})
+			})
+		}
+
+		result = await pdfDocument.save()
+		return result
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
