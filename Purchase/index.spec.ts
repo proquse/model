@@ -1,3 +1,4 @@
+import * as fs from "fs/promises"
 import * as model from "../index"
 
 describe("Purchase", () => {
@@ -147,6 +148,64 @@ describe("Purchase", () => {
 			},
 		],
 		purchases: [],
+	}
+	const expenseData: { purchases: { buyer: string; purpose: string; amount: model.Amount }[] } = {
+		purchases: [
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+		],
 	}
 	it("is", () => {
 		expect(model.Purchase.is(purchase)).toEqual(true)
@@ -375,12 +434,12 @@ describe("Purchase", () => {
 		expect(result.length).toEqual(1)
 		expect(result.every(purchase => model.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
-	it("compile", () => {
-		const receiptResult = await model.Receipt.compile(receiptsData, "Issuefab AB", {
+	it("compile", async () => {
+		const expenseReport = await model.Purchase.compileExpense(expenseData, "Issuefab AB", {
 			start: "2022-09-19",
 			end: "2022-09-21",
 		})
-		await fs.writeFile("./Receipt/receiptResult.pdf", receiptResult)
-	})
+		if (expenseReport)
+			await fs.writeFile("./Purchase/expenseReport.pdf", expenseReport)
 	})
 })

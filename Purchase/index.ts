@@ -1,6 +1,7 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import * as PDFLib from "pdf-lib"
+import { degrees } from "pdf-lib"
 import { Amount } from "../Amount"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
@@ -152,13 +153,13 @@ export namespace Purchase {
 		const headerSize = Math.round(fontSize * 1.33)
 		const xMargin = 30
 		const yMargin = 4 * fontSize
-		const cellWidth = 90
+		const cellWidth = 230
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
 		const headers = ["Buyer", "Purpose", "Amount"]
-		const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
-		const costCenterStartPage: Record<string, number> = {}
+		// const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
+		// const costCenterStartPage: Record<string, number> = {}
 		const frontPage = pdfDocument.addPage([width, height])
 
 		frontPage.drawText(`Expense summary for: ${organization}`, {
@@ -178,25 +179,39 @@ export namespace Purchase {
 			end: { x: width - xMargin, y: height / 2 - lineThickness - lineMargin },
 			thickness: lineThickness,
 		})
-		frontPage.moveDown(lineHeight * 5)
-		headers.forEach((header, index) =>
-			frontPage.drawText(header, {
-				x: xMargin + index * cellWidth,
-				y: height - yMargin,
-				size: headerSize,
-			})
-		)
+
+		let page = addPage()
+		addHeader(page)
 
 		for (const purchase of compileData.purchases) {
+			if (page.getY() < yMargin) {
+				page = addPage()
+				addHeader(page)
+			}
 			const cellText = [`${purchase.buyer}`, `${purchase.purpose}`, `${purchase.amount[0]} ${purchase.amount[1]} `]
-			frontPage.moveDown(lineHeight)
+			page.moveDown(lineHeight)
 			cellText.forEach((text, index) => {
-				frontPage.drawText(text, {
+				page.drawText(text, {
 					x: xMargin + index * cellWidth,
 					size: fontSize,
 					font: font,
 				})
 			})
+		}
+
+		function addPage(): PDFLib.PDFPage {
+			return pdfDocument.addPage()
+		}
+		function addHeader(page: PDFLib.PDFPage) {
+			page.moveTo(xMargin, height - yMargin - fontSize / 2)
+			// page.moveDown(lineHeight * 5)
+			headers.forEach((header, index) =>
+				page.drawText(header, {
+					x: xMargin + index * cellWidth,
+					y: height - yMargin,
+					size: headerSize,
+				})
+			)
 		}
 
 		result = await pdfDocument.save()
