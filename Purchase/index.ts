@@ -1,7 +1,6 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import * as PDFLib from "pdf-lib"
-import { degrees } from "pdf-lib"
 import { Amount } from "../Amount"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
@@ -69,13 +68,13 @@ export namespace Purchase {
 	}
 	export function list<T = Purchase>(
 		roots: Iterable<Delegation>,
-		filter?: (purchase: Purchase, delegation: Delegation) => boolean | any,
+		filter?: (purchase: Purchase) => boolean | any,
 		map?: (purchase: Purchase, delegation: Delegation) => T
 	): T[] {
 		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
 				for (const purchase of root.purchases) {
-					;(!filter || filter(purchase, root)) && (yield map ? map(purchase, root) : (purchase as T))
+					;(!filter || filter(purchase)) && (yield map ? map(purchase, root) : (purchase as T))
 				}
 				yield* list(root.delegations)
 			}
@@ -140,7 +139,7 @@ export namespace Purchase {
 		compileData: { purchases: { buyer: string; purpose: string; amount: Amount }[] },
 		organization: string,
 		dateRange: isoly.DateRange
-	): Promise<Uint8Array | undefined> {
+	): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
 		const pdfDocument = await PDFLib.PDFDocument.create()
 		const font = await pdfDocument.embedFont(PDFLib.StandardFonts.Courier)
