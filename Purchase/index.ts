@@ -204,7 +204,6 @@ export namespace Purchase {
 		}
 		function addHeader(page: PDFLib.PDFPage) {
 			page.moveTo(xMargin, height - yMargin - fontSize / 2)
-			// page.moveDown(lineHeight * 5)
 			headers.forEach((header, index) => {
 				page.drawText(header, {
 					x: xMargin + index * cellWidth,
