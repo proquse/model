@@ -68,14 +68,13 @@ export namespace Purchase {
 	}
 	export function list<T = Purchase>(
 		roots: Iterable<Delegation>,
-		filter?: (purchase: Purchase) => boolean | any,
+		filter?: (purchase: Purchase, delegation: Delegation) => boolean | any,
 		map?: (purchase: Purchase, delegation: Delegation) => T
 	): T[] {
 		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
-				for (const purchase of root.purchases) {
-					;(!filter || filter(purchase)) && (yield map ? map(purchase, root) : (purchase as T))
-				}
+				for (const purchase of root.purchases)
+					(!filter || filter(purchase, root)) && (yield map ? map(purchase, root) : (purchase as T))
 				yield* list(root.delegations)
 			}
 		}
