@@ -1,3 +1,4 @@
+import * as fs from "fs/promises"
 import * as model from "../index"
 
 describe("Purchase", () => {
@@ -5,8 +6,8 @@ describe("Purchase", () => {
 		id: "aoeu1234",
 		created: "2022-01-01T00:00:42Z",
 		modified: "2022-01-01T00:00:42Z",
-		buyer: "richard@example.com",
-		amount: [9.5, "EUR"],
+		buyer: "richard.stevensson@example.com",
+		amount: [951221231, "EUR"],
 		purpose: "Production Workers",
 		email: "receipt@example.com",
 		payment: { type: "card", limit: [10, "EUR"] },
@@ -147,6 +148,64 @@ describe("Purchase", () => {
 			},
 		],
 		purchases: [],
+	}
+	const expenseData: { purchases: { buyer: string; purpose: string; amount: model.Amount }[] } = {
+		purchases: [
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+			{ buyer: purchase.buyer, purpose: purchase.purpose, amount: purchase.amount ?? [1, "SEK"] },
+		],
 	}
 	it("is", () => {
 		expect(model.Purchase.is(purchase)).toEqual(true)
@@ -374,5 +433,13 @@ describe("Purchase", () => {
 		)
 		expect(result.length).toEqual(1)
 		expect(result.every(purchase => model.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
+	})
+	it("compile", async () => {
+		const expenseReport = await model.Purchase.compileExpense(expenseData, "Issuefab AB", {
+			start: "2022-09-19",
+			end: "2022-09-21",
+		})
+		if (expenseReport)
+			await fs.writeFile("./Purchase/expenseReport.pdf", expenseReport)
 	})
 })

@@ -51,11 +51,10 @@ export namespace Receipt {
 	): T[] {
 		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
-				for (const purchase of root.purchases) {
-					for (const receipt of purchase.receipts) {
-						;(!filter || filter(receipt, purchase, root)) && (yield map ? map(receipt, purchase, root) : (receipt as T))
-					}
-				}
+				for (const purchase of root.purchases)
+					for (const receipt of purchase.receipts)
+						(!filter || filter(receipt, purchase, root)) && (yield map ? map(receipt, purchase, root) : (receipt as T))
+
 				yield* list(root.delegations)
 			}
 		}
@@ -135,9 +134,9 @@ export namespace Receipt {
 					// Costcenter summary
 					const cellText = [
 						`${pdfDocument.getPageCount() + indexPages.length - i}`,
-						`${vat} `,
-						`${net}`,
-						`${net + vat}`,
+						`${vat.toLocaleString("en-US", { style: "decimal" })} `,
+						`${net.toLocaleString("en-US", { style: "decimal" })}`,
+						`${(net + vat).toLocaleString("en-US", { style: "decimal" })}`,
 						currency,
 					]
 					page.moveDown(lineHeight)
@@ -260,9 +259,9 @@ export namespace Receipt {
 			const cellText = [
 				`${costCenter.costCenter}`,
 				`${costCenterStartPage[costCenter.costCenter]}`,
-				`${totalVat}`,
-				`${totalNet}`,
-				`${totalNet + totalVat}`,
+				`${totalVat.toLocaleString("en-US", { style: "decimal" })}`,
+				`${totalNet.toLocaleString("en-US", { style: "decimal" })}`,
+				`${(totalNet + totalVat).toLocaleString("en-US", { style: "decimal" })}`,
 				`${costCenterCurrency}`,
 			]
 			frontPage.moveDown(lineHeight)
