@@ -152,7 +152,7 @@ export namespace Purchase {
 		const headerSize = Math.round(fontSize * 1.33)
 		const xMargin = 30
 		const yMargin = 4 * fontSize
-		const cellWidth = 230
+		const cellWidth = 220
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
@@ -187,11 +187,16 @@ export namespace Purchase {
 				page = addPage()
 				addHeader(page)
 			}
-			const cellText = [`${purchase.buyer}`, `${purchase.purpose}`, `${purchase.amount[0]} ${purchase.amount[1]} `]
+			const cellText = [
+				`${purchase.buyer}`,
+				`${purchase.purpose}`,
+				`${purchase.amount[0].toLocaleString("en-US", { style: "decimal" })}`,
+				`${purchase.amount[1]} `,
+			]
 			page.moveDown(lineHeight)
 			cellText.forEach((text, index) => {
 				page.drawText(text, {
-					x: xMargin + index * cellWidth,
+					x: index <= 2 ? xMargin + index * cellWidth : xMargin + index * cellWidth - 140,
 					size: fontSize,
 					font: font,
 				})
@@ -204,13 +209,13 @@ export namespace Purchase {
 		function addHeader(page: PDFLib.PDFPage) {
 			page.moveTo(xMargin, height - yMargin - fontSize / 2)
 			// page.moveDown(lineHeight * 5)
-			headers.forEach((header, index) =>
+			headers.forEach((header, index) => {
 				page.drawText(header, {
-					x: xMargin + index * cellWidth,
+					x: index <= 2 ? xMargin + index * cellWidth : xMargin + index * cellWidth - 130,
 					y: height - yMargin,
 					size: headerSize,
 				})
-			)
+			})
 		}
 
 		result = await pdfDocument.save()
