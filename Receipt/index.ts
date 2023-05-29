@@ -51,11 +51,10 @@ export namespace Receipt {
 	): T[] {
 		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
-				for (const purchase of root.purchases) {
-					for (const receipt of purchase.receipts) {
-						;(!filter || filter(receipt, purchase, root)) && (yield map ? map(receipt, purchase, root) : (receipt as T))
-					}
-				}
+				for (const purchase of root.purchases)
+					for (const receipt of purchase.receipts)
+						(!filter || filter(receipt, purchase, root)) && (yield map ? map(receipt, purchase, root) : (receipt as T))
+
 				yield* list(root.delegations)
 			}
 		}

@@ -70,12 +70,11 @@ export namespace Transaction {
 	): T[] {
 		function* list(roots: Iterable<Delegation>): Generator<T> {
 			for (const root of roots) {
-				for (const purchase of root.purchases) {
-					for (const transaction of purchase.transactions) {
-						;(!filter || filter(transaction, purchase, root)) &&
+				for (const purchase of root.purchases)
+					for (const transaction of purchase.transactions)
+						(!filter || filter(transaction, purchase, root)) &&
 							(yield map ? map(transaction, purchase, root) : (transaction as T))
-					}
-				}
+
 				yield* list(root.delegations)
 			}
 		}
