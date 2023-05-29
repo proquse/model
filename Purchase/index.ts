@@ -211,7 +211,7 @@ export namespace Purchase {
 			// page.moveDown(lineHeight * 5)
 			headers.forEach((header, index) => {
 				page.drawText(header, {
-					x: index <= 2 ? xMargin + index * cellWidth : xMargin + index * cellWidth - 130,
+					x: xMargin + index * cellWidth,
 					y: height - yMargin,
 					size: headerSize,
 				})
