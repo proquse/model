@@ -134,9 +134,9 @@ export namespace Receipt {
 					// Costcenter summary
 					const cellText = [
 						`${pdfDocument.getPageCount() + indexPages.length - i}`,
-						`${vat} `,
-						`${net}`,
-						`${net + vat}`,
+						`${vat.toLocaleString("en-US", { style: "decimal" })} `,
+						`${net.toLocaleString("en-US", { style: "decimal" })}`,
+						`${(net + vat).toLocaleString("en-US", { style: "decimal" })}`,
 						currency,
 					]
 					page.moveDown(lineHeight)
@@ -259,9 +259,9 @@ export namespace Receipt {
 			const cellText = [
 				`${costCenter.costCenter}`,
 				`${costCenterStartPage[costCenter.costCenter]}`,
-				`${totalVat}`,
-				`${totalNet}`,
-				`${totalNet + totalVat}`,
+				`${totalVat.toLocaleString("en-US", { style: "decimal" })}`,
+				`${totalNet.toLocaleString("en-US", { style: "decimal" })}`,
+				`${(totalNet + totalVat).toLocaleString("en-US", { style: "decimal" })}`,
 				`${costCenterCurrency}`,
 			]
 			frontPage.moveDown(lineHeight)
