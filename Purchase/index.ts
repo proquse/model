@@ -147,7 +147,6 @@ export namespace Purchase {
 		pdfDocument.setCreationDate(new Date())
 		const width = PDFLib.PageSizes.A4[0]
 		const height = PDFLib.PageSizes.A4[1]
-
 		const fontSize = 12
 		const headerSize = Math.round(fontSize * 1.33)
 		const xMargin = 30
@@ -157,8 +156,6 @@ export namespace Purchase {
 		const lineThickness = 1
 		const lineMargin = 1
 		const headers = ["Buyer", "Purpose", "Amount"]
-		// const receiptsPerIndexPage = (height - 2 * yMargin - fontSize / 2) / lineHeight
-		// const costCenterStartPage: Record<string, number> = {}
 		const frontPage = pdfDocument.addPage([width, height])
 
 		frontPage.drawText(`Expense summary for: ${organization}`, {
