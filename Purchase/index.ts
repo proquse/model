@@ -135,7 +135,7 @@ export namespace Purchase {
 	}
 
 	export async function compileExpense(
-		compileData: { buyer: string; purpose: string; amount: Amount }[],
+		compileData: Record<string, { purpose: string; amount: Amount }>[],
 		organization: string,
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
