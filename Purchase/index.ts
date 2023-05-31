@@ -14,7 +14,7 @@ export interface Purchase {
 	modified: isoly.DateTime
 	payment: Payment
 	purpose: string
-	buyer: string
+	buyer: string //email
 	amount?: Amount
 	email: string
 	receipts: Receipt[]
@@ -135,7 +135,7 @@ export namespace Purchase {
 	}
 
 	export async function compileExpense(
-		compileData: { purchases: { buyer: string; purpose: string; amount: Amount }[] },
+		compileData: { buyer: string; purpose: string; amount: Amount }[],
 		organization: string,
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
@@ -178,7 +178,7 @@ export namespace Purchase {
 		let page = addPage()
 		addHeader(page)
 
-		for (const purchase of compileData.purchases) {
+		for (const purchase of compileData) {
 			if (page.getY() < yMargin) {
 				page = addPage()
 				addHeader(page)
