@@ -195,7 +195,7 @@ export namespace Purchase {
 				totalAmount += purchase.amount[0]
 				const cellText = [
 					`${purchase.purpose}`,
-					`${purchase.date}`,
+					`${purchase.date.split("T")[0]}`,
 					`${purchase.amount[0].toLocaleString()}`,
 					`${purchase.amount[1]} `,
 				]
