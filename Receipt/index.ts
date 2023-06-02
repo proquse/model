@@ -69,6 +69,9 @@ export namespace Receipt {
 			receipt.transactionId != ""
 		)
 	}
+
+	// data: Record<string, { details: Receipt; purchase: Purchase; file: File }[]>,
+
 	export async function compile(
 		receiptData: {
 			costCenter: string
@@ -134,9 +137,9 @@ export namespace Receipt {
 					// Costcenter summary
 					const cellText = [
 						`${pdfDocument.getPageCount() + indexPages.length - i}`,
-						`${vat.toLocaleString("en-US", { style: "decimal" })} `,
-						`${net.toLocaleString("en-US", { style: "decimal" })}`,
-						`${(net + vat).toLocaleString("en-US", { style: "decimal" })}`,
+						`${vat.toLocaleString()} `,
+						`${net.toLocaleString()}`,
+						`${(net + vat).toLocaleString()}`,
 						currency,
 					]
 					page.moveDown(lineHeight)

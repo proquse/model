@@ -134,6 +134,8 @@ export namespace Purchase {
 		])
 	}
 
+
+	
 	export async function compileExpense(
 		compileData: Record<string, { purpose: string; date: isoly.Date; amount: Amount }[]>,
 		organization: string,
@@ -181,7 +183,7 @@ export namespace Purchase {
 		for (const user in compileData) {
 			page.moveDown(lineHeight)
 			let totalAmount = 0
-			page.drawText(`Expenses for ${user}`, {
+			page.drawText(`User: ${user}`, {
 				x: xMargin,
 				size: fontSize,
 				font: font,
@@ -199,7 +201,7 @@ export namespace Purchase {
 					`${purchase.amount[0].toLocaleString()}`,
 					`${purchase.amount[1]} `,
 				]
-				page.moveDown(lineHeight)
+				page.moveDown(lineHeight + 1)
 				cellText.forEach((text, index) => {
 					page.drawText(text, {
 						x: index <= 2 ? xMargin + index * cellWidth : xMargin + index * cellWidth - 140,
