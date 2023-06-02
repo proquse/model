@@ -154,7 +154,7 @@ export namespace Purchase {
 		const lineHeight = 15
 		const lineThickness = 1
 		const lineMargin = 1
-		const headers = ["Buyer", "Purpose", "Amount"]
+		const headers = ["Purpose", "Date", "Amount"]
 		const frontPage = pdfDocument.addPage([width, height])
 
 		frontPage.drawText(`Expense summary for: ${organization}`, {
@@ -179,6 +179,7 @@ export namespace Purchase {
 		addHeader(page)
 
 		for (const user in compileData) {
+			page.moveDown(lineHeight)
 			let totalAmount = 0
 			page.drawText(`Expenses for ${user}`, {
 				x: xMargin,
@@ -191,7 +192,7 @@ export namespace Purchase {
 					page = addPage()
 					addHeader(page)
 				}
-				totalAmount = +purchase.amount[0]
+				totalAmount += purchase.amount[0]
 				const cellText = [
 					`${purchase.purpose}`,
 					`${purchase.date}`,
@@ -213,11 +214,7 @@ export namespace Purchase {
 				size: fontSize,
 				font: font,
 			})
-			page.drawLine({
-				start: { x: xMargin, y: height / 2 - lineThickness - lineMargin },
-				end: { x: width - xMargin, y: height / 2 - lineThickness - lineMargin },
-				thickness: lineThickness,
-			})
+			page.moveDown(lineHeight)
 		}
 
 		function addPage(): PDFLib.PDFPage {
