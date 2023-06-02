@@ -135,7 +135,7 @@ export namespace Purchase {
 	}
 
 	export async function compileExpense(
-		compileData: Record<string, { purpose: string; amount: Amount }>[],
+		compileData: Record<string, { purpose: string; date: isoly.Date; amount: Amount }[]>,
 		organization: string,
 		dateRange: isoly.DateRange
 	): Promise<Uint8Array> {
@@ -178,24 +178,45 @@ export namespace Purchase {
 		let page = addPage()
 		addHeader(page)
 
-		for (const purchase of compileData) {
-			if (page.getY() < yMargin) {
-				page = addPage()
-				addHeader(page)
-			}
-			const cellText = [
-				`${purchase.buyer}`,
-				`${purchase.purpose}`,
-				`${purchase.amount[0].toLocaleString("en-US", { style: "decimal" })}`,
-				`${purchase.amount[1]} `,
-			]
-			page.moveDown(lineHeight)
-			cellText.forEach((text, index) => {
-				page.drawText(text, {
-					x: index <= 2 ? xMargin + index * cellWidth : xMargin + index * cellWidth - 140,
-					size: fontSize,
-					font: font,
+		for (const user in compileData) {
+			let totalAmount = 0
+			page.drawText(`Expenses for ${user}`, {
+				x: xMargin,
+				size: fontSize,
+				font: font,
+			})
+
+			for (const purchase of compileData[user]) {
+				if (page.getY() < yMargin) {
+					page = addPage()
+					addHeader(page)
+				}
+				totalAmount = +purchase.amount[0]
+				const cellText = [
+					`${purchase.purpose}`,
+					`${purchase.date}`,
+					`${purchase.amount[0].toLocaleString()}`,
+					`${purchase.amount[1]} `,
+				]
+				page.moveDown(lineHeight)
+				cellText.forEach((text, index) => {
+					page.drawText(text, {
+						x: index <= 2 ? xMargin + index * cellWidth : xMargin + index * cellWidth - 140,
+						size: fontSize,
+						font: font,
+					})
 				})
+			}
+			page.moveDown(lineHeight)
+			page.drawText(`Total amount: ${totalAmount.toLocaleString()}`, {
+				x: xMargin,
+				size: fontSize,
+				font: font,
+			})
+			page.drawLine({
+				start: { x: xMargin, y: height / 2 - lineThickness - lineMargin },
+				end: { x: width - xMargin, y: height / 2 - lineThickness - lineMargin },
+				thickness: lineThickness,
 			})
 		}
 
