@@ -70,8 +70,6 @@ export namespace Receipt {
 		)
 	}
 
-	// data: Record<string, { details: Receipt; purchase: Purchase; file: File }[]>,
-
 	export async function compile(
 		receiptData: {
 			costCenter: string
