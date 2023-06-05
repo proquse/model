@@ -262,9 +262,9 @@ export namespace Receipt {
 			const cellText = [
 				`${costCenter.costCenter}`,
 				`${costCenterStartPage[costCenter.costCenter]}`,
-				`${totalVat.toLocaleString("en-US", { style: "decimal" })}`,
-				`${totalNet.toLocaleString("en-US", { style: "decimal" })}`,
-				`${(totalNet + totalVat).toLocaleString("en-US", { style: "decimal" })}`,
+				`${totalVat.toLocaleString()}`,
+				`${totalNet.toLocaleString()}`,
+				`${(totalNet + totalVat).toLocaleString()}`,
 				`${costCenterCurrency}`,
 			]
 			frontPage.moveDown(lineHeight)
