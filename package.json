@@ -76,7 +76,8 @@
 		"cryptly": "^3.0.2",
 		"isoly": "^2.0.16",
 		"pdf-lib": "^1.17.1",
-		"web-file-polyfill": "^1.0.4"
+		"web-file-polyfill": "^1.0.4",
+		"isly": "0.1.7"
 	},
 	"overridesComments": {
 		"yaml": "try to remove this override when updating prettierx"
