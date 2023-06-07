@@ -15,5 +15,3 @@ describe("Payment", () => {
 		expect(model.Payment.validate({ type: "card", limit: [-1, "EUR"] })).toEqual(false)
 	})
 })
-
-const t: model.Payment.Creatable.Card

@@ -10,7 +10,7 @@ export namespace Expense {
 	export const type = isly.object<Expense>({
 		file: isly.fromIs<Uint8Array>("Uint8Array", value => value instanceof Uint8Array),
 	})
-	export async function compileExpense(data: ExpenseCreatable): Promise<Uint8Array> {
+	export async function compile(data: ExpenseCreatable): Promise<Uint8Array> {
 		let result: Uint8Array | undefined = undefined
 		const pdfDocument = await PDFLib.PDFDocument.create()
 		const font = await pdfDocument.embedFont(PDFLib.StandardFonts.Courier)
