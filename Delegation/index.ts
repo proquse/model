@@ -1,5 +1,6 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
+import { isly } from "isly"
 import { Amount } from "../Amount"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { Data as DelegationData } from "./Data"
@@ -7,19 +8,17 @@ import { Data as DelegationData } from "./Data"
 export interface Delegation extends DelegationData {
 	delegations: Delegation[]
 }
+
 export namespace Delegation {
 	export type Creatable = DelegationCreatable
 	export const Creatable = DelegationCreatable
 	export type Data = DelegationData
 	export const Data = DelegationData
-
-	export function is(value: Delegation | any): value is Delegation & Record<string, any> {
-		return (
-			DelegationData.is(value) &&
-			Array.isArray(value.delegations) &&
-			value.delegations.every(delegation => Delegation.is(delegation))
-		)
-	}
+	export const type: isly.object.ExtendableType<Delegation> = DelegationData.type.extend<Delegation>({
+		delegations: isly.array(isly.lazy(() => type, "Delegation")),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
 	export function create(
 		creatable: DelegationCreatable,
 		from: string,

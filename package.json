@@ -30,7 +30,7 @@
 			"^.+\\.(js)$": "babel-jest"
 		},
 		"transformIgnorePatterns": [
-			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|gracely|cloudly-http|cloudly-router|cloudly-formdata|fetch-blob|formdata-polyfill)/.*)"
+			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|gracely|cloudly-http|cloudly-router|cloudly-formdata|fetch-blob|formdata-polyfill|isly)/.*)"
 		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
@@ -74,6 +74,7 @@
 		"@userwidgets/model": "^0.0.31",
 		"authly": "^3.0.3",
 		"cryptly": "^3.0.2",
+		"isly": "^0.1.7",
 		"isoly": "^2.0.16",
 		"pdf-lib": "^1.17.1",
 		"web-file-polyfill": "^1.0.4"

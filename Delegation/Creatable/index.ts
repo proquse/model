@@ -1,3 +1,4 @@
+import { isly } from "isly"
 import { Amount } from "../../Amount"
 
 export interface Creatable {
@@ -8,16 +9,14 @@ export interface Creatable {
 }
 
 export namespace Creatable {
-	export function is(value: Creatable | any): value is Creatable & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			typeof value.purpose == "string" &&
-			(typeof value.costCenter == "undefined" || typeof value.costCenter == "string") &&
-			Array.isArray(value.to) &&
-			value.to.every((v: any) => typeof v == "string") &&
-			Amount.is(value.amount)
-		)
-	}
+	export const type = isly.object<Creatable>({
+		to: isly.array(isly.string()),
+		purpose: isly.string(),
+		amount: Amount.type,
+		costCenter: isly.string(),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
 	export function equals(first: Creatable | any, second: Creatable | any) {
 		return (
 			is(first) &&
