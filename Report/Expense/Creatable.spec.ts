@@ -21,7 +21,6 @@ describe("Creatable", () => {
 	}
 
 	it("is", () => {
-		console.log(issuefab.Report.Expense.Creatable.flaw(creatable))
 		expect(issuefab.Report.Expense.Creatable.is(creatable)).toEqual(true)
 		expect(issuefab.Report.Expense.Creatable.is((({ organization, ...validData }) => validData)(creatable))).toEqual(
 			false
