@@ -1,5 +1,3 @@
-import { isoly } from "isoly"
-import * as fs from "fs/promises"
 import * as model from "../index"
 
 describe("Purchase", () => {
@@ -150,32 +148,7 @@ describe("Purchase", () => {
 		],
 		purchases: [],
 	}
-	const expenseData: Record<string, { purpose: string; date: isoly.Date; amount: model.Amount }[]> = {
-		"person1@test.com": [
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-		],
-		"person2@test.com": [
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-		],
-		"person3@test.com": [
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-			{ purpose: purchase.purpose, date: purchase.created, amount: purchase.amount ?? [1, "SEK"] },
-		],
-	}
+
 	it("is", () => {
 		expect(model.Purchase.is(purchase)).toEqual(true)
 	})
@@ -403,5 +376,4 @@ describe("Purchase", () => {
 		expect(result.length).toEqual(1)
 		expect(result.every(purchase => model.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
-	
 })

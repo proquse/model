@@ -1,8 +1,4 @@
-import * as fs from "fs/promises"
-import { Blob, File } from "web-file-polyfill"
 import * as model from "../index"
-globalThis.Blob = Blob
-globalThis.File = File
 
 describe("Receipt", () => {
 	const receipt: model.Receipt = {
@@ -259,6 +255,4 @@ describe("Receipt", () => {
 			true
 		)
 	})
-
-	
 })
