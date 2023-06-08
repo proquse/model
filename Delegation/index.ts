@@ -8,7 +8,6 @@ import { Data as DelegationData } from "./Data"
 export interface Delegation extends DelegationData {
 	delegations: Delegation[]
 }
-
 export namespace Delegation {
 	export type Creatable = DelegationCreatable
 	export const Creatable = DelegationCreatable
