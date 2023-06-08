@@ -6,7 +6,7 @@ import { Receipt as ReportReceipt } from "./Receipt"
 export type Report = Report.Expense | Report.Receipt
 
 export namespace Report {
-	const type = isly.union(ReportExpense.type, ReportReceipt.type)
+	const type = isly.union<Report, Report.Expense, Report.Receipt>(ReportExpense.type, ReportReceipt.type)
 	export type Receipt = ReportReceipt
 	export const Receipt = ReportReceipt
 	export namespace Receipt {

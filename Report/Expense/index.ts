@@ -106,6 +106,8 @@ export namespace Expense {
 		result = await pdfDocument.save()
 		return result
 	}
+	export const is = type.is
+	export const flaw = type.flaw
 	export type Creatable = ExpenseCreatable
 	export const Creatable = ExpenseCreatable
 }

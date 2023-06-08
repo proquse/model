@@ -1,4 +1,5 @@
 import { isoly } from "isoly"
+import { isly } from "isly"
 
 export interface Paid {
 	created: isoly.Date
@@ -6,7 +7,8 @@ export interface Paid {
 }
 
 export namespace Paid {
-	export function is(value: Paid | any): value is Paid {
-		return typeof value == "object" && value && isoly.Date.is(value.created) && typeof value.issuer === "string"
-	}
+	export const type = isly.object<Paid>({ created: isly.fromIs("date", isoly.Date.is), issuer: isly.string() })
+
+	export const is = type.is
+	export const flaw = type.flaw
 }
