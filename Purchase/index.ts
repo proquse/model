@@ -1,5 +1,5 @@
 import * as cryptly from "cryptly"
-import * as isoly from "isoly"
+import { isoly } from "isoly"
 import { Amount } from "../Amount"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
@@ -132,7 +132,6 @@ export namespace Purchase {
 			purchase.amount?.[1] ?? purchase.payment.limit[1],
 		])
 	}
-
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
 }

@@ -1,5 +1,5 @@
 import * as cryptly from "cryptly"
-import * as isoly from "isoly"
+import { isoly } from "isoly"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
@@ -68,7 +68,6 @@ export namespace Receipt {
 			receipt.transactionId != ""
 		)
 	}
-
 	export type Link = Transaction.Link
 	export const link = Transaction.link
 	export type Creatable = CreatableRequest
