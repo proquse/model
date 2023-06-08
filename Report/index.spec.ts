@@ -1,5 +1,8 @@
 import * as fs from "fs/promises"
+import { Blob, File } from "web-file-polyfill"
 import { issuefab } from "../index"
+globalThis.Blob = Blob
+globalThis.File = File
 
 async function createBufferFromFile(filePath: string): Promise<Buffer> {
 	return await fs.readFile(filePath)

@@ -19,15 +19,15 @@ export namespace Creatable {
 				costCenter: isly.string(),
 				receipts: isly.array(
 					isly.object<{ details: Receipt; file: File; purchase: Purchase }>({
-						details: isly.fromIs<Receipt>("Receipt", value => Receipt.is(value)),
+						details: isly.fromIs<Receipt>("Receipt", Receipt.is),
 						file: isly.fromIs<File>("File", value => value instanceof File),
-						purchase: isly.fromIs<Purchase>("Purchase", value => Purchase.is(value)),
+						purchase: isly.fromIs<Purchase>("Purchase", Purchase.is),
 					})
 				),
 			})
 		),
 		organization: isly.string(),
-		dateRange: isly.fromIs<isoly.DateRange>("DateRange", value => isoly.DateRange.is(value)),
+		dateRange: isly.fromIs<isoly.DateRange>("DateRange", isoly.DateRange.is),
 	})
 
 	export const is = type.is

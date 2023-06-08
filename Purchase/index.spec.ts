@@ -403,12 +403,5 @@ describe("Purchase", () => {
 		expect(result.length).toEqual(1)
 		expect(result.every(purchase => model.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
-	it("compile", async () => {
-		const expenseReport = await model.Purchase.compileExpense(expenseData, "Issuefab AB", {
-			start: "2022-09-19",
-			end: "2022-09-21",
-		})
-		if (expenseReport)
-			await fs.writeFile("./Purchase/expenseReport.pdf", expenseReport)
-	})
+	
 })
