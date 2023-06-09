@@ -3,6 +3,7 @@ import { issuefab } from "../index"
 describe("Delegation.Creatable", () => {
 	const creatable: issuefab.Delegation.Creatable = {
 		to: ["jessie@example.com"],
+		from: "james@example.com",
 		purpose: "testing",
 		amount: [10, "EUR"],
 		costCenter: "budget",
@@ -26,18 +27,21 @@ describe("Delegation.Creatable", () => {
 	it("equals", () => {
 		const first: issuefab.Delegation.Creatable = {
 			to: ["james@example.com"],
+			from: "jessie@example.com",
 			purpose: "testing",
 			amount: [10, "EUR"],
 			costCenter: "budget",
 		}
 		const second: issuefab.Delegation.Creatable = {
 			to: ["james@example.com"],
+			from: "jessie@example.com",
 			purpose: "testing",
 			amount: [10, "EUR"],
 			costCenter: "budget",
 		}
 		const third: issuefab.Delegation.Creatable = {
 			to: [],
+			from: "jessie@example.com",
 			purpose: "testing",
 			amount: [10, "EUR"],
 			costCenter: "budget",
@@ -46,80 +50,76 @@ describe("Delegation.Creatable", () => {
 		expect(issuefab.Delegation.Creatable.equals(first, second)).toEqual(true)
 		expect(issuefab.Delegation.Creatable.equals(first, creatable)).toEqual(false)
 	})
-	it("create", () => {
-		expect(issuefab.Delegation.Creatable.is(issuefab.Delegation.Creatable.create())).toEqual(true)
-		expect(
-			issuefab.Delegation.Creatable.is(issuefab.Delegation.Creatable.create(undefined, undefined, [0, "USD"]))
-		).toEqual(true)
-		expect(
-			issuefab.Delegation.Creatable.is(issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [11, "EUR"]))
-		).toEqual(true)
-	})
 	it("validate", () => {
 		expect(
 			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], "testCostCenter"),
-				undefined,
-				true
+				{
+					to: [],
+					from: "jessie@example.com",
+					purpose: "testPurpose",
+					amount: [0, "EUR"],
+					costCenter: "testCostCenter",
+				},
+				undefined
 			)
 		).toEqual(true)
 		expect(
 			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create([""], "testPurpose", [0, "EUR"], "testCostCenter"),
-				undefined,
-				true
+				{
+					to: [""],
+					from: "jessie@example.com",
+					purpose: "testPurpose",
+					amount: [0, "EUR"],
+					costCenter: "testCostCenter",
+				},
+				undefined
 			)
 		).toEqual(false)
 		expect(
 			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], ""),
-				undefined,
-				true
+				{
+					to: [],
+					from: "jessie@example.com",
+					purpose: "testPurpose",
+					amount: [0, "EUR"],
+					costCenter: "",
+				},
+				undefined
 			)
 		).toEqual(false)
 		expect(
 			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create([], "", [0, "EUR"], "testCostCenter"),
-				undefined,
-				true
+				{
+					to: [],
+					from: "jessie@example.com",
+					purpose: "",
+					amount: [0, "EUR"],
+					costCenter: "testCostCenter",
+				},
+				undefined
 			)
 		).toEqual(false)
 		expect(
-			issuefab.Delegation.Creatable.validate(issuefab.Delegation.Creatable.create([""], "", [0, "SEK"]), [10, "EUR"])
-		).toEqual(false)
-		expect(
 			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "EUR"], "budget"),
+				{
+					to: ["james@example.com"],
+					from: "jessie@example.com",
+					purpose: "testPurpose",
+					amount: [9, "EUR"],
+					costCenter: "testCostCenter",
+				},
 				[10, "EUR"]
 			)
 		).toEqual(true)
 		expect(
-			issuefab.Delegation.Creatable.validate(issuefab.Delegation.Creatable.create([""], "testPurpose", [9, "EUR"]), [
-				10,
-				"EUR",
-			])
-		).toEqual(false)
-		expect(
-			issuefab.Delegation.Creatable.validate(issuefab.Delegation.Creatable.create(["testTo"], "", [9, "EUR"]), [
-				10,
-				"EUR",
-			])
-		).toEqual(false)
-		expect(
 			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [11, "EUR"]),
-				[10, "EUR"]
-			)
-		).toEqual(false)
-		expect(
-			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "SEK"]),
-				[10, "EUR"]
-			)
-		).toEqual(false)
-		expect(
-			issuefab.Delegation.Creatable.validate(
-				issuefab.Delegation.Creatable.create(undefined, "testPurpose", [9, "EUR"]),
+				{
+					to: ["james@example.com"],
+					from: "jessie@example.com",
+					purpose: "testPurpose",
+					amount: [11, "EUR"],
+					costCenter: "testCostCenter",
+				},
 				[10, "EUR"]
 			)
 		).toEqual(false)

@@ -2,15 +2,16 @@ import { isly } from "isly"
 import { Amount } from "../Amount"
 
 export interface Creatable {
+	from: string
 	to: string[]
 	purpose: string
 	amount: Amount
 	costCenter: string
 }
-
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		to: isly.array(isly.string()),
+		from: isly.string(),
+		to: isly.array(isly.string(), { criteria: "minLength", value: 1 }),
 		purpose: isly.string(),
 		amount: Amount.type,
 		costCenter: isly.string(),
@@ -28,20 +29,13 @@ export namespace Creatable {
 			first.to.every((value, index) => value == second.to[index])
 		)
 	}
-	export function create(to?: string[], purpose?: string, amount?: Amount, costCenter?: string): Creatable {
-		return {
-			to: to ?? [],
-			purpose: purpose ?? "",
-			amount: amount ?? [0, "EUR"],
-			costCenter: costCenter ?? "",
-		}
-	}
-	export function validate(delegation: Creatable, limit?: Amount, costCenter = false): boolean {
+	export function validate(delegation: Creatable, limit?: Amount): boolean {
 		return (
 			!!delegation.purpose &&
-			Amount.validate(delegation.amount, limit, costCenter) &&
+			Amount.validate(delegation.amount, limit) &&
 			!!delegation.costCenter &&
-			(!costCenter ? delegation.to.length > 0 && !delegation.to.some(to => !to) : delegation.to.length == 0)
+			delegation.to.length > 0 &&
+			!delegation.to.some(to => !to)
 		)
 	}
 }

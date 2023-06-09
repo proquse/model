@@ -4,6 +4,7 @@ describe("CostCenter.Creatable", () => {
 	const creatable: issuefab.CostCenter.Creatable = {
 		from: "jessie@rocket.com",
 		costCenter: "Development",
+		purpose: "Description",
 		amount: [10, "USD"],
 	}
 	it("is", () => {
