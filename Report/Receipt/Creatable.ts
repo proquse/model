@@ -1,33 +1,12 @@
-import { isoly } from "isoly"
 import { isly } from "isly"
-import { Purchase } from "../../Purchase"
-import { Receipt } from "../../Receipt"
 
 export interface Creatable {
-	receiptData: {
-		costCenter: string
-		receipts: { details: Receipt; file: File; purchase: Purchase }[]
-	}[]
-	organization: string
-	dateRange: isoly.DateRange
+	costCenterIds: string[]
 }
 
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		receiptData: isly.array(
-			isly.object({
-				costCenter: isly.string(),
-				receipts: isly.array(
-					isly.object<{ details: Receipt; file: File; purchase: Purchase }>({
-						details: isly.fromIs<Receipt>("Receipt", Receipt.is),
-						file: isly.fromIs<File>("File", value => value instanceof File),
-						purchase: isly.fromIs<Purchase>("Purchase", Purchase.is),
-					})
-				),
-			})
-		),
-		organization: isly.string(),
-		dateRange: isly.fromIs<isoly.DateRange>("DateRange", isoly.DateRange.is),
+		costCenterIds: isly.array(isly.string()),
 	})
 
 	export const is = type.is
