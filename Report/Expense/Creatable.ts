@@ -2,13 +2,13 @@ import { isly } from "isly"
 
 export interface Creatable {
 	costCenterIds: string[]
-	userEmails: string[]
+	emails?: string[]
 }
 
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
 		costCenterIds: isly.array(isly.string()),
-		userEmails: isly.array(isly.string()),
+		emails: isly.array(isly.string()).optional(),
 	})
 
 	export const is = type.is
