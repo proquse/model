@@ -73,7 +73,7 @@
 	"dependencies": {
 		"@userwidgets/model": "^0.0.31",
 		"authly": "^3.0.3",
-		"cryptly": "^3.0.2",
+		"cryptly": "^3.0.4",
 		"isly": "^0.1.7",
 		"isoly": "^2.0.16",
 		"pdf-lib": "^1.17.1",
