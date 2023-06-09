@@ -2,18 +2,26 @@ import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
 import { Amount } from "../Amount"
+import { Purchase } from "../Purchase"
 import { Creatable as DelegationCreatable } from "./Creatable"
-import { Data as DelegationData } from "./Data"
 
-export interface Delegation extends DelegationData {
+export interface Delegation extends Delegation.Creatable {
+	id: cryptly.Identifier
+	created: isoly.DateTime
+	modified: isoly.DateTime
+	from: string
+	purchases: Purchase[]
 	delegations: Delegation[]
 }
 export namespace Delegation {
 	export type Creatable = DelegationCreatable
 	export const Creatable = DelegationCreatable
-	export type Data = DelegationData
-	export const Data = DelegationData
-	export const type: isly.object.ExtendableType<Delegation> = DelegationData.type.extend<Delegation>({
+	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
+		id: isly.fromIs<cryptly.Identifier>("Identifier", cryptly.Identifier.is),
+		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
+		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
+		from: isly.string(),
+		purchases: isly.array(isly.fromIs("Purchase", Purchase.is)),
 		delegations: isly.array(isly.lazy(() => type, "Delegation")),
 	})
 	export const is = type.is

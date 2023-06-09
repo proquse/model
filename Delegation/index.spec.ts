@@ -1,7 +1,7 @@
-import * as model from "../index"
+import { issuefab } from "../index"
 
 describe("Delegation", () => {
-	const initialDelegation: model.Delegation = {
+	const initialDelegation: issuefab.Delegation = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -13,7 +13,7 @@ describe("Delegation", () => {
 		delegations: [],
 		purchases: [],
 	}
-	const topLevelDelegation: model.Delegation = {
+	const topLevelDelegation: issuefab.Delegation = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -158,46 +158,46 @@ describe("Delegation", () => {
 	}
 
 	it("is", () => {
-		expect(model.Delegation.is(initialDelegation)).toEqual(true)
-		expect(model.Delegation.is(topLevelDelegation)).toEqual(true)
+		expect(issuefab.Delegation.is(initialDelegation)).toEqual(true)
+		expect(issuefab.Delegation.is(topLevelDelegation)).toEqual(true)
 	})
 
 	it("findUser", () => {
-		expect(model.Delegation.findUser([topLevelDelegation], "john@example.com")).toEqual([
+		expect(issuefab.Delegation.findUser([topLevelDelegation], "john@example.com")).toEqual([
 			topLevelDelegation.delegations[0].delegations[0].delegations[0],
 			topLevelDelegation.delegations[1].delegations[0],
 		])
-		expect(new Set(model.Delegation.findUser([topLevelDelegation], "richard@example.com"))).toEqual(
+		expect(new Set(issuefab.Delegation.findUser([topLevelDelegation], "richard@example.com"))).toEqual(
 			new Set([topLevelDelegation.delegations[1], topLevelDelegation.delegations[0].delegations[0]])
 		)
 	})
 	it("find", () => {
-		expect(model.Delegation.find([topLevelDelegation], "abcd0001")).toEqual({
+		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0001")).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation,
 		})
-		expect(model.Delegation.find([topLevelDelegation], "abcd0002")).toEqual({
+		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0002")).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation.delegations[0],
 		})
-		expect(model.Delegation.find([topLevelDelegation], "abcd0005")).toEqual({
+		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0005")).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation.delegations[1].delegations[0],
 		})
 	})
 	it("findParent", () => {
-		expect(model.Delegation.findParent([topLevelDelegation], topLevelDelegation.delegations[0].id)).toEqual({
+		expect(issuefab.Delegation.findParent([topLevelDelegation], topLevelDelegation.delegations[0].id)).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation,
 		})
-		expect(model.Delegation.findParent([topLevelDelegation.delegations[1]], "abcd0006")).toEqual({
+		expect(issuefab.Delegation.findParent([topLevelDelegation.delegations[1]], "abcd0006")).toEqual({
 			root: topLevelDelegation.delegations[1],
 			found: topLevelDelegation.delegations[1].delegations[0],
 		})
-		expect(model.Delegation.findParent([topLevelDelegation.delegations[0]], "abcd0006")).toEqual(undefined)
+		expect(issuefab.Delegation.findParent([topLevelDelegation.delegations[0]], "abcd0006")).toEqual(undefined)
 	})
 	it("change", () => {
-		let before: model.Delegation = {
+		let before: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -222,7 +222,7 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		let updated: model.Delegation = {
+		let updated: issuefab.Delegation = {
 			id: "abcd0002",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -234,7 +234,7 @@ describe("Delegation", () => {
 			delegations: [],
 			purchases: [],
 		}
-		let after: model.Delegation = {
+		let after: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -246,11 +246,11 @@ describe("Delegation", () => {
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
-		let result = model.Delegation.change([before], updated)
+		let result = issuefab.Delegation.change([before], updated)
 		expect(before).toEqual(after)
 		expect(result).toEqual({ root: before, changed: updated })
 		const final = { ...before, to: ["jane@example.com"] }
-		result = model.Delegation.change([before], final)
+		result = issuefab.Delegation.change([before], final)
 		expect(before).toEqual(final)
 		expect(result).toEqual({ root: before, changed: final })
 
@@ -303,15 +303,15 @@ describe("Delegation", () => {
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
-		result = model.Delegation.change([before], updated)
+		result = issuefab.Delegation.change([before], updated)
 		expect(result).toEqual(undefined)
 		updated = { ...updated, id: "abcd0001" }
 		after = { ...updated }
-		result = model.Delegation.change([before], updated)
+		result = issuefab.Delegation.change([before], updated)
 		expect(result).toEqual({ root: after, changed: after })
 	})
 	it("remove", () => {
-		const toBeRemoved: model.Delegation = {
+		const toBeRemoved: issuefab.Delegation = {
 			id: "abcd0003",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -323,7 +323,7 @@ describe("Delegation", () => {
 			delegations: [],
 			purchases: [],
 		}
-		const after: model.Delegation = {
+		const after: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -348,54 +348,54 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		const before: model.Delegation = {
+		const before: issuefab.Delegation = {
 			...after,
 			delegations: [...after.delegations, toBeRemoved],
 		}
-		expect(model.Delegation.remove([before], toBeRemoved.id)).toEqual({ root: before, removed: toBeRemoved })
+		expect(issuefab.Delegation.remove([before], toBeRemoved.id)).toEqual({ root: before, removed: toBeRemoved })
 		expect(before).toEqual(after)
-		expect(model.Delegation.remove([before], before.id)).toEqual({ root: before, removed: before })
-		expect(model.Delegation.remove([after], "xyz")).toEqual(undefined)
+		expect(issuefab.Delegation.remove([before], before.id)).toEqual({ root: before, removed: before })
+		expect(issuefab.Delegation.remove([after], "xyz")).toEqual(undefined)
 	})
 	it("spent", () => {
-		expect(model.Delegation.spent(topLevelDelegation)).toEqual(29)
-		expect(model.Delegation.spent(topLevelDelegation.delegations[1])).toEqual(0)
-		expect(model.Delegation.spent(topLevelDelegation.delegations[0])).toEqual(19.5)
-		expect(model.Delegation.spent(topLevelDelegation, true)).toEqual(29)
-		expect(model.Delegation.spent(topLevelDelegation.delegations[0].delegations[0], true)).toEqual(19.5)
-		expect(model.Delegation.spent(topLevelDelegation.delegations[0], true)).toEqual(29)
+		expect(issuefab.Delegation.spent(topLevelDelegation)).toEqual(29)
+		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[1])).toEqual(0)
+		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[0])).toEqual(19.5)
+		expect(issuefab.Delegation.spent(topLevelDelegation, true)).toEqual(29)
+		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[0].delegations[0], true)).toEqual(19.5)
+		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[0], true)).toEqual(29)
 	})
 	it("balance", () => {
-		expect(model.Delegation.balance(topLevelDelegation)).toEqual(16000)
-		expect(model.Delegation.balance(topLevelDelegation.delegations[1].delegations[0].delegations[0])).toEqual(1000)
+		expect(issuefab.Delegation.balance(topLevelDelegation)).toEqual(16000)
+		expect(issuefab.Delegation.balance(topLevelDelegation.delegations[1].delegations[0].delegations[0])).toEqual(1000)
 	})
 	it("create", () => {
 		expect(
-			model.Delegation.is(model.Delegation.create(model.Delegation.Creatable.create(), "mary@example.com"))
+			issuefab.Delegation.is(issuefab.Delegation.create(issuefab.Delegation.Creatable.create(), "mary@example.com"))
 		).toEqual(true)
 	})
 	it("findParents", () => {
-		expect(model.Delegation.findParents([topLevelDelegation], "abcd0003")).toEqual([
+		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0003")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[0],
 		])
-		expect(model.Delegation.findParents([topLevelDelegation], "abcd0001")).toEqual([])
-		expect(model.Delegation.findParents([topLevelDelegation], "abcd0006")).toEqual([
+		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0001")).toEqual([])
+		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0006")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[1],
 			topLevelDelegation.delegations[1].delegations[0],
 		])
-		expect(model.Delegation.findParents([topLevelDelegation], "abcd0002")).toEqual([topLevelDelegation])
-		expect(model.Delegation.findParents([topLevelDelegation], "xyz")).toEqual(undefined)
+		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0002")).toEqual([topLevelDelegation])
+		expect(issuefab.Delegation.findParents([topLevelDelegation], "xyz")).toEqual(undefined)
 	})
 	it("path", () => {
-		expect(model.Delegation.path([topLevelDelegation], "abcd0001")).toEqual([topLevelDelegation])
-		expect(model.Delegation.path([topLevelDelegation], "abcd0003")).toEqual([
+		expect(issuefab.Delegation.path([topLevelDelegation], "abcd0001")).toEqual([topLevelDelegation])
+		expect(issuefab.Delegation.path([topLevelDelegation], "abcd0003")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[0],
 			topLevelDelegation.delegations[0].delegations[0],
 		])
-		expect(model.Delegation.path([topLevelDelegation], "abcd0006")).toEqual([
+		expect(issuefab.Delegation.path([topLevelDelegation], "abcd0006")).toEqual([
 			topLevelDelegation,
 			topLevelDelegation.delegations[1],
 			topLevelDelegation.delegations[1].delegations[0],
@@ -403,7 +403,7 @@ describe("Delegation", () => {
 		])
 	})
 	it("validate", () => {
-		const testFrom: model.Delegation = {
+		const testFrom: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -428,7 +428,7 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		const testCostCenter: model.Delegation = {
+		const testCostCenter: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "",
 			costCenter: "budget",
@@ -453,9 +453,9 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		expect(model.Delegation.validate(topLevelDelegation, undefined, true)).toEqual(true)
-		expect(model.Delegation.validate(initialDelegation, undefined, true)).toEqual(true)
-		expect(model.Delegation.validate(testFrom)).toEqual(false)
-		expect(model.Delegation.validate(testCostCenter, undefined, true)).toEqual(false)
+		expect(issuefab.Delegation.validate(topLevelDelegation, undefined, true)).toEqual(true)
+		expect(issuefab.Delegation.validate(initialDelegation, undefined, true)).toEqual(true)
+		expect(issuefab.Delegation.validate(testFrom)).toEqual(false)
+		expect(issuefab.Delegation.validate(testCostCenter, undefined, true)).toEqual(false)
 	})
 })

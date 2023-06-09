@@ -1,5 +1,5 @@
 import { isly } from "isly"
-import { Amount } from "../../Amount"
+import { Amount } from "../Amount"
 
 export interface Creatable {
 	to: string[]
