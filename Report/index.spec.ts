@@ -10,7 +10,7 @@ describe("Report", () => {
 	const notAFile = "file"
 
 	it("is", () => {
-		expect(issuefab.Report.Expense.type.is(file)).toEqual(true)
-		expect(issuefab.Report.Expense.type.is(notAFile)).toEqual(false)
+		expect(issuefab.Report.is(file)).toEqual(true)
+		expect(issuefab.Report.is(notAFile)).toEqual(false)
 	})
 })
