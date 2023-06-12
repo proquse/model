@@ -35,7 +35,7 @@ export namespace Creatable {
 			Amount.validate(delegation.amount, limit) &&
 			!!delegation.costCenter &&
 			delegation.to.length > 0 &&
-			!delegation.to.some(to => !to)
+			delegation.to.every(email => !!email)
 		)
 	}
 }

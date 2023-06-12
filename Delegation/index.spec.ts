@@ -13,13 +13,12 @@ describe("Delegation", () => {
 		delegations: [],
 		purchases: [],
 	}
-	const topLevelDelegation: issuefab.Delegation = {
+	const topLevelDelegation: issuefab.CostCenter = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
-		to: ["jessie@example.com"],
 		purpose: "Total company Budget",
 		amount: [20_000, "EUR"],
 		delegations: [
@@ -154,12 +153,12 @@ describe("Delegation", () => {
 				purchases: [],
 			},
 		],
-		purchases: [],
+		costCenters: [],
 	}
 
 	it("is", () => {
 		expect(issuefab.Delegation.is(initialDelegation)).toEqual(true)
-		expect(issuefab.Delegation.is(topLevelDelegation)).toEqual(true)
+		expect(issuefab.Delegation.is((({ from, ...delegation }) => delegation)(initialDelegation))).toEqual(false)
 		expect(issuefab.Delegation.is({ ...initialDelegation, to: [] })).toEqual(false)
 	})
 
@@ -173,7 +172,7 @@ describe("Delegation", () => {
 		)
 	})
 	it("find", () => {
-		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0001")).toEqual({
+		expect(issuefab.CostCenter.find([topLevelDelegation], "abcd0001")).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation,
 		})
@@ -309,7 +308,7 @@ describe("Delegation", () => {
 		updated = { ...updated, id: "abcd0001" }
 		after = { ...updated }
 		result = issuefab.Delegation.change([before], updated)
-		expect(result).toEqual({ root: after, changed: after })
+		expect(result).toEqual(undefined)
 	})
 	it("remove", () => {
 		const toBeRemoved: issuefab.Delegation = {
@@ -462,7 +461,6 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		expect(issuefab.Delegation.validate(topLevelDelegation, undefined)).toEqual(true)
 		expect(issuefab.Delegation.validate(initialDelegation, undefined)).toEqual(true)
 		expect(issuefab.Delegation.validate(testFrom)).toEqual(false)
 		expect(issuefab.Delegation.validate(testCostCenter, undefined)).toEqual(false)

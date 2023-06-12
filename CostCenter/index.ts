@@ -1,13 +1,11 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
+import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
+import { changeCostCenter } from "../Delegation/change"
+import { findCostCenter } from "../Delegation/find"
 import { Creatable as CostCenterCreatable } from "./Creatable"
-
-function* chain<T>(...iterables: Iterable<T>[]): Iterable<T> {
-	for (const iterable of iterables)
-		yield* iterable
-}
 
 export interface CostCenter extends CostCenter.Creatable {
 	id: cryptly.Identifier
@@ -15,7 +13,7 @@ export interface CostCenter extends CostCenter.Creatable {
 	modified: isoly.DateTime
 	from: string
 	delegations: Delegation[]
-	to: string[] // currently defined for backwards compatibility
+	to?: string[] // currently defined for backwards compatibility
 	costCenters: CostCenter[] // currently optional for backwards compatibility
 }
 export namespace CostCenter {
@@ -26,7 +24,7 @@ export namespace CostCenter {
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		from: isly.string(),
-		to: isly.array(isly.string(), { criteria: "length", value: 0 }),
+		to: isly.array(isly.string(), { criteria: "length", value: 0 }).optional(),
 		delegations: isly.array(Delegation.type),
 		costCenters: isly.array(isly.lazy(() => type, "CostCenter")),
 	})
@@ -34,52 +32,52 @@ export namespace CostCenter {
 	export const flaw = type.flaw
 
 	export function create(
-		costCenter: CostCenter,
-		override: Partial<CostCenter>,
+		costCenter: CostCenter.Creatable,
+		override?: Partial<CostCenter>,
 		idLength: cryptly.Identifier.Length = 8
 	): CostCenter {
 		const now = isoly.DateTime.now()
 		return {
 			...costCenter,
 			...override,
-			id: override.id ?? cryptly.Identifier.generate(idLength),
-			created: override.created ?? now,
-			modified: override.modified ?? now,
-			delegations: override.delegations ?? [],
-			costCenters: override.costCenters ?? [],
+			id: override?.id ?? cryptly.Identifier.generate(idLength),
+			created: override?.created ?? now,
+			modified: override?.modified ?? now,
+			delegations: override?.delegations ?? [],
+			costCenters: override?.costCenters ?? [],
 		}
 	}
-	function changeName(root: CostCenter | Delegation, name: string): string {
-		root.costCenter = name
-		for (const child of chain<Delegation | CostCenter>(root.delegations, "costCenters" in root ? root.costCenters : []))
-			changeName(child, name)
-		return name
+	export const change = changeCostCenter
+	export function remove(roots: CostCenter[], id: string): { root: CostCenter; removed: CostCenter } | undefined {
+		let result: ReturnType<typeof remove>
+		const index = roots.findIndex(root => root.id == id && (result = { root: root, removed: root }))
+		if (index >= 0)
+			roots.splice(index, 1)
+		return result
+			? result
+			: roots.find(
+					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
+			  ) && result
 	}
-	// export function change(roots: CostCenter[], updated: CostCenter) {
-	// 	const search = find(roots, updated.id)
-	// 	const result: { root: CostCenter; changed: CostCenter } | undefined = search && { root: search, found: search }
-	// 	return result
-	// }
-	export function find(
-		roots: CostCenter[],
-		id: cryptly.Identifier
-	): { root: CostCenter; found: CostCenter } | undefined {
-		const search = roots.find(root => root.id == id)
-		let result: { root: CostCenter; found: CostCenter } | undefined = search && { root: search, found: search }
+	export function validate(costCenter: CostCenter, limit?: Amount): boolean {
+		const equity: Amount = [balance(costCenter), costCenter.amount[1]]
 		return (
-			result ??
-			(roots.find(
-				root => (result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id)))
-			) &&
-				result)
+			!!costCenter.id &&
+			costCenter.created <= costCenter.modified &&
+			costCenter.modified <= isoly.DateTime.now() &&
+			!!costCenter.from &&
+			!!costCenter.costCenter &&
+			0 <= equity[0] &&
+			(!limit || (costCenter.amount[1] == limit[1] && equity[0] <= limit[0])) &&
+			costCenter.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]])) &&
+			costCenter.costCenters.every(costCenter => validate(costCenter, [costCenter.amount[0], equity[1]]))
 		)
 	}
-	// export const find = Delegation.find
+	export const find = findCostCenter
 	export const findUser = Delegation.findUser
 	export const findParent = Delegation.findParent
 	export const findParents = Delegation.findParents
 	export const path = Delegation.path
-	export const remove = Delegation.remove
 	export const spent = Delegation.spent
 	export const balance = Delegation.balance
 }

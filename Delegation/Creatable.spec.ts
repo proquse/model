@@ -54,10 +54,10 @@ describe("Delegation.Creatable", () => {
 		expect(
 			issuefab.Delegation.Creatable.validate(
 				{
-					to: [],
+					to: ["james@example.com"],
 					from: "jessie@example.com",
 					purpose: "testPurpose",
-					amount: [0, "EUR"],
+					amount: [1, "EUR"],
 					costCenter: "testCostCenter",
 				},
 				undefined
@@ -90,10 +90,10 @@ describe("Delegation.Creatable", () => {
 		expect(
 			issuefab.Delegation.Creatable.validate(
 				{
-					to: [],
+					to: [""],
 					from: "jessie@example.com",
 					purpose: "",
-					amount: [0, "EUR"],
+					amount: [1, "EUR"],
 					costCenter: "testCostCenter",
 				},
 				undefined
