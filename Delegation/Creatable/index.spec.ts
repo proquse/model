@@ -1,14 +1,14 @@
-import * as model from "../../index"
+import { issuefab } from "../../index"
 
 describe("Delegation.Creatable", () => {
-	const creatable: model.Delegation.Creatable = {
+	const creatable: issuefab.Delegation.Creatable = {
 		to: ["jessie@example.com"],
 		purpose: "testing",
 		amount: [10, "EUR"],
 		costCenter: "budget",
 	}
 	it("is", () => {
-		const delegation: model.Delegation = {
+		const delegation: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -20,105 +20,108 @@ describe("Delegation.Creatable", () => {
 			delegations: [],
 			purchases: [],
 		}
-		expect(model.Delegation.Creatable.is(creatable)).toEqual(true)
-		expect(model.Delegation.Creatable.is(delegation)).toEqual(true)
+		expect(issuefab.Delegation.Creatable.is(creatable)).toEqual(true)
+		expect(issuefab.Delegation.Creatable.is(delegation)).toEqual(true)
 	})
 	it("equals", () => {
-		const first: model.Delegation.Creatable = {
+		const first: issuefab.Delegation.Creatable = {
 			to: ["james@example.com"],
 			purpose: "testing",
 			amount: [10, "EUR"],
 			costCenter: "budget",
 		}
-		const second: model.Delegation.Creatable = {
+		const second: issuefab.Delegation.Creatable = {
 			to: ["james@example.com"],
 			purpose: "testing",
 			amount: [10, "EUR"],
 			costCenter: "budget",
 		}
-		const third: model.Delegation.Creatable = {
+		const third: issuefab.Delegation.Creatable = {
 			to: [],
 			purpose: "testing",
 			amount: [10, "EUR"],
 			costCenter: "budget",
 		}
-		expect(model.Delegation.Creatable.equals(third, first)).toEqual(false)
-		expect(model.Delegation.Creatable.equals(first, second)).toEqual(true)
-		expect(model.Delegation.Creatable.equals(first, creatable)).toEqual(false)
+		expect(issuefab.Delegation.Creatable.equals(third, first)).toEqual(false)
+		expect(issuefab.Delegation.Creatable.equals(first, second)).toEqual(true)
+		expect(issuefab.Delegation.Creatable.equals(first, creatable)).toEqual(false)
 	})
 	it("create", () => {
-		expect(model.Delegation.Creatable.is(model.Delegation.Creatable.create())).toEqual(true)
-		expect(model.Delegation.Creatable.is(model.Delegation.Creatable.create(undefined, undefined, [0, "USD"]))).toEqual(
-			true
-		)
+		expect(issuefab.Delegation.Creatable.is(issuefab.Delegation.Creatable.create())).toEqual(true)
 		expect(
-			model.Delegation.Creatable.is(model.Delegation.Creatable.create(["testTo"], "testPurpose", [11, "EUR"]))
+			issuefab.Delegation.Creatable.is(issuefab.Delegation.Creatable.create(undefined, undefined, [0, "USD"]))
+		).toEqual(true)
+		expect(
+			issuefab.Delegation.Creatable.is(issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [11, "EUR"]))
 		).toEqual(true)
 	})
 	it("validate", () => {
 		expect(
-			model.Delegation.Creatable.validate(
-				model.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], "testCostCenter"),
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], "testCostCenter"),
 				undefined,
 				true
 			)
 		).toEqual(true)
 		expect(
-			model.Delegation.Creatable.validate(
-				model.Delegation.Creatable.create([""], "testPurpose", [0, "EUR"], "testCostCenter"),
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create([""], "testPurpose", [0, "EUR"], "testCostCenter"),
 				undefined,
 				true
 			)
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(
-				model.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], ""),
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create([], "testPurpose", [0, "EUR"], ""),
 				undefined,
 				true
 			)
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(
-				model.Delegation.Creatable.create([], "", [0, "EUR"], "testCostCenter"),
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create([], "", [0, "EUR"], "testCostCenter"),
 				undefined,
 				true
 			)
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create([""], "", [0, "SEK"]), [10, "EUR"])
+			issuefab.Delegation.Creatable.validate(issuefab.Delegation.Creatable.create([""], "", [0, "SEK"]), [10, "EUR"])
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(
-				model.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "EUR"], "budget"),
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "EUR"], "budget"),
 				[10, "EUR"]
 			)
 		).toEqual(true)
 		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create([""], "testPurpose", [9, "EUR"]), [
+			issuefab.Delegation.Creatable.validate(issuefab.Delegation.Creatable.create([""], "testPurpose", [9, "EUR"]), [
 				10,
 				"EUR",
 			])
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create(["testTo"], "", [9, "EUR"]), [10, "EUR"])
-		).toEqual(false)
-		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create(["testTo"], "testPurpose", [11, "EUR"]), [
+			issuefab.Delegation.Creatable.validate(issuefab.Delegation.Creatable.create(["testTo"], "", [9, "EUR"]), [
 				10,
 				"EUR",
 			])
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "SEK"]), [
-				10,
-				"EUR",
-			])
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [11, "EUR"]),
+				[10, "EUR"]
+			)
 		).toEqual(false)
 		expect(
-			model.Delegation.Creatable.validate(model.Delegation.Creatable.create(undefined, "testPurpose", [9, "EUR"]), [
-				10,
-				"EUR",
-			])
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create(["testTo"], "testPurpose", [9, "SEK"]),
+				[10, "EUR"]
+			)
+		).toEqual(false)
+		expect(
+			issuefab.Delegation.Creatable.validate(
+				issuefab.Delegation.Creatable.create(undefined, "testPurpose", [9, "EUR"]),
+				[10, "EUR"]
+			)
 		).toEqual(false)
 	})
 })

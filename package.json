@@ -71,7 +71,7 @@
 		"watch": "0.13.0"
 	},
 	"dependencies": {
-		"@userwidgets/model": "^0.0.31",
+		"@userwidgets/model": "^0.4.3",
 		"authly": "^3.0.3",
 		"cryptly": "^3.0.4",
 		"isoly": "^2.0.16",

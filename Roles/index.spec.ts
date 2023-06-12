@@ -1,9 +1,9 @@
-import * as userModel from "@userwidgets/model"
-import * as model from "../index"
+import { userwidgets } from "@userwidgets/model"
+import { issuefab } from "../index"
 
 describe("Financial Controller", () => {
 	it("satisfies", () => {
-		const key: userModel.User.Key = {
+		const key: userwidgets.User.Key = {
 			issuer: "",
 			audience: "",
 			issued: "",
@@ -20,8 +20,8 @@ describe("Financial Controller", () => {
 				},
 			},
 		}
-		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
-		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
+		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
 		key.permissions = {
 			["*"]: {
 				organization: { read: true },
@@ -33,10 +33,10 @@ describe("Financial Controller", () => {
 				banking: { read: true, write: true },
 			},
 		}
-		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
-		expect(model.Roles.satisfies("financialController", key.permissions)).toEqual(false)
-		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(model.Roles.satisfies("user", key.permissions)).toEqual(false)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions)).toEqual(false)
+		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(issuefab.Roles.satisfies("user", key.permissions)).toEqual(false)
 		key.permissions = {
 			organizationId: {
 				organization: { read: false, write: false },
@@ -45,16 +45,16 @@ describe("Financial Controller", () => {
 				banking: { read: false, write: false },
 			},
 		}
-		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
-		expect(model.Roles.satisfies("financialController", key.permissions)).toEqual(false)
-		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(model.Roles.satisfies("user", key.permissions)).toEqual(false)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions)).toEqual(false)
+		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(issuefab.Roles.satisfies("user", key.permissions)).toEqual(false)
 		key.permissions = {
 			["*"]: { user: { write: true } },
 		}
-		expect(model.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
-		expect(model.Roles.satisfies("financialController", key.permissions)).toEqual(false)
-		expect(model.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(model.Roles.satisfies("user", key.permissions)).toEqual(true)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
+		expect(issuefab.Roles.satisfies("financialController", key.permissions)).toEqual(false)
+		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(issuefab.Roles.satisfies("user", key.permissions)).toEqual(true)
 	})
 })

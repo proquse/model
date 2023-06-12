@@ -1,7 +1,7 @@
-import * as model from "../index"
+import { issuefab } from "../index"
 
 describe("Purchase", () => {
-	const purchase: model.Purchase = {
+	const purchase: issuefab.Purchase = {
 		id: "aoeu1234",
 		created: "2022-01-01T00:00:42Z",
 		modified: "2022-01-01T00:00:42Z",
@@ -20,7 +20,7 @@ describe("Purchase", () => {
 		],
 		transactions: [],
 	}
-	const delegation: model.Delegation = {
+	const delegation: issuefab.Delegation = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -150,10 +150,10 @@ describe("Purchase", () => {
 	}
 
 	it("is", () => {
-		expect(model.Purchase.is(purchase)).toEqual(true)
+		expect(issuefab.Purchase.is(purchase)).toEqual(true)
 	})
 	it("create", () => {
-		const purchase: model.Purchase.Creatable = {
+		const purchase: issuefab.Purchase.Creatable = {
 			purpose: "buy things",
 			payment: {
 				type: "card",
@@ -161,23 +161,23 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		const result = model.Purchase.create(
+		const result = issuefab.Purchase.create(
 			purchase,
 			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
-		expect(model.Purchase.is(result))
+		expect(issuefab.Purchase.is(result))
 		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
 	})
 	it("find", () => {
-		expect(model.Purchase.find([delegation], "aoeu1234")).toEqual({
+		expect(issuefab.Purchase.find([delegation], "aoeu1234")).toEqual({
 			root: delegation,
 			found: delegation.delegations[0].delegations[0].purchases[0],
 		})
 	})
 	it("change", () => {
-		const target: model.Purchase = model.Purchase.create(
+		const target: issuefab.Purchase = issuefab.Purchase.create(
 			{
 				purpose: "buy things",
 				payment: {
@@ -190,19 +190,19 @@ describe("Purchase", () => {
 			"organizationId",
 			"receipt@example.com"
 		)
-		const updated: model.Purchase = {
+		const updated: issuefab.Purchase = {
 			...target,
 			purpose: "buy more things",
 			payment: { type: "card", limit: [10, "EUR"] },
 			buyer: "john@example.com",
 		}
-		const after: model.Purchase = {
+		const after: issuefab.Purchase = {
 			...target,
 			purpose: "buy more things",
 			payment: { type: "card", limit: [10, "EUR"] },
 			buyer: "john@example.com",
 		}
-		const root: model.Delegation = {
+		const root: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -215,15 +215,15 @@ describe("Purchase", () => {
 			purchases: [target],
 		}
 		expect(target).not.toEqual(updated)
-		const first = model.Purchase.change(target, updated)
+		const first = issuefab.Purchase.change(target, updated)
 		expect(target).toEqual(after)
 		expect(first).not.toBe(after)
-		const second = model.Purchase.change([root], updated)
+		const second = issuefab.Purchase.change([root], updated)
 		expect(second).toEqual({ root: root, changed: updated })
 		expect(second?.changed).not.toBe(updated)
 	})
 	it("remove", () => {
-		const target: model.Purchase = model.Purchase.create(
+		const target: issuefab.Purchase = issuefab.Purchase.create(
 			{
 				purpose: "buy things",
 				payment: {
@@ -236,7 +236,7 @@ describe("Purchase", () => {
 			"organizationId",
 			"receipt@example.com"
 		)
-		const root: model.Delegation = {
+		const root: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -248,12 +248,12 @@ describe("Purchase", () => {
 			delegations: [],
 			purchases: [target],
 		}
-		const result = model.Purchase.remove([root], target.id)
+		const result = issuefab.Purchase.remove([root], target.id)
 		expect(root.purchases.length).toEqual(0)
 		expect(result?.removed).toBe(target)
 	})
 	it("validate", () => {
-		const target: model.Purchase = model.Purchase.create(
+		const target: issuefab.Purchase = issuefab.Purchase.create(
 			{
 				purpose: "buy things",
 				payment: {
@@ -267,10 +267,10 @@ describe("Purchase", () => {
 			"receipt@example.com"
 		)
 
-		expect(model.Purchase.validate(target)).toEqual(true)
+		expect(issuefab.Purchase.validate(target)).toEqual(true)
 		expect(
-			model.Purchase.validate(
-				model.Purchase.create(
+			issuefab.Purchase.validate(
+				issuefab.Purchase.create(
 					{
 						purpose: "",
 						payment: {
@@ -286,8 +286,8 @@ describe("Purchase", () => {
 			)
 		).toEqual(true)
 		expect(
-			model.Purchase.validate(
-				model.Purchase.create(
+			issuefab.Purchase.validate(
+				issuefab.Purchase.create(
 					{
 						purpose: "buy things",
 						payment: {
@@ -303,8 +303,8 @@ describe("Purchase", () => {
 			)
 		).toEqual(false)
 		expect(
-			model.Purchase.validate(
-				model.Purchase.create(
+			issuefab.Purchase.validate(
+				issuefab.Purchase.create(
 					{
 						purpose: "buy things",
 						payment: {
@@ -321,9 +321,9 @@ describe("Purchase", () => {
 			)
 		).toEqual(true)
 		expect(
-			model.Purchase.validate(
+			issuefab.Purchase.validate(
 				{
-					...model.Purchase.create(
+					...issuefab.Purchase.create(
 						{
 							purpose: "buy things",
 							payment: {
@@ -342,8 +342,8 @@ describe("Purchase", () => {
 			)
 		).toEqual(false)
 		expect(
-			model.Purchase.validate(
-				model.Purchase.create(
+			issuefab.Purchase.validate(
+				issuefab.Purchase.create(
 					{
 						purpose: "buy things",
 						payment: {
@@ -361,19 +361,19 @@ describe("Purchase", () => {
 		).toEqual(false)
 	})
 	it("list", () => {
-		expect(model.Purchase.list(delegation.delegations).length).toEqual(3)
+		expect(issuefab.Purchase.list(delegation.delegations).length).toEqual(3)
 		expect(
-			model.Purchase.list(delegation.delegations, purchase => purchase.amount && purchase.amount[0] < 10).length
+			issuefab.Purchase.list(delegation.delegations, purchase => purchase.amount && purchase.amount[0] < 10).length
 		).toEqual(2)
 		expect(
-			model.Purchase.list(delegation.delegations, purchase => purchase.buyer == "mary@example.com").length
+			issuefab.Purchase.list(delegation.delegations, purchase => purchase.buyer == "mary@example.com").length
 		).toEqual(1)
-		const result = model.Purchase.list(
+		const result = issuefab.Purchase.list(
 			[delegation],
 			p => p.buyer == "mary@example.com",
 			(p, d) => ({ ...p, delegationId: d.id })
 		)
 		expect(result.length).toEqual(1)
-		expect(result.every(purchase => model.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
+		expect(result.every(purchase => issuefab.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
 })

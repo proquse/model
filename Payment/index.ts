@@ -19,15 +19,22 @@ export namespace Payment {
 	}
 	export type Card = PaymentCard
 	export const Card = PaymentCard
+	export namespace Card {
+		export type Creatable = PaymentCard.Creatable
+	}
 	export type PrePaid = PaymentPrePaid
 	export const PrePaid = PaymentPrePaid
-	export type Creatable = PaymentCreatable
-	export const Creatable = PaymentCreatable
+	export namespace PrePaid {
+		export type Creatable = PaymentPrePaid.Creatable
+	}
 	export type Expense = PaymentExpense
 	export const Expense = PaymentExpense
 	export namespace Expense {
 		export type Paid = PaymentExpense.Paid
+		export type Creatable = PaymentExpense.Creatable
 	}
+	export type Creatable = PaymentCreatable
+	export const Creatable = PaymentCreatable
 	export namespace Creatable {
 		export type PrePaid = PaymentCreatable.PrePaid
 		export type Card = PaymentCreatable.Card
