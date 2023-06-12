@@ -1,5 +1,5 @@
-import * as cryptly from "cryptly"
-import * as isoly from "isoly"
+import { cryptly } from "cryptly"
+import { isoly } from "isoly"
 import { Amount } from "../../Amount"
 import { Purchase } from "../../Purchase"
 import { Creatable } from "../Creatable"

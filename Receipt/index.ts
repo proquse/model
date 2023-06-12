@@ -1,4 +1,4 @@
-import * as cryptly from "cryptly"
+import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
