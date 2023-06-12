@@ -1,7 +1,7 @@
-import * as model from "../../index"
+import { issuefab } from "../../index"
 
 describe("Delegation.Data", () => {
-	const data: model.Delegation.Data = {
+	const data: issuefab.Delegation.Data = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -13,10 +13,10 @@ describe("Delegation.Data", () => {
 		purchases: [],
 	}
 	it("is", () => {
-		expect(model.Delegation.Data.is(data)).toEqual(true)
+		expect(issuefab.Delegation.Data.is(data)).toEqual(true)
 	})
 	it("to", () => {
-		const delegation: model.Delegation = {
+		const delegation: issuefab.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -28,12 +28,12 @@ describe("Delegation.Data", () => {
 			purchases: [],
 			delegations: [],
 		}
-		const data = model.Delegation.Data.to(delegation)
-		expect(model.Delegation.Data.is(data)).toEqual(true)
-		expect(model.Delegation.is(data)).toEqual(false)
+		const data = issuefab.Delegation.Data.to(delegation)
+		expect(issuefab.Delegation.Data.is(data)).toEqual(true)
+		expect(issuefab.Delegation.is(data)).toEqual(false)
 	})
 	it("validate", () => {
-		const purchase: model.Purchase = model.Purchase.create(
+		const purchase: issuefab.Purchase = issuefab.Purchase.create(
 			{
 				purpose: "buy things",
 				payment: {
@@ -49,9 +49,9 @@ describe("Delegation.Data", () => {
 			"organizationId",
 			"receipt@example.com"
 		)
-		expect(model.Delegation.Data.validate(data)).toEqual(true)
+		expect(issuefab.Delegation.Data.validate(data)).toEqual(true)
 		expect(
-			model.Delegation.Data.validate({
+			issuefab.Delegation.Data.validate({
 				id: "",
 				from: "jane@example.com",
 				costCenter: "budget",
@@ -64,7 +64,7 @@ describe("Delegation.Data", () => {
 			})
 		).toEqual(false)
 		expect(
-			model.Delegation.Data.validate({
+			issuefab.Delegation.Data.validate({
 				id: "abcd0001",
 				from: "jane@example.com",
 				costCenter: "budget",
@@ -77,7 +77,7 @@ describe("Delegation.Data", () => {
 			})
 		).toEqual(false)
 		expect(
-			model.Delegation.Data.validate({
+			issuefab.Delegation.Data.validate({
 				id: "abcd0001",
 				from: "jane@example.com",
 				costCenter: "budget",
@@ -90,7 +90,7 @@ describe("Delegation.Data", () => {
 			})
 		).toEqual(false)
 		expect(
-			model.Delegation.Data.validate({
+			issuefab.Delegation.Data.validate({
 				id: "abcd0001",
 				from: "jane@example.com",
 				costCenter: "budget",
@@ -103,7 +103,7 @@ describe("Delegation.Data", () => {
 			})
 		).toEqual(false)
 		expect(
-			model.Delegation.Data.validate({
+			issuefab.Delegation.Data.validate({
 				id: "abcd0001",
 				from: "jane@example.com",
 				costCenter: "budget",

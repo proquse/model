@@ -1,7 +1,7 @@
-import * as model from "../index"
+import { issuefab } from "../index"
 
 describe("Transaction.Creatable", () => {
-	const transaction: model.Transaction.Creatable = {
+	const transaction: issuefab.Transaction.Creatable = {
 		amount: [10, "EUR"],
 		descriptor: "hello world",
 		date: {
@@ -11,11 +11,14 @@ describe("Transaction.Creatable", () => {
 		balance: [-10, "EUR"],
 	}
 	it("is", () => {
-		expect(model.Transaction.Creatable.is(transaction)).toEqual(true)
+		expect(issuefab.Transaction.Creatable.is(transaction)).toEqual(true)
 		expect(
-			model.Transaction.Creatable.is({ ...transaction, date: { ...transaction.date, payment: "2021-12-22T13:37:42Z" } })
+			issuefab.Transaction.Creatable.is({
+				...transaction,
+				date: { ...transaction.date, payment: "2021-12-22T13:37:42Z" },
+			})
 		).toEqual(true)
-		expect(model.Transaction.Creatable.is({ ...transaction, receiptId: "receiptId" })).toEqual(true)
-		expect(model.Transaction.is({ ...transaction, reference: "referenceId" }))
+		expect(issuefab.Transaction.Creatable.is({ ...transaction, receiptId: "receiptId" })).toEqual(true)
+		expect(issuefab.Transaction.is({ ...transaction, reference: "referenceId" }))
 	})
 })
