@@ -1,4 +1,4 @@
-import * as isoly from "isoly"
+import { isoly } from "isoly"
 import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
