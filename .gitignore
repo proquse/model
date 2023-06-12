@@ -4,3 +4,5 @@ dist
 .npmrc
 Report/testFiles/receiptReport.pdf
 Report/testFiles/expenseReport.pdf
+Receipt/receiptResult.pdf
+Purchase/expenseReport.pdf
