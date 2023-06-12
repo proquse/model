@@ -31,11 +31,12 @@ export namespace Creatable {
 	}
 	export function validate(delegation: Creatable, limit?: Amount): boolean {
 		return (
+			!!delegation.from &&
+			delegation.to.length > 0 &&
+			delegation.to.every(email => !!email) &&
 			!!delegation.purpose &&
 			Amount.validate(delegation.amount, limit) &&
-			!!delegation.costCenter &&
-			delegation.to.length > 0 &&
-			delegation.to.every(email => !!email)
+			!!delegation.costCenter
 		)
 	}
 }
