@@ -1,13 +1,13 @@
-import * as model from "../index"
+import { issuefab } from "../index"
 
 describe("Receipt", () => {
-	const receipt: model.Receipt = {
+	const receipt: issuefab.Receipt = {
 		id: "asd",
 		original: "https://example.com/receipt.pdf",
 		total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 		date: "2022-01-01T00:00:42Z",
 	}
-	const delegation: model.Delegation = {
+	const delegation: issuefab.Delegation = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -182,12 +182,12 @@ describe("Receipt", () => {
 		purchases: [],
 	}
 	it("is", () => {
-		expect(model.Receipt.is(receipt)).toEqual(true)
+		expect(issuefab.Receipt.is(receipt)).toEqual(true)
 	})
 	it("validate", () => {
 		const now = "2022-01-01T00:00:42Z"
 		expect(
-			model.Receipt.validate(
+			issuefab.Receipt.validate(
 				{
 					id: "id",
 					total: [{ net: [10, "EUR"], vat: [2, "EUR"] }],
@@ -198,7 +198,7 @@ describe("Receipt", () => {
 			)
 		).toEqual(true)
 		expect(
-			model.Receipt.validate(
+			issuefab.Receipt.validate(
 				{
 					id: "id",
 					total: [{ net: [10, "EUR"], vat: [2, "EUR"] }],
@@ -209,7 +209,7 @@ describe("Receipt", () => {
 			)
 		).toEqual(false)
 		expect(
-			model.Receipt.validate(
+			issuefab.Receipt.validate(
 				{
 					id: "id",
 					total: [{ net: [10, "EUR"], vat: [2, "USD"] }],
@@ -220,38 +220,38 @@ describe("Receipt", () => {
 			)
 		).toEqual(false)
 		expect(
-			model.Receipt.validate(
+			issuefab.Receipt.validate(
 				{ id: "id", total: [{ net: [10, "EUR"], vat: [2, "EUR"] }], date: now, original: "" },
 				"EUR"
 			)
 		).toEqual(false)
 	})
 	it("find", () => {
-		expect(model.Receipt.find([delegation], "w")).toEqual({
+		expect(issuefab.Receipt.find([delegation], "w")).toEqual({
 			root: delegation,
 			purchase: delegation.delegations[0].delegations[0].purchases[1],
 			found: delegation.delegations[0].delegations[0].purchases[1].receipts[0],
 		})
-		expect(model.Receipt.find([delegation], "q")).not.toEqual(undefined)
-		expect(model.Receipt.find([delegation], "e")).not.toEqual(undefined)
+		expect(issuefab.Receipt.find([delegation], "q")).not.toEqual(undefined)
+		expect(issuefab.Receipt.find([delegation], "e")).not.toEqual(undefined)
 	})
 	it("list", () => {
-		expect(model.Receipt.list([delegation]).length).toEqual(3)
-		expect(model.Receipt.list(delegation.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(3)
-		expect(model.Receipt.list([delegation], (_, p) => p.buyer == "mary@example.com").length).toEqual(1)
+		expect(issuefab.Receipt.list([delegation]).length).toEqual(3)
+		expect(issuefab.Receipt.list(delegation.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(3)
+		expect(issuefab.Receipt.list([delegation], (_, p) => p.buyer == "mary@example.com").length).toEqual(1)
 		expect(
-			model.Receipt.list(
+			issuefab.Receipt.list(
 				[delegation],
 				r => r.total.reduce((total, { net: [net], vat: [vat] }) => total + net + vat, 0) >= 10
 			).length
 		).toEqual(2)
-		const result = model.Receipt.list(
+		const result = issuefab.Receipt.list(
 			[delegation],
 			r => r.total.reduce((total, { net: [net], vat: [vat] }) => total + net + vat, 0) < 10,
 			(r, p, d) => ({ ...r, purchaseId: p.id, delegationId: d.id })
 		)
 		expect(result.length).toEqual(1)
-		expect(result.every(receipt => model.Receipt.is(receipt) && receipt.purchaseId && receipt.delegationId)).toEqual(
+		expect(result.every(receipt => issuefab.Receipt.is(receipt) && receipt.purchaseId && receipt.delegationId)).toEqual(
 			true
 		)
 	})

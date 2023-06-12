@@ -7,7 +7,6 @@ export interface Card {
 	limit: Amount
 	details?: Card.Details
 }
-
 export namespace Card {
 	export function is(value: Card | any): value is Card {
 		return (

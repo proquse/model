@@ -1,3 +1,4 @@
+import { isly } from "isly"
 import { Amount } from "../../Amount"
 import { Creatable as ExpenseCreatable } from "./Creatable"
 import { Paid as ExpensePaid } from "./Paid"
@@ -9,9 +10,13 @@ export interface Expense {
 }
 
 export namespace Expense {
-	export function is(value: Expense | any): value is Expense {
-		return typeof value == "object" && value && value.type == "expense" && Amount.is(value.limit)
-	}
+	export const type = isly.object<Expense>({
+		type: isly.string(["expense"]),
+		limit: Amount.type,
+		Paid: ExpensePaid.type.optional(),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
 	export const validate = ExpenseCreatable.validate
 	export type Creatable = ExpenseCreatable
 	export const Creatable = ExpenseCreatable
