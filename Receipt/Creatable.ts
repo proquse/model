@@ -3,7 +3,7 @@ import { isly } from "isly"
 import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
-	file: File
+	file: File & { type: "image/jpeg" | "application/pdf" }
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
