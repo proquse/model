@@ -10,17 +10,18 @@ export namespace Creatable {
 		total: isly.array(Total.type),
 		file: isly.fromIs<File & { type: "image/jpeg" | "application/pdf" }>(
 			"File",
-			value => value instanceof File && !(value.type == "image/jpeg" || value.type == "application/pdf")
+			value => value instanceof File && (value.type == "image/jpeg" || value.type == "application/pdf")
 		),
 	})
 
 	export const is = type.is
 	export const flaw = type.flaw
-}
-export function validate(receipt: Creatable, currency: isoly.Currency): boolean {
-	return !!(
-		receipt.total.length &&
-		receipt.total.every(total => Total.validate(total, currency)) &&
-		receipt.file instanceof File
-	)
+
+	export function validate(receipt: Creatable, currency: isoly.Currency): boolean {
+		return !!(
+			receipt.total.length &&
+			receipt.total.every(total => Total.validate(total, currency)) &&
+			receipt.file instanceof File
+		)
+	}
 }
