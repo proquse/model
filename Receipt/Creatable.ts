@@ -3,15 +3,12 @@ import { isly } from "isly"
 import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
-	file: File & { type: "image/jpeg" | "application/pdf" }
+	file: File
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
 		total: isly.array(Total.type),
-		file: isly.fromIs<File & { type: "image/jpeg" | "application/pdf" }>(
-			"File",
-			value => value instanceof File && (value.type == "image/jpeg" || value.type == "application/pdf")
-		),
+		file: isly.fromIs<File & { type: "image/jpeg" | "application/pdf" }>("File", value => value instanceof File),
 	})
 
 	export const is = type.is
