@@ -1,19 +1,19 @@
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
 	file: File
 }
 export namespace Creatable {
-	export function is(value: Creatable | any): value is Creatable {
-		return (
-			typeof value == "object" &&
-			value &&
-			Array.isArray(value.total) &&
-			value.total.every(Total.is) &&
-			value.file instanceof File
-		)
-	}
+	export const type = isly.object<Creatable>({
+		total: isly.array(Total.type),
+		file: isly.fromIs<File & { type: "image/jpeg" | "application/pdf" }>("File", value => value instanceof File),
+	})
+
+	export const is = type.is
+	export const flaw = type.flaw
+
 	export function validate(receipt: Creatable, currency: isoly.Currency): boolean {
 		return !!(
 			receipt.total.length &&

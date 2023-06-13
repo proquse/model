@@ -7,11 +7,18 @@ globalThis.File = File
 
 describe("Receipt.Creatable", () => {
 	it("is", () => {
+		const receiptImg: issuefab.Receipt.Creatable = {
+			total: [{ net: [10, "EUR"], vat: [2.5, "EUR"] }],
+			file: new File([new Uint8Array([97])], "file", { type: "image/jpeg" }),
+		}
 		const receipt: issuefab.Receipt.Creatable = {
 			total: [{ net: [10, "EUR"], vat: [2.5, "EUR"] }],
 			file: new File([new Uint8Array([97])], "file"),
 		}
-		expect(issuefab.Receipt.Creatable.is(receipt)).toEqual(true)
+
+		expect(issuefab.Receipt.Creatable.is(receiptImg)).toEqual(true)
+		expect(issuefab.Receipt.Creatable.is((({ total, ...receipt }) => receipt)(receipt))).toEqual(false)
+		expect(issuefab.Receipt.Creatable.is((({ file, ...receipt }) => receipt)(receipt))).toEqual(false)
 	})
 	it("validate", () => {
 		const creatable: issuefab.Receipt.Creatable = {
