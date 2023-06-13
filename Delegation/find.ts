@@ -7,7 +7,28 @@ import { cryptly } from "cryptly"
 import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "./index"
 
-export function findDelegation<T extends Delegation | CostCenter>(
+// add test for this one
+function findNode<T extends Delegation | CostCenter>(
+	roots: T[],
+	id: string
+): { root: T; found: Delegation | CostCenter } | undefined {
+	const search = roots.find(root => root.id == id)
+	let result: { root: T; found: Delegation | CostCenter } | undefined = search
+		? { root: search, found: search }
+		: undefined
+	return (
+		result ??
+		(roots.find(
+			root =>
+				(result = (result => (!result ? result : { ...result, root }))(
+					findNode(root.delegations, id) ?? ("costCenters" in root ? findNode(root.costCenters, id) : undefined)
+				))
+		) &&
+			result)
+	)
+}
+
+function findDelegation<T extends Delegation | CostCenter>(
 	roots: T[],
 	id: string
 ): { root: T; found: Delegation } | undefined {
@@ -26,7 +47,7 @@ export function findDelegation<T extends Delegation | CostCenter>(
 			result)
 	)
 }
-export function findCostCenter(
+function findCostCenter(
 	roots: CostCenter[],
 	id: cryptly.Identifier
 ): { root: CostCenter; found: CostCenter } | undefined {
@@ -40,3 +61,4 @@ export function findCostCenter(
 			result)
 	)
 }
+export const find = Object.assign(findNode, { delegation: findDelegation, costCenter: findCostCenter })
