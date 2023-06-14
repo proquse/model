@@ -73,17 +73,14 @@ export namespace Purchase {
 				root.purchases.find(
 					purchase => purchase.id == id && (result = { root, parent: root as Delegation, found: purchase })
 				)
-		)
-		return (
-			result ??
-			(roots.find(
+		) ??
+			roots.find(
 				root =>
 					(result = (result => (!result ? result : { ...result, root }))(find(root.delegations, id))) ??
 					("costCenters" in root &&
 						(result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id))))
-			) &&
-				result)
-		)
+			)
+		return result
 	}
 	export function list<T = Purchase, TRoot extends Delegation | CostCenter = Delegation | CostCenter>(
 		roots: Iterable<TRoot>,
