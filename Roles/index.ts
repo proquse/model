@@ -1,9 +1,9 @@
-import * as model from "@userwidgets/model"
+import { userwidgets } from "@userwidgets/model"
 
 export namespace Roles {
 	interface Permissions {
-		"*"?: model.User.Permissions.Application
-		[organizationId: string]: model.User.Permissions.Organization | undefined
+		"*"?: userwidgets.User.Permissions.Application
+		[organizationId: string]: userwidgets.User.Permissions.Organization | undefined
 	}
 	const functions = {
 		user: satisfiesUser,

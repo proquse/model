@@ -160,6 +160,7 @@ describe("Delegation", () => {
 		expect(issuefab.Delegation.is(initialDelegation)).toEqual(true)
 		expect(issuefab.Delegation.is((({ from, ...delegation }) => delegation)(initialDelegation))).toEqual(false)
 		expect(issuefab.Delegation.is({ ...initialDelegation, to: [] })).toEqual(false)
+		expect(issuefab.Delegation.is(topLevelDelegation)).toEqual(false)
 	})
 
 	it("findUser", () => {

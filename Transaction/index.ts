@@ -1,4 +1,4 @@
-import * as isoly from "isoly"
+import { isoly } from "isoly"
 import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"

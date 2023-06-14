@@ -1,6 +1,6 @@
-import * as model from "../index"
+import { issuefab } from "../index"
 describe("Transaction", () => {
-	const creatable: model.Transaction.Creatable = {
+	const creatable: issuefab.Transaction.Creatable = {
 		amount: [10, "EUR"],
 		descriptor: "hello world",
 		date: {
@@ -9,7 +9,7 @@ describe("Transaction", () => {
 		purchaseId: "purchaseId",
 		balance: [-10, "EUR"],
 	}
-	const transaction: model.Transaction = {
+	const transaction: issuefab.Transaction = {
 		id: "asd",
 		reference: "123",
 		purchaseId: "y",
@@ -22,7 +22,7 @@ describe("Transaction", () => {
 		receiptId: "qwe",
 		balance: [-10, "EUR"],
 	}
-	const delegation: model.Delegation = {
+	const delegation: issuefab.Delegation = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -197,18 +197,18 @@ describe("Transaction", () => {
 		purchases: [],
 	}
 	it("is", () => {
-		expect(model.Transaction.is(transaction)).toEqual(true)
+		expect(issuefab.Transaction.is(transaction)).toEqual(true)
 	})
 	it("create", () => {
-		let result: model.Transaction = model.Transaction.create(creatable, "id")
-		expect(model.Transaction.is(result)).toEqual(true)
+		let result: issuefab.Transaction = issuefab.Transaction.create(creatable, "id")
+		expect(issuefab.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(true)
-		result = model.Transaction.create({ ...creatable, reference: "reference" }, "id")
-		expect(model.Transaction.is(result)).toEqual(true)
+		result = issuefab.Transaction.create({ ...creatable, reference: "reference" }, "id")
+		expect(issuefab.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(false)
 	})
 	it("linking", () => {
-		const purchase: model.Purchase = {
+		const purchase: issuefab.Purchase = {
 			id: "aoeu1234",
 			created: "2022-01-01T00:00:42Z",
 			modified: "2022-01-01T00:00:42Z",
@@ -267,7 +267,7 @@ describe("Transaction", () => {
 				},
 			],
 		}
-		const remainder = model.Transaction.link(
+		const remainder = issuefab.Transaction.link(
 			[
 				{ receiptId: "1", transactionId: "a" },
 				{ receiptId: "2", transactionId: "b" },
@@ -284,18 +284,18 @@ describe("Transaction", () => {
 		expect(purchase.receipts[2].transactionId).toEqual(undefined)
 	})
 	it("find", () => {
-		expect(model.Transaction.find(delegation.delegations, "3")).toEqual({
+		expect(issuefab.Transaction.find(delegation.delegations, "3")).toEqual({
 			root: delegation.delegations[0],
 			purchase: delegation.delegations[0].purchases[0],
 			found: delegation.delegations[0].purchases[0].transactions[0],
 		})
 	})
 	it("list", () => {
-		expect(model.Transaction.list([delegation]).length).toEqual(3)
-		expect(model.Transaction.list([delegation], (_, __, d) => d.costCenter == "IT").length).toEqual(3)
-		expect(model.Transaction.list([delegation], t => t.amount[0] < 10).length).toEqual(1)
-		expect(model.Transaction.list([delegation], (_, p) => p.buyer == "richard@example.com").length).toEqual(2)
-		const result = model.Transaction.list(
+		expect(issuefab.Transaction.list([delegation]).length).toEqual(3)
+		expect(issuefab.Transaction.list([delegation], (_, __, d) => d.costCenter == "IT").length).toEqual(3)
+		expect(issuefab.Transaction.list([delegation], t => t.amount[0] < 10).length).toEqual(1)
+		expect(issuefab.Transaction.list([delegation], (_, p) => p.buyer == "richard@example.com").length).toEqual(2)
+		const result = issuefab.Transaction.list(
 			[delegation],
 			(_, p) => p.buyer == "richard@example.com",
 			(t, p, d) => ({ ...t, purchaseId: p.id, delegationId: d.id })
@@ -303,7 +303,7 @@ describe("Transaction", () => {
 		expect(result.length).toEqual(2)
 		expect(
 			result.every(
-				transaction => model.Transaction.is(transaction) && transaction.purchaseId && transaction.delegationId
+				transaction => issuefab.Transaction.is(transaction) && transaction.purchaseId && transaction.delegationId
 			)
 		)
 	})
