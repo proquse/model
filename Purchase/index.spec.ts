@@ -231,6 +231,7 @@ describe("Purchase", () => {
 	it("find", () => {
 		expect(model.Purchase.find([delegation], "aoeu1234")).toEqual({
 			root: delegation,
+			parent: delegation.delegations[0].delegations[0],
 			found: delegation.delegations[0].delegations[0].purchases[0],
 		})
 	})
@@ -277,7 +278,7 @@ describe("Purchase", () => {
 		expect(target).toEqual(after)
 		expect(first).not.toBe(after)
 		const second = model.Purchase.change([root], updated)
-		expect(second).toEqual({ root: root, changed: updated })
+		expect(second).toEqual({ root: root, parent: root, changed: updated })
 		expect(second?.changed).not.toBe(updated)
 	})
 	it("remove", () => {
