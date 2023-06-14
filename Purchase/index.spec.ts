@@ -151,6 +151,9 @@ describe("Purchase", () => {
 
 	it("is", () => {
 		expect(issuefab.Purchase.is(purchase)).toEqual(true)
+		expect(issuefab.Purchase.is((({ transactions, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ amount, ...purchase }) => purchase)(purchase))).toEqual(true)
+		expect(issuefab.Purchase.is((({ email, ...purchase }) => purchase)(purchase))).toEqual(false)
 	})
 	it("create", () => {
 		const purchase: issuefab.Purchase.Creatable = {

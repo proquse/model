@@ -11,6 +11,7 @@ describe("Purchase.Creatable", () => {
 	}
 	it("is", () => {
 		expect(issuefab.Purchase.Creatable.is(creatable)).toEqual(true)
+		expect(issuefab.Purchase.Creatable.is((({ payment, ...creatable }) => creatable)(creatable))).toEqual(false)
 	})
 	it("validate", () => {
 		expect(issuefab.Purchase.Creatable.validate(creatable)).toEqual(true)

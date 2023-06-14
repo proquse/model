@@ -1,3 +1,4 @@
+import { isly } from "isly"
 import { Amount } from "../Amount"
 import { Payment } from "../Payment"
 
@@ -8,14 +9,10 @@ export interface Creatable {
 }
 
 export namespace Creatable {
-	export function is(value: Creatable | any): value is Creatable & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			typeof value.purpose == "string" &&
-			Payment.is(value.payment) &&
-			typeof value.buyer == "string"
-		)
-	}
+	export const type = isly.object<Creatable>({ purpose: isly.string(), payment: Payment.type, buyer: isly.string() })
+	export const is = type.is
+	export const flaw = type.flaw
+
 	export function validate(purchase: Creatable, limit?: Amount): boolean {
 		return !!purchase.buyer && Payment.Creatable.validate(purchase.payment, limit)
 	}
