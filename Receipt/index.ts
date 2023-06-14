@@ -4,7 +4,7 @@ import { isly } from "isly"
 import { CostCenter } from "../CostCenter"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
-import { Transaction } from "../Transaction"
+// import { Transaction } from "../Transaction"
 import { Creatable as CreatableRequest } from "./Creatable"
 import { Total as ReceiptTotal } from "./Total"
 export interface Receipt {
@@ -12,7 +12,6 @@ export interface Receipt {
 	original: string
 	total: ReceiptTotal[]
 	date: isoly.DateTime
-	transactionId?: string
 }
 
 export namespace Receipt {
@@ -21,10 +20,25 @@ export namespace Receipt {
 		original: isly.string(),
 		total: isly.array(ReceiptTotal.type),
 		date: isly.fromIs("DateTime", isoly.DateTime.is),
-		transactionId: isly.string().optional(),
 	})
 	export const is = type.is
 	export const flaw = type.flaw
+	export function create(
+		receipt: Creatable,
+		purchase: string,
+		origin: string,
+		override?: Partial<Receipt>,
+		idLength: cryptly.Identifier.Length = 8
+	): Receipt {
+		const id = cryptly.Identifier.generate(idLength)
+		return {
+			...receipt,
+			...override,
+			id: override?.id ?? id,
+			original: override?.original ?? `${origin}/receipt/${purchase}/${id}`,
+			date: override?.date ?? isoly.DateTime.now(),
+		}
+	}
 
 	export function find<T extends Delegation | CostCenter>(
 		roots: T[],
@@ -75,12 +89,11 @@ export namespace Receipt {
 			!!receipt.id &&
 			!!receipt.original &&
 			receipt.date < isoly.DateTime.now() &&
-			(!receipt.total.length || !currency || receipt.total.every(total => Total.validate(total, currency))) &&
-			receipt.transactionId != ""
+			(!receipt.total.length || !currency || receipt.total.every(total => Total.validate(total, currency)))
 		)
 	}
-	export type Link = Transaction.Link
-	export const link = Transaction.link
+	// export type Link = Transaction.Link
+	// export const link = Transaction.link
 	export type Creatable = CreatableRequest
 	export const Creatable = CreatableRequest
 	export type Total = ReceiptTotal
