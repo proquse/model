@@ -1,4 +1,5 @@
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Amount } from "../Amount"
 
 export interface Creatable {
@@ -15,17 +16,18 @@ export interface Creatable {
 }
 
 export namespace Creatable {
-	export function is(creatable: Creatable | any): creatable is Creatable {
-		return (
-			typeof creatable == "object" &&
-			(creatable.reference == undefined || typeof creatable.reference == "string") &&
-			typeof creatable.descriptor == "string" &&
-			typeof creatable.date == "object" &&
-			isoly.DateTime.is(creatable.date.transaction) &&
-			(creatable.date.payment == undefined || isoly.DateTime.is(creatable.date.payment)) &&
-			(creatable.receiptId == undefined || typeof creatable.receiptId == "string") &&
-			(typeof creatable.purchaseId == "string" || creatable.purchaseId == undefined) &&
-			Amount.is(creatable.balance)
-		)
-	}
+	export const type = isly.object<Creatable>({
+		reference: isly.string().optional(),
+		purchaseId: isly.string().optional(),
+		descriptor: isly.string(),
+		amount: Amount.type,
+		date: isly.object({
+			transaction: isly.fromIs("DateTime", isoly.DateTime.is),
+			payment: isly.fromIs("DateTime", isoly.DateTime.is).optional(),
+		}),
+		receiptId: isly.string().optional(),
+		balance: Amount.type,
+	})
+	export const is = type.is
+	export const flaw = type.flaw
 }

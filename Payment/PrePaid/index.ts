@@ -1,15 +1,12 @@
-import { Amount } from "../../Amount"
+import { isly } from "isly"
 import { Creatable as PrePaidCreatable } from "./Creatable"
 
-export interface PrePaid {
-	type: "pre-paid"
-	limit: Amount
-}
+export type PrePaid = PrePaidCreatable
 
 export namespace PrePaid {
-	export function is(value: PrePaid | any): value is PrePaid {
-		return typeof value == "object" && value && value.type == "pre-paid" && Amount.is(value.limit)
-	}
+	export const type: isly.object.ExtendableType<PrePaid> = PrePaidCreatable.type.extend<PrePaid>({})
+	export const is = type.is
+	export const flaw = type.flaw
 	export const validate = PrePaidCreatable.validate
 	export type Creatable = PrePaidCreatable
 	export const Creatable = PrePaidCreatable

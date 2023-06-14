@@ -198,6 +198,12 @@ describe("Transaction", () => {
 	}
 	it("is", () => {
 		expect(issuefab.Transaction.is(transaction)).toEqual(true)
+		expect(issuefab.Transaction.is((({ id, ...transaction }) => transaction)(transaction))).toEqual(false)
+		expect(issuefab.Transaction.is((({ reference, ...transaction }) => transaction)(transaction))).toEqual(false)
+		expect(issuefab.Transaction.Creatable.is((({ reference, ...transaction }) => transaction)(transaction))).toEqual(
+			true
+		)
+		expect(issuefab.Transaction.is((({ date, ...transaction }) => transaction)(transaction))).toEqual(false)
 	})
 	it("create", () => {
 		let result: issuefab.Transaction = issuefab.Transaction.create(creatable, "id")

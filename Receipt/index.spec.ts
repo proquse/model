@@ -183,6 +183,7 @@ describe("Receipt", () => {
 	}
 	it("is", () => {
 		expect(issuefab.Receipt.is(receipt)).toEqual(true)
+		expect(issuefab.Receipt.is((({ original, ...receipt }) => receipt)(receipt))).toEqual(false)
 	})
 	it("validate", () => {
 		const now = "2022-01-01T00:00:42Z"

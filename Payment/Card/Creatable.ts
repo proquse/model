@@ -1,3 +1,4 @@
+import { isly } from "isly"
 import { Amount } from "../../Amount"
 
 export interface Creatable {
@@ -5,6 +6,7 @@ export interface Creatable {
 	limit: Amount
 }
 export namespace Creatable {
+	export const type = isly.object<Creatable>({ type: isly.string(["card"]), limit: Amount.type })
 	export function is(value: Creatable | any): value is Creatable {
 		return typeof value == "object" && value && value.type == "card" && Amount.is(value.limit)
 	}

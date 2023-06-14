@@ -1,5 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { CostCenter } from "../CostCenter"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
@@ -15,17 +16,16 @@ export interface Receipt {
 }
 
 export namespace Receipt {
-	export function is(value: Receipt | any): value is Receipt & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			isoly.DateTime.is(value.date) &&
-			cryptly.Identifier.is(value.id) &&
-			typeof value.original == "string" &&
-			Array.isArray(value.total) &&
-			value.total.every(ReceiptTotal.is) &&
-			(value.transactionId == undefined || typeof value.transactionId == "string")
-		)
-	}
+	export const type = isly.object<Receipt>({
+		id: isly.fromIs("Id", cryptly.Identifier.is),
+		original: isly.string(),
+		total: isly.array(ReceiptTotal.type),
+		date: isly.fromIs("DateTime", isoly.DateTime.is),
+		transactionId: isly.string().optional(),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
+
 	export function find<T extends Delegation | CostCenter>(
 		roots: T[],
 		id: string

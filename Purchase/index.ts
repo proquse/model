@@ -1,5 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Amount } from "../Amount"
 import { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
@@ -8,13 +9,10 @@ import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase {
+export interface Purchase extends PurchaseCreatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	payment: Payment
-	purpose: string
-	buyer: string //email
 	amount?: Amount
 	email: string
 	receipts: Receipt[]
@@ -22,24 +20,18 @@ export interface Purchase {
 }
 
 export namespace Purchase {
-	export function is(value: Purchase | any): value is Purchase & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			value &&
-			typeof value.purpose == "string" &&
-			typeof value.buyer == "string" &&
-			cryptly.Identifier.is(value.id) &&
-			isoly.DateTime.is(value.created) &&
-			isoly.DateTime.is(value.modified) &&
-			Payment.is(value.payment) &&
-			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
-			typeof value.email == "string" &&
-			Array.isArray(value.receipts) &&
-			value.receipts.every((receipt: unknown) => Receipt.is(receipt)) &&
-			Array.isArray(value.transactions) &&
-			value.transactions.every((transaction: unknown) => Transaction.is(transaction))
-		)
-	}
+	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
+		id: isly.fromIs("Id", cryptly.Identifier.is),
+		created: isly.fromIs("DateTime", isoly.DateTime.is),
+		modified: isly.fromIs("DateTime", isoly.DateTime.is),
+		amount: Amount.type.optional(),
+		email: isly.string(),
+		receipts: isly.array(Receipt.type),
+		transactions: isly.array(Transaction.type),
+	})
+
+	export const is = type.is
+	export const flaw = type.flaw
 	export function create(
 		purchase: Purchase.Creatable,
 		organizationId: string,

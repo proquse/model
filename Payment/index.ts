@@ -1,3 +1,4 @@
+import { isly } from "isly"
 import { Amount } from "../Amount"
 import { Card as PaymentCard } from "./Card"
 import { Creatable as PaymentCreatable } from "./Creatable"
@@ -6,9 +7,13 @@ import { PrePaid as PaymentPrePaid } from "./PrePaid"
 
 export type Payment = Payment.Card | Payment.PrePaid | Payment.Expense
 export namespace Payment {
-	export function is(value: Payment | any): value is Payment {
-		return Card.is(value) || PrePaid.is(value) || Expense.is(value)
-	}
+	export const type = isly.union<Payment, Payment.Card, Payment.Expense, Payment.PrePaid>(
+		PaymentCard.type,
+		PaymentExpense.type,
+		PaymentPrePaid.type
+	)
+	export const is = type.is
+	export const flaw = type.flaw
 
 	export function validate(payment: Payment, limit?: Amount): boolean {
 		return Card.is(payment)

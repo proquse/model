@@ -1,38 +1,22 @@
-import { isoly } from "isoly"
-import { Amount } from "../Amount"
+import { isly } from "isly"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Creatable as TransactionCreatable } from "./Creatable"
 import { Link as TransactionLink } from "./Link"
 
-export interface Transaction {
+export interface Transaction extends TransactionCreatable {
 	id: string
 	reference: string
-	purchaseId?: string
-	descriptor: string
-	amount: Amount
-	date: {
-		transaction: isoly.DateTime
-		payment?: isoly.DateTime
-	}
-	receiptId?: string
-	balance: Amount
 }
 
 export namespace Transaction {
-	export function is(value: Transaction | any): value is Transaction {
-		return (
-			typeof value == "object" &&
-			typeof value.reference == "string" &&
-			typeof value.descriptor == "string" &&
-			Amount.is(value.amount) &&
-			typeof value.date == "object" &&
-			(value.date.transaction == undefined || isoly.DateTime.is(value.date.transaction)) &&
-			(value.date.payment == undefined || isoly.DateTime.is(value.date.payment)) &&
-			(value.receipt == undefined || typeof value.receipt == "string") &&
-			Amount.is(value.balance)
-		)
-	}
+	export const type: isly.object.ExtendableType<Transaction> = TransactionCreatable.type.extend<Transaction>({
+		id: isly.string(),
+		reference: isly.string(),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
+
 	export function create(transaction: Creatable, id: string): Transaction {
 		return {
 			id: id,
