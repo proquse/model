@@ -1,6 +1,7 @@
 import * as cryptly from "cryptly"
 import * as isoly from "isoly"
 import * as PDFLib from "pdf-lib"
+import { CostCenter } from "../CostCenter"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
@@ -26,36 +27,46 @@ export namespace Receipt {
 			(value.transactionId == undefined || typeof value.transactionId == "string")
 		)
 	}
-	function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
-		let result: S | undefined
-		elements.find(single => (result = finder(single)))
+	export function find<T extends Delegation | CostCenter>(
+		roots: T[],
+		id: string
+	): { root: T; delegation: Delegation; purchase: Purchase; found: Receipt } | undefined {
+		let result: { root: T; delegation: Delegation; purchase: Purchase; found: Receipt } | undefined
+		roots.find(
+			root =>
+				"purchases" in root &&
+				root.purchases.find(purchase =>
+					purchase.receipts.find(
+						receipt =>
+							receipt.id == id &&
+							(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt })
+					)
+				)
+		) ??
+			roots.find(
+				root =>
+					(result = (result => (!result ? result : { ...result, root }))(find(root.delegations, id))) ??
+					("costCenters" in root &&
+						(result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id))))
+			)
 		return result
 	}
-	export function find(
-		roots: Delegation[],
-		id: string
-	): { root: Delegation; purchase: Purchase; found: Receipt } | undefined {
-		return findInner(roots, root => {
-			let result = findInner(root.purchases, purchase =>
-				findInner(purchase.receipts, receipt =>
-					receipt.id != id ? undefined : { root: root, purchase: purchase, found: receipt }
-				)
-			)
-			return result ?? ((result = find(root.delegations, id)) && { ...result, root: root })
-		})
-	}
-	export function list<T = Receipt>(
-		roots: Iterable<Delegation>,
+	export function list<T = Receipt, TRoot extends Delegation | CostCenter = Delegation | CostCenter>(
+		roots: Iterable<TRoot>,
 		filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any,
 		map?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => T
 	): T[] {
-		function* list(roots: Iterable<Delegation>): Generator<T> {
+		function* list<TRoot extends Delegation | CostCenter>(roots: Iterable<TRoot>): Generator<T> {
 			for (const root of roots) {
-				for (const purchase of root.purchases)
-					for (const receipt of purchase.receipts)
-						(!filter || filter(receipt, purchase, root)) && (yield map ? map(receipt, purchase, root) : (receipt as T))
+				if ("purchases" in root)
+					for (const purchase of root.purchases)
+						for (const receipt of purchase.receipts)
+							(!filter || filter(receipt, purchase, root)) &&
+								(yield map ? map(receipt, purchase, root) : (receipt as T))
 
 				yield* list(root.delegations)
+				if ("costCenters" in root)
+					yield* list(root.costCenters)
 			}
 		}
 		return Array.from(list(roots))

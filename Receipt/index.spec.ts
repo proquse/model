@@ -233,6 +233,7 @@ describe("Receipt", () => {
 	it("find", () => {
 		expect(model.Receipt.find([delegation], "w")).toEqual({
 			root: delegation,
+			delegation: delegation.delegations[0].delegations[0],
 			purchase: delegation.delegations[0].delegations[0].purchases[1],
 			found: delegation.delegations[0].delegations[0].purchases[1].receipts[0],
 		})
