@@ -161,12 +161,7 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		const result = issuefab.Purchase.create(
-			purchase,
-			{ type: "card", limit: [10, "EUR"] },
-			"organizationId",
-			"receipt@example.com"
-		)
+		const result = issuefab.Purchase.create(purchase, "organizationId", "receipt@example.com")
 		expect(issuefab.Purchase.is(result))
 		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
 	})
@@ -187,7 +182,6 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -233,7 +227,6 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -263,7 +256,6 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -280,7 +272,6 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -297,7 +288,6 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -314,7 +304,6 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),
@@ -333,7 +322,6 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						{ type: "card", limit: [10, "EUR"] },
 						"organizationId",
 						"receipt@example.com"
 					),
@@ -353,7 +341,6 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),

@@ -42,7 +42,6 @@ export namespace Purchase {
 	}
 	export function create(
 		purchase: Purchase.Creatable,
-		payment: Payment,
 		organizationId: string,
 		email: string,
 		override?: Partial<Purchase>,
@@ -57,7 +56,6 @@ export namespace Purchase {
 			id: override?.id ?? id,
 			created: override?.created ?? now,
 			modified: override?.modified ?? now,
-			payment: override?.payment ?? payment,
 			email: override?.email ?? `${recipient}+${organizationId}_${id}@${domain}`,
 			receipts: override?.receipts ?? [],
 			transactions: override?.transactions ?? [],
@@ -123,7 +121,6 @@ export namespace Purchase {
 		roots: T[],
 		id: string
 	): { root: T; parent: Delegation; removed: Purchase } | undefined {
-		// let result: { root: T; parent: Delegation; removed: Purchase } | undefined
 		const search = find(roots, id)
 		const index = search?.parent.purchases.findIndex(purchase => purchase == search.found) ?? -1
 
@@ -134,12 +131,6 @@ export namespace Purchase {
 					parent: search.parent,
 					removed: search.found,
 			  }
-		// roots.find(root =>
-		// 	root.purchases.find(
-		// 		(purchase, index) => purchase.id == id && (result = { root: root, removed: root.purchases.splice(index, 1)[0] })
-		// 	)
-		// )
-		// return result ?? (roots.find(root => (result = remove(root.delegations, id))) && result)
 	}
 	export function validate(purchase: Purchase, limit?: Amount): boolean {
 		return (
