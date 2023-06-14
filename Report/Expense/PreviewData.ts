@@ -9,7 +9,7 @@ export interface PreviewData {
 }
 
 export namespace PreviewData {
-	const type = isly.object<PreviewData>({
+	export const type = isly.object<PreviewData>({
 		compileData: isly.record(
 			isly.string(),
 			isly.array(isly.object({ purpose: isly.string(), date: isly.fromIs("Date", isoly.Date.is), amount: Amount.type }))
