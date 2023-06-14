@@ -16,6 +16,7 @@ export namespace Report {
 	export const Expense = ReportExpense
 	export namespace Expense {
 		export type Creatable = ReportExpense.Creatable
+		export type PreviewData = ReportExpense.PreviewData
 	}
 	export type Creatable = ReportCreatable
 	export const Creatable = ReportCreatable
