@@ -7,6 +7,8 @@ describe("Payment.Prepaid", () => {
 	}
 	it("is", () => {
 		expect(issuefab.Payment.PrePaid.Creatable.is(prePaid)).toEqual(true)
+		expect(issuefab.Payment.PrePaid.is((({ type, ...prePaid }) => prePaid)(prePaid))).toEqual(false)
+		expect(issuefab.Payment.PrePaid.Creatable.is({ ...prePaid, wrong: "should become false" })).toEqual(true)
 		expect(issuefab.Payment.PrePaid.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
 	})
 })
