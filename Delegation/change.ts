@@ -28,13 +28,10 @@ export function changeDelegation(
 
 	if (result) {
 		if (result.root.costCenter != change.costCenter)
-			if (
-				"costCenters" in result.root &&
-				changeCostCenter([result.root], { ...result.root, costCenter: change.costCenter })
-			)
-				Object.assign(result.changed, change)
-			else
+			if (!("costCenters" in result.root))
 				result = undefined
+			else
+				changeCostCenter([result.root], { ...result.root, costCenter: Object.assign(result.changed, change).id })
 		else
 			Object.assign(result.changed, change)
 	}
