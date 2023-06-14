@@ -44,21 +44,23 @@ export namespace Purchase {
 		purchase: Purchase.Creatable,
 		payment: Payment,
 		organizationId: string,
-		to: string,
+		email: string,
+		override?: Partial<Purchase>,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
 		const id = cryptly.Identifier.generate(idLength)
-		const [recipient, domain] = to.split("@")
+		const [recipient, domain] = email.split("@")
 		return {
-			id: id,
-			created: now,
-			modified: now,
 			...purchase,
-			payment: payment,
-			email: `${recipient}+${organizationId}_${id}@${domain}`,
-			receipts: [],
-			transactions: [],
+			...override,
+			id: override?.id ?? id,
+			created: override?.created ?? now,
+			modified: override?.modified ?? now,
+			payment: override?.payment ?? payment,
+			email: override?.email ?? `${recipient}+${organizationId}_${id}@${domain}`,
+			receipts: override?.receipts ?? [],
+			transactions: override?.transactions ?? [],
 		}
 	}
 	export function find<T extends Delegation | CostCenter>(
