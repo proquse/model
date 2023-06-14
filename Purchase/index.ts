@@ -1,5 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Amount } from "../Amount"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
@@ -7,13 +8,10 @@ import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase {
+export interface Purchase extends PurchaseCreatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	payment: Payment
-	purpose: string
-	buyer: string //email
 	amount?: Amount
 	email: string
 	receipts: Receipt[]

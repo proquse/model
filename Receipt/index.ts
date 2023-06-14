@@ -1,5 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Transaction } from "../Transaction"
@@ -14,17 +15,16 @@ export interface Receipt {
 }
 
 export namespace Receipt {
-	export function is(value: Receipt | any): value is Receipt & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			isoly.DateTime.is(value.date) &&
-			cryptly.Identifier.is(value.id) &&
-			typeof value.original == "string" &&
-			Array.isArray(value.total) &&
-			value.total.every(ReceiptTotal.is) &&
-			(value.transactionId == undefined || typeof value.transactionId == "string")
-		)
-	}
+	export const type = isly.object<Receipt>({
+		id: isly.fromIs("Id", cryptly.Identifier.is),
+		original: isly.string(),
+		total: isly.array(ReceiptTotal.type),
+		date: isly.fromIs("DateTime", isoly.DateTime.is),
+		transactionId: isly.string().optional(),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
+
 	function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
 		let result: S | undefined
 		elements.find(single => (result = finder(single)))
