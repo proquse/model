@@ -18,4 +18,7 @@ export namespace Expense {
 	export const Creatable = ExpenseCreatable
 	export type Paid = ExpensePaid
 	export const Paid = ExpensePaid
+	export namespace Paid {
+		export type Creatable = ExpensePaid.Creatable
+	}
 }
