@@ -4,13 +4,11 @@ import { isly } from "isly"
 import { CostCenter } from "../CostCenter"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
-// import { Transaction } from "../Transaction"
 import { Creatable as CreatableRequest } from "./Creatable"
 import { Total as ReceiptTotal } from "./Total"
-export interface Receipt {
+export interface Receipt extends Omit<Receipt.Creatable, "file"> {
 	id: cryptly.Identifier
 	original: string
-	total: ReceiptTotal[]
 	date: isoly.DateTime
 }
 
@@ -32,7 +30,7 @@ export namespace Receipt {
 	): Receipt {
 		const id = cryptly.Identifier.generate(idLength)
 		return {
-			...receipt,
+			...(({ file, ...receipt }) => receipt)(receipt),
 			...override,
 			id: override?.id ?? id,
 			original: override?.original ?? `${origin}/receipt/${purchase}/${id}`,

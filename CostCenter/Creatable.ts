@@ -18,7 +18,10 @@ export namespace Creatable {
 	export const flaw = type.flaw
 	export function validate(costCenter: Creatable, limit?: Amount) {
 		return (
-			!!costCenter.from && !!costCenter.costCenter && Amount.validate(costCenter.amount, limit) && !!costCenter.purpose
+			!!costCenter.from &&
+			!!costCenter.costCenter &&
+			Amount.validate(costCenter.amount, limit) &&
+			(typeof costCenter.costCenter == "string" || costCenter.costCenter == undefined)
 		)
 	}
 }
