@@ -36,7 +36,7 @@ describe("CostCenter", () => {
 		expect(issuefab.CostCenter.is((({ created, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ modified, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ from, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
-		expect(issuefab.CostCenter.is((({ purpose, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
+		expect(issuefab.CostCenter.is((({ purpose, ...costCenter }) => costCenter)(costCenter))).toEqual(true)
 		expect(issuefab.CostCenter.is((({ delegations, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ costCenters, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 	})
