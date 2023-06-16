@@ -16,12 +16,7 @@ export namespace Creatable {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function validate(costCenter: Creatable, limit?: Amount) {
-		return (
-			!!costCenter.from &&
-			!!costCenter.costCenter &&
-			Amount.validate(costCenter.amount, limit) &&
-			(typeof costCenter.costCenter == "string" || costCenter.costCenter == undefined)
-		)
+	export function validate(costCenter: Creatable, limit?: Amount): boolean {
+		return !!costCenter.from && !!costCenter.costCenter && Amount.validate(costCenter.amount, limit)
 	}
 }
