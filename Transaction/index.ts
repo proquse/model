@@ -4,7 +4,7 @@ import { Purchase } from "../Purchase"
 import { Creatable as TransactionCreatable } from "./Creatable"
 import { Link as TransactionLink } from "./Link"
 
-export interface Transaction extends TransactionCreatable {
+export interface Transaction extends Transaction.Creatable {
 	id: string
 	reference: string
 }

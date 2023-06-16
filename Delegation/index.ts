@@ -4,7 +4,7 @@ import { Amount } from "../Amount"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { Data as DelegationData } from "./Data"
 
-export interface Delegation extends DelegationData {
+export interface Delegation extends Delegation.Data {
 	delegations: Delegation[]
 }
 export namespace Delegation {

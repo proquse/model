@@ -2,7 +2,7 @@ import { isly } from "isly"
 import { Creatable as ExpenseCreatable } from "./Creatable"
 import { Paid as ExpensePaid } from "./Paid"
 
-export interface Expense extends ExpenseCreatable {
+export interface Expense extends Expense.Creatable {
 	Paid?: Expense.Paid
 }
 

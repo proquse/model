@@ -2,7 +2,7 @@ import { isoly } from "isoly"
 import { isly } from "isly"
 import { Creatable as PaidCreatable } from "./Creatable"
 
-export interface Paid extends PaidCreatable {
+export interface Paid extends Paid.Creatable {
 	created: isoly.Date
 	modified: isoly.Date
 }
