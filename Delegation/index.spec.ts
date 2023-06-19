@@ -16,10 +16,10 @@ describe("Delegation", () => {
 	const topLevelDelegation: issuefab.CostCenter = {
 		id: "abcd0001",
 		from: "jane@example.com",
-		costCenter: "budget",
+		name: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
-		purpose: "Total company Budget",
+		description: "Total company Budget",
 		amount: [20_000, "EUR"],
 		delegations: [
 			{

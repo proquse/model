@@ -12,12 +12,12 @@ function* chain<T>(...iterables: Iterable<T>[]): Iterable<T> {
 		yield* iterable
 }
 
-export function changeDelegation(
-	roots: (Delegation | CostCenter)[],
+export function changeDelegation<T extends Delegation | CostCenter>(
+	roots: T[],
 	change: Delegation
-): { root: Delegation | CostCenter; changed: Delegation } | undefined {
+): { root: T; changed: Delegation } | undefined {
 	const search = findDelegation(roots, change.id)
-	let result: { root: Delegation | CostCenter; changed: Delegation } | undefined = !search
+	let result: { root: T; changed: Delegation } | undefined = !search
 		? search
 		: "costCenters" in search.found
 		? undefined
@@ -27,18 +27,20 @@ export function changeDelegation(
 		  }
 
 	if (result) {
-		if (result.root.costCenter != change.costCenter)
-			if (!("costCenters" in result.root))
-				result = undefined
-			else
-				changeCostCenter([result.root], { ...result.root, costCenter: Object.assign(result.changed, change).id })
+		if ("name" in result.root && result.root.name != change.costCenter)
+			result = undefined
+		else if ("purchases" in result.root && result.root.costCenter != change.costCenter)
+			result = undefined
 		else
 			Object.assign(result.changed, change)
 	}
 	return result
 }
 function changeName(root: CostCenter | Delegation, name: string): string {
-	root.costCenter = name
+	if ("name" in root)
+		root.name = name
+	else
+		root.costCenter = name
 	for (const child of chain<Delegation | CostCenter>(root.delegations, "costCenters" in root ? root.costCenters : []))
 		changeName(child, name)
 	return name
@@ -52,8 +54,8 @@ export function changeCostCenter(
 		? search
 		: { root: search.root, changed: search.found }
 	if (result) {
-		if (result.root.costCenter != change.costCenter)
-			changeName(result.root, change.costCenter)
+		if (result.root.id == result.changed.id && result.root.name != change.name)
+			changeName(result.root, change.name)
 		Object.assign(result.changed, change)
 	}
 	return result

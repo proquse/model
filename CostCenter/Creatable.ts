@@ -3,20 +3,20 @@ import { Amount } from "../Amount"
 
 export interface Creatable {
 	from: string //email
-	costCenter: string
+	name: string
 	amount: Amount
-	purpose?: string
+	description?: string
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
 		from: isly.string(),
-		costCenter: isly.string(),
+		name: isly.string(),
 		amount: Amount.type,
-		purpose: isly.string().optional(),
+		description: isly.string().optional(),
 	})
 	export const is = type.is
 	export const flaw = type.flaw
 	export function validate(costCenter: Creatable, limit?: Amount): boolean {
-		return !!costCenter.from && !!costCenter.costCenter && Amount.validate(costCenter.amount, limit)
+		return !!costCenter.from && !!costCenter.name && Amount.validate(costCenter.amount, limit)
 	}
 }

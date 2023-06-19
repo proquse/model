@@ -19,24 +19,24 @@ describe("CostCenter", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "1",
 			amount: [10, "USD"],
-			costCenter: "Development",
+			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
 			from: "jessie@example.com",
-			purpose: "description",
+			description: "description",
 			delegations: [],
 			costCenters: [],
 		}
 		expect(issuefab.CostCenter.is(costCenter)).toEqual(true)
 		expect(issuefab.CostCenter.is({ ...costCenter, to: [] })).toEqual(true)
-		expect(issuefab.CostCenter.is({ ...costCenter, to: ["james@issuefab.com"] })).toEqual(false)
+		expect(issuefab.CostCenter.type.get({ ...costCenter, to: ["james@issuefab.com"] })).toEqual(costCenter)
 		expect(issuefab.CostCenter.is((({ id, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ amount, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
-		expect(issuefab.CostCenter.is((({ costCenter, ...rest }) => rest)(costCenter))).toEqual(false)
+		expect(issuefab.CostCenter.is((({ name, ...rest }) => rest)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ created, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ modified, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ from, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
-		expect(issuefab.CostCenter.is((({ purpose, ...costCenter }) => costCenter)(costCenter))).toEqual(true)
+		expect(issuefab.CostCenter.is((({ description, ...costCenter }) => costCenter)(costCenter))).toEqual(true)
 		expect(issuefab.CostCenter.is((({ delegations, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(issuefab.CostCenter.is((({ costCenters, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 	})
@@ -44,21 +44,21 @@ describe("CostCenter", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
 			amount: [10, "USD"],
-			costCenter: "Development",
+			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
 			from: "jessie@example.com",
-			purpose: "description",
+			description: "description",
 			delegations: [],
 			costCenters: [
 				{
 					id: "c2",
 					amount: [4, "USD"],
-					costCenter: "Development",
+					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
 					from: "jessie@example.com",
-					purpose: "better description",
+					description: "better description",
 					delegations: [
 						{
 							id: "d1",
@@ -81,20 +81,20 @@ describe("CostCenter", () => {
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).toBe(result?.changed)
 		expect(result?.root?.amount).toEqual([11, "USD"])
-		result = issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], costCenter: "development" })
+		result = issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], name: "development" })
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).not.toBe(result?.changed)
 		expect(result?.changed).toBe(costCenter.costCenters[0])
-		expect(costCenter.costCenter).toEqual("development")
-		expect(costCenter.costCenters[0].costCenter).toEqual("development")
-		expect(costCenter.costCenters[0].delegations[0].costCenter).toEqual("development")
+		expect(costCenter.name).toEqual("Development")
+		expect(costCenter.costCenters[0].name).toEqual("development")
+		expect(costCenter.costCenters[0].delegations[0].costCenter).toEqual("Development")
 	})
 	it("create", () => {
 		const creatable: issuefab.CostCenter.Creatable = {
 			amount: [16, "USD"],
 			from: "jessie@example.com",
-			purpose: "buy things",
-			costCenter: "fun",
+			description: "buy things",
+			name: "fun",
 		}
 
 		expect(issuefab.CostCenter.is(issuefab.CostCenter.create(creatable))).toEqual(true)
@@ -106,21 +106,21 @@ describe("CostCenter", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
 			amount: [10, "USD"],
-			costCenter: "Development",
+			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
 			from: "jessie@example.com",
-			purpose: "description",
+			description: "description",
 			delegations: [],
 			costCenters: [
 				{
 					id: "c2",
 					amount: [4, "USD"],
-					costCenter: "Development",
+					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
 					from: "jessie@example.com",
-					purpose: "better description",
+					description: "better description",
 					delegations: [
 						{
 							id: "d1",
@@ -163,21 +163,21 @@ describe("CostCenter", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
 			amount: [10, "USD"],
-			costCenter: "Development",
+			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
 			from: "jessie@example.com",
-			purpose: "description",
+			description: "description",
 			delegations: [],
 			costCenters: [
 				{
 					id: "c2",
 					amount: [4, "USD"],
-					costCenter: "Development",
+					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
 					from: "jessie@example.com",
-					purpose: "better description",
+					description: "better description",
 					delegations: [
 						{
 							id: "d1",
@@ -214,21 +214,21 @@ describe("CostCenter", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
 			amount: [10, "USD"],
-			costCenter: "Development",
+			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
 			from: "jessie@example.com",
-			purpose: "description",
+			description: "description",
 			delegations: [],
 			costCenters: [
 				{
 					id: "c2",
 					amount: [4, "USD"],
-					costCenter: "Development",
+					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
 					from: "jessie@example.com",
-					purpose: "better description",
+					description: "better description",
 					delegations: [
 						{
 							id: "d1",
