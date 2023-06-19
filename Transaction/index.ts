@@ -74,17 +74,17 @@ export namespace Transaction {
 			transaction.receiptId != ""
 		)
 	}
-	export function link(links: TransactionLink[], purchase: Purchase): TransactionLink[] {
-		return links.filter(link => {
-			let result = true
-			const transaction = purchase.transactions.find(transaction => transaction.id == link.transactionId)
-			if (transaction) {
-				const receipt = purchase.receipts.find(receipt => receipt.id == link.receiptId)
-				receipt && ((transaction.receiptId = receipt.id), (receipt.transactionId = transaction.id), (result = false))
-			}
-			return result
-		})
-	}
+	// export function link(links: TransactionLink[], purchase: Purchase): TransactionLink[] {
+	// 	return links.filter(link => {
+	// 		let result = true
+	// 		const transaction = purchase.transactions.find(transaction => transaction.id == link.transactionId)
+	// 		if (transaction) {
+	// 			const receipt = purchase.receipts.find(receipt => receipt.id == link.receiptId)
+	// 			receipt && ((transaction.receiptId = receipt.id), (receipt.transactionId = transaction.id), (result = false))
+	// 		}
+	// 		return result
+	// 	})
+	// }
 	export const Link = TransactionLink
 	export type Link = TransactionLink
 	export const Creatable = TransactionCreatable

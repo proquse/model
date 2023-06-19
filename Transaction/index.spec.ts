@@ -213,82 +213,82 @@ describe("Transaction", () => {
 		expect(issuefab.Transaction.is(result)).toEqual(true)
 		expect(result.id == result.reference).toEqual(false)
 	})
-	it("linking", () => {
-		const purchase: issuefab.Purchase = {
-			id: "aoeu1234",
-			created: "2022-01-01T00:00:42Z",
-			modified: "2022-01-01T00:00:42Z",
-			buyer: "richard@example.com",
-			amount: [30, "EUR"],
-			purpose: "Production Workers",
-			email: "receipt@example.com",
-			payment: { type: "card", limit: [100, "EUR"] },
-			receipts: [
-				{
-					id: "1",
-					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
-					date: "2022-01-01T00:00:42Z",
-					original: "https://example.com/receipt.pdf",
-				},
-				{
-					id: "2",
-					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
-					date: "2022-01-01T00:00:42Z",
-					original: "https://example.com/receipt.pdf",
-				},
-				{
-					id: "3",
-					total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
-					date: "2022-01-01T00:00:42Z",
-					original: "https://example.com/receipt.pdf",
-				},
-			],
-			transactions: [
-				{
-					id: "c",
-					reference: "someid",
-					purchaseId: "y",
-					amount: [10, "EUR"],
-					descriptor: "irelevant",
-					date: { transaction: "2022-01-01T00:00:42Z" },
-					balance: [-10, "EUR"],
-				},
-				{
-					id: "b",
-					reference: "someid",
-					purchaseId: "y",
-					amount: [10, "EUR"],
-					descriptor: "irelevant",
-					date: { transaction: "2022-01-01T00:00:42Z" },
-					balance: [-10, "EUR"],
-				},
-				{
-					id: "a",
-					reference: "someid",
-					purchaseId: "y",
-					amount: [10, "EUR"],
-					descriptor: "irelevant",
-					date: { transaction: "2022-01-01T00:00:42Z" },
-					balance: [-10, "EUR"],
-				},
-			],
-		}
-		const remainder = issuefab.Transaction.link(
-			[
-				{ receiptId: "1", transactionId: "a" },
-				{ receiptId: "2", transactionId: "b" },
-				{ receiptId: "4", transactionId: "d" },
-			],
-			purchase
-		)
-		expect(remainder).toEqual([{ receiptId: "4", transactionId: "d" }])
-		expect(purchase.transactions[0].receiptId).toEqual(undefined)
-		expect(purchase.transactions[1].receiptId).toEqual("2")
-		expect(purchase.transactions[2].receiptId).toEqual("1")
-		expect(purchase.receipts[0].transactionId).toEqual("a")
-		expect(purchase.receipts[1].transactionId).toEqual("b")
-		expect(purchase.receipts[2].transactionId).toEqual(undefined)
-	})
+	// it("linking", () => {
+	// 	const purchase: issuefab.Purchase = {
+	// 		id: "aoeu1234",
+	// 		created: "2022-01-01T00:00:42Z",
+	// 		modified: "2022-01-01T00:00:42Z",
+	// 		buyer: "richard@example.com",
+	// 		amount: [30, "EUR"],
+	// 		purpose: "Production Workers",
+	// 		email: "receipt@example.com",
+	// 		payment: { type: "card", limit: [100, "EUR"] },
+	// 		receipts: [
+	// 			{
+	// 				id: "1",
+	// 				total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+	// 				date: "2022-01-01T00:00:42Z",
+	// 				original: "https://example.com/receipt.pdf",
+	// 			},
+	// 			{
+	// 				id: "2",
+	// 				total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+	// 				date: "2022-01-01T00:00:42Z",
+	// 				original: "https://example.com/receipt.pdf",
+	// 			},
+	// 			{
+	// 				id: "3",
+	// 				total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+	// 				date: "2022-01-01T00:00:42Z",
+	// 				original: "https://example.com/receipt.pdf",
+	// 			},
+	// 		],
+	// 		transactions: [
+	// 			{
+	// 				id: "c",
+	// 				reference: "someid",
+	// 				purchaseId: "y",
+	// 				amount: [10, "EUR"],
+	// 				descriptor: "irelevant",
+	// 				date: { transaction: "2022-01-01T00:00:42Z" },
+	// 				balance: [-10, "EUR"],
+	// 			},
+	// 			{
+	// 				id: "b",
+	// 				reference: "someid",
+	// 				purchaseId: "y",
+	// 				amount: [10, "EUR"],
+	// 				descriptor: "irelevant",
+	// 				date: { transaction: "2022-01-01T00:00:42Z" },
+	// 				balance: [-10, "EUR"],
+	// 			},
+	// 			{
+	// 				id: "a",
+	// 				reference: "someid",
+	// 				purchaseId: "y",
+	// 				amount: [10, "EUR"],
+	// 				descriptor: "irelevant",
+	// 				date: { transaction: "2022-01-01T00:00:42Z" },
+	// 				balance: [-10, "EUR"],
+	// 			},
+	// 		],
+	// 	}
+	// 	const remainder = issuefab.Transaction.link(
+	// 		[
+	// 			{ receiptId: "1", transactionId: "a" },
+	// 			{ receiptId: "2", transactionId: "b" },
+	// 			{ receiptId: "4", transactionId: "d" },
+	// 		],
+	// 		purchase
+	// 	)
+	// 	expect(remainder).toEqual([{ receiptId: "4", transactionId: "d" }])
+	// 	expect(purchase.transactions[0].receiptId).toEqual(undefined)
+	// 	expect(purchase.transactions[1].receiptId).toEqual("2")
+	// 	expect(purchase.transactions[2].receiptId).toEqual("1")
+	// 	expect(purchase.receipts[0].transactionId).toEqual("a")
+	// 	expect(purchase.receipts[1].transactionId).toEqual("b")
+	// 	expect(purchase.receipts[2].transactionId).toEqual(undefined)
+	// })
 	it("find", () => {
 		expect(issuefab.Transaction.find(delegation.delegations, "3")).toEqual({
 			root: delegation.delegations[0],
