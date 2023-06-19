@@ -4,7 +4,7 @@ import { isly } from "isly"
 import { Amount } from "../Amount"
 import { Delegation } from "../Delegation"
 import { changeCostCenter } from "../Delegation/change"
-import { find as costCenterFind } from "../Delegation/find"
+import { findCostCenter, findNode } from "../Delegation/find"
 import { Creatable as CostCenterCreatable } from "./Creatable"
 
 export interface CostCenter extends CostCenter.Creatable {
@@ -71,7 +71,7 @@ export namespace CostCenter {
 			costCenter.costCenters.every(costCenter => validate(costCenter, [costCenter.amount[0], equity[1]]))
 		)
 	}
-	export const find = costCenterFind
+	export const find = Object.assign(findCostCenter, { node: findNode })
 	export const findUser = Delegation.findUser
 	export const findParent = Delegation.findParent
 	export const findParents = Delegation.findParents

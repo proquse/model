@@ -185,6 +185,11 @@ describe("Delegation", () => {
 			root: topLevelDelegation,
 			found: topLevelDelegation.delegations[1].delegations[0],
 		})
+		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0001")).toEqual(undefined)
+		expect(issuefab.Delegation.find.node([topLevelDelegation], "abcd0001")).toEqual({
+			root: topLevelDelegation,
+			found: topLevelDelegation,
+		})
 	})
 	it("findParent", () => {
 		expect(issuefab.Delegation.findParent([topLevelDelegation], topLevelDelegation.delegations[0].id)).toEqual({

@@ -8,7 +8,7 @@ import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "./index"
 
 // add test for this one
-function findNode<T extends Delegation | CostCenter>(
+export function findNode<T extends Delegation | CostCenter>(
 	roots: T[],
 	id: string
 ): { root: T; found: Delegation | CostCenter } | undefined {
@@ -28,7 +28,7 @@ function findNode<T extends Delegation | CostCenter>(
 	)
 }
 
-function findDelegation<T extends Delegation | CostCenter>(
+export function findDelegation<T extends Delegation | CostCenter>(
 	roots: T[],
 	id: string
 ): { root: T; found: Delegation } | undefined {
@@ -47,7 +47,7 @@ function findDelegation<T extends Delegation | CostCenter>(
 			result)
 	)
 }
-function findCostCenter(
+export function findCostCenter(
 	roots: CostCenter[],
 	id: cryptly.Identifier
 ): { root: CostCenter; found: CostCenter } | undefined {
@@ -61,4 +61,4 @@ function findCostCenter(
 			result)
 	)
 }
-export const find = Object.assign(findNode, { delegation: findDelegation, costCenter: findCostCenter })
+// export const find = Object.assign(findNode, { delegation: findDelegation, costCenter: findCostCenter })

@@ -6,7 +6,7 @@ import type { CostCenter } from "../CostCenter"
 import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
-import { find as delegationFind } from "./find"
+import { findDelegation, findNode } from "./find"
 
 export interface Delegation extends Delegation.Creatable {
 	id: cryptly.Identifier
@@ -74,7 +74,7 @@ export namespace Delegation {
 			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
 		)
 	}
-	export const find = delegationFind
+	export const find = Object.assign(findDelegation, { node: findNode })
 	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: string): Delegation[] {
 		const result: Delegation[] = []
 		for (const root of roots) {

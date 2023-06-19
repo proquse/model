@@ -139,13 +139,24 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		let result = issuefab.CostCenter.find([costCenter], "c2")
+		let result:
+			| {
+					root: issuefab.CostCenter | issuefab.Delegation | undefined
+					found: issuefab.CostCenter | issuefab.Delegation | undefined
+			  }
+			| undefined
+		result = issuefab.CostCenter.find([costCenter], "c2")
 		expect(result?.root).toBe(costCenter)
 		expect(result?.found).toBe(costCenter.costCenters[0])
 		result = issuefab.CostCenter.find([costCenter], "c1")
 		expect(result?.root).toBe(costCenter)
 		expect(result?.found).toBe(costCenter)
-		result = issuefab.CostCenter.find([costCenter], "d2")
+		result = issuefab.CostCenter.find([costCenter], "d1")
+		expect(result).toEqual(undefined)
+		result = issuefab.CostCenter.find.node([costCenter], "d1")
+		expect(result?.root).toBe(costCenter)
+		expect(result?.found).toBe(costCenter.costCenters[0].delegations[0])
+		result = issuefab.CostCenter.find.node([costCenter], "d2")
 		expect(result).toEqual(undefined)
 	})
 	it("remove", () => {

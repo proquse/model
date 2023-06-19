@@ -4,7 +4,7 @@
  */
 
 import type { CostCenter } from "../CostCenter"
-import { find } from "./find"
+import { findCostCenter, findDelegation } from "./find"
 import type { Delegation } from "./index"
 
 function* chain<T>(...iterables: Iterable<T>[]): Iterable<T> {
@@ -16,7 +16,7 @@ export function changeDelegation(
 	roots: (Delegation | CostCenter)[],
 	change: Delegation
 ): { root: Delegation | CostCenter; changed: Delegation } | undefined {
-	const search = find.delegation(roots, change.id)
+	const search = findDelegation(roots, change.id)
 	let result: { root: Delegation | CostCenter; changed: Delegation } | undefined = !search
 		? search
 		: "costCenters" in search.found
@@ -47,7 +47,7 @@ export function changeCostCenter(
 	roots: CostCenter[],
 	change: CostCenter
 ): { root: CostCenter; changed: CostCenter } | undefined {
-	const search = find.costCenter(roots, change.id)
+	const search = findCostCenter(roots, change.id)
 	const result: { root: CostCenter; changed: CostCenter } | undefined = !search
 		? search
 		: { root: search.root, changed: search.found }
