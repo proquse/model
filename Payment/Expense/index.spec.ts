@@ -4,6 +4,7 @@ describe("Payment.Expense", () => {
 	const expense: issuefab.Payment.Expense = {
 		type: "expense",
 		limit: [10, "EUR"],
+		paid: {},
 	}
 	it("is", () => {
 		expect(issuefab.Payment.Expense.is(expense)).toEqual(true)
