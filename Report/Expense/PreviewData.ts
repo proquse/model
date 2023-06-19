@@ -1,27 +1,16 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Amount } from "../../Amount"
-import { Paid } from "../../Payment/Expense/Paid"
+import { Purchase } from "./../../Purchase"
 
 export interface PreviewData {
-	compileData: Record<string, { purpose: string; date: isoly.DateTime; amount: Amount; paid?: Paid }[]>
+	compileData: Record<string, Purchase[]>
 	organization: string
 	dateRange: isoly.DateRange
 }
 
 export namespace PreviewData {
 	export const type = isly.object<PreviewData>({
-		compileData: isly.record(
-			isly.string(),
-			isly.array(
-				isly.object({
-					purpose: isly.string(),
-					date: isly.fromIs("DateTime", isoly.DateTime.is),
-					amount: Amount.type,
-					paid: Paid.type.optional(),
-				})
-			)
-		),
+		compileData: isly.record(isly.string(), isly.array(Purchase.type)),
 		organization: isly.string(),
 		dateRange: isly.fromIs("DateRange", isoly.DateRange.is),
 	})

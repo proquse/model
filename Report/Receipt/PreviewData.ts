@@ -6,7 +6,7 @@ import { Receipt } from "../../Receipt"
 export interface PreviewData {
 	receiptsData: {
 		costCenter: string
-		receipts: { details: Receipt; purchase: Purchase; file: File }[]
+		receipts: { receipt: Receipt; purchase: Purchase; file: File }[]
 	}[]
 	organization: string
 	dateRange: isoly.DateRange
@@ -19,7 +19,7 @@ export namespace PreviewData {
 				costCenter: isly.string(),
 				receipts: isly.array<PreviewData["receiptsData"][number]["receipts"]>(
 					isly.object({
-						details: Receipt.type,
+						receipt: Receipt.type,
 						purchase: Purchase.type,
 						file: isly.fromIs<File>("File", value => value instanceof File),
 					})
