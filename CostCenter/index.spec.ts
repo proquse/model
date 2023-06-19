@@ -100,6 +100,7 @@ describe("CostCenter", () => {
 		expect(issuefab.CostCenter.is(issuefab.CostCenter.create(creatable))).toEqual(true)
 		expect(issuefab.CostCenter.create(creatable, { id: "d4" }).id).toEqual("d4")
 		expect(issuefab.CostCenter.create(creatable, { from: "james@issuefab.com" }).from).toEqual("james@issuefab.com")
+		expect(issuefab.CostCenter.is(issuefab.CostCenter.create(creatable, { from: undefined }))).toEqual(false)
 	})
 	it("find", () => {
 		const costCenter: issuefab.CostCenter = {
