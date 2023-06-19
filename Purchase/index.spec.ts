@@ -151,6 +151,9 @@ describe("Purchase", () => {
 
 	it("is", () => {
 		expect(issuefab.Purchase.is(purchase)).toEqual(true)
+		expect(issuefab.Purchase.is((({ transactions, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ amount, ...purchase }) => purchase)(purchase))).toEqual(true)
+		expect(issuefab.Purchase.is((({ email, ...purchase }) => purchase)(purchase))).toEqual(false)
 	})
 	it("create", () => {
 		const purchase: issuefab.Purchase.Creatable = {
@@ -161,18 +164,14 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		const result = issuefab.Purchase.create(
-			purchase,
-			{ type: "card", limit: [10, "EUR"] },
-			"organizationId",
-			"receipt@example.com"
-		)
+		const result = issuefab.Purchase.create(purchase, "organizationId", "receipt@example.com")
 		expect(issuefab.Purchase.is(result))
 		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
 	})
 	it("find", () => {
 		expect(issuefab.Purchase.find([delegation], "aoeu1234")).toEqual({
 			root: delegation,
+			parent: delegation.delegations[0].delegations[0],
 			found: delegation.delegations[0].delegations[0].purchases[0],
 		})
 	})
@@ -186,7 +185,6 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -219,7 +217,7 @@ describe("Purchase", () => {
 		expect(target).toEqual(after)
 		expect(first).not.toBe(after)
 		const second = issuefab.Purchase.change([root], updated)
-		expect(second).toEqual({ root: root, changed: updated })
+		expect(second).toEqual({ root: root, parent: root, changed: updated })
 		expect(second?.changed).not.toBe(updated)
 	})
 	it("remove", () => {
@@ -232,7 +230,6 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -262,7 +259,6 @@ describe("Purchase", () => {
 				},
 				buyer: "jane@example.com",
 			},
-			{ type: "card", limit: [10, "EUR"] },
 			"organizationId",
 			"receipt@example.com"
 		)
@@ -279,7 +275,6 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -296,7 +291,6 @@ describe("Purchase", () => {
 						},
 						buyer: "",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				)
@@ -313,7 +307,6 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),
@@ -332,7 +325,6 @@ describe("Purchase", () => {
 							},
 							buyer: "jane@example.com",
 						},
-						{ type: "card", limit: [10, "EUR"] },
 						"organizationId",
 						"receipt@example.com"
 					),
@@ -352,7 +344,6 @@ describe("Purchase", () => {
 						},
 						buyer: "jane@example.com",
 					},
-					{ type: "card", limit: [10, "EUR"] },
 					"organizationId",
 					"receipt@example.com"
 				),

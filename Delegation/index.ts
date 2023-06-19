@@ -1,130 +1,150 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Amount } from "../Amount"
+import type { CostCenter } from "../CostCenter"
+import { Purchase } from "../Purchase"
+import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
-import { Data as DelegationData } from "./Data"
+import { findDelegation, findNode } from "./find"
 
-export interface Delegation extends DelegationData {
+export interface Delegation extends Delegation.Creatable {
+	id: cryptly.Identifier
+	created: isoly.DateTime
+	modified: isoly.DateTime
+	purchases: Purchase[]
 	delegations: Delegation[]
 }
 export namespace Delegation {
 	export type Creatable = DelegationCreatable
 	export const Creatable = DelegationCreatable
-	export type Data = DelegationData
-	export const Data = DelegationData
-
-	export function is(value: Delegation | any): value is Delegation & Record<string, any> {
-		return (
-			DelegationData.is(value) &&
-			Array.isArray(value.delegations) &&
-			value.delegations.every(delegation => Delegation.is(delegation))
-		)
-	}
+	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
+		id: isly.fromIs<cryptly.Identifier>("Identifier", cryptly.Identifier.is),
+		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
+		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
+		purchases: isly.array(isly.fromIs("Purchase", Purchase.is)),
+		delegations: isly.array(isly.lazy(() => type, "Delegation")),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
 	export function create(
-		creatable: DelegationCreatable,
-		from: string,
+		delegation: Delegation.Creatable,
+		override?: Partial<Delegation>,
 		idLength: cryptly.Identifier.Length = 8
 	): Delegation {
 		const now = isoly.DateTime.now()
 		return {
-			...creatable,
-			id: cryptly.Identifier.generate(idLength),
-			from: from,
-			created: now,
-			modified: now,
-			purchases: [],
-			delegations: [],
+			...delegation,
+			...override,
+			id: override?.id ?? cryptly.Identifier.generate(idLength),
+			created: override?.created ?? now,
+			modified: override?.modified ?? now,
+			purchases: override?.purchases ?? [],
+			delegations: override?.delegations ?? [],
 		}
 	}
-	export function findUser(roots: Delegation[], email: string): Delegation[] {
-		const result: Delegation[] = []
-		roots.forEach(root => root.to.includes(email) && result.push(root))
-		roots.forEach(root => result.push(...findUser(root.delegations, email)))
-		return result
-	}
-	export function find(roots: Delegation[], id: string): { root: Delegation; found: Delegation } | undefined {
-		let result: { root: Delegation; found: Delegation } | undefined
-		roots.find(root => root.id == id && (result = { root: root, found: root }))
-		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
-	}
-	export function findParent(roots: Delegation[], id: string): { root: Delegation; found: Delegation } | undefined {
-		let result: { root: Delegation; found: Delegation } | undefined
-		return roots.find(
-			root => root.delegations.find(delegation => delegation.id == id) && (result = { root: root, found: root })
+	export const change = changeDelegation
+	export function remove<T extends Delegation | CostCenter>(
+		roots: T[],
+		id: string
+	): { root: T; removed: Delegation } | undefined {
+		let result: { root: T; removed: Delegation } | undefined
+		const index = roots.findIndex(
+			root => root.id == id && "purchases" in root && (result = { root: root, removed: root })
 		)
-			? result
-			: roots.find(root => (result = findParent(root.delegations, id)) && (result.root = root)) && result
-	}
-	export function findParents(roots: Delegation[], id: string): Delegation[] | undefined {
-		let result: Delegation[] | undefined = roots.find(root => root.id == id) && []
+		if (index >= 0)
+			roots.splice(index, 1)
 		return result
 			? result
-			: roots.find(root => (result = findParents(root.delegations, id)) && (result = [root, ...result])) && result
+			: roots.find(
+					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.delegations, id)))
+			  ) && result
 	}
-	export function path(roots: Delegation[], id: string): Delegation[] | undefined {
-		let result: Delegation[] | undefined = [roots.find(root => root.id == id) ?? []].flat()
-		return result.length
-			? result
-			: roots.find(root => (result = path(root.delegations, id)) && (result = [root, ...result])) && result
-	}
-	function changeCostCenter(root: Delegation, costCenter: string): string {
-		root.delegations.forEach(delegation => changeCostCenter(delegation, costCenter))
-		return (root.costCenter = costCenter)
-	}
-	export function change(
-		roots: Delegation[],
-		updated: Delegation
-	): { root: Delegation; changed: Delegation } | undefined {
-		const search = find(roots, updated.id)
-		let result: { root: Delegation; changed: Delegation } | undefined = search && {
-			root: search.root,
-			changed: search.found,
-		}
-		!(result && updated.costCenter != result.changed.costCenter) ||
-			(result.root == result.changed ? changeCostCenter(result.root, updated.costCenter) : (result = undefined))
-		result &&
-			((Object.keys(result.changed) as (keyof Delegation)[]).forEach(key => result && delete result.changed[key]),
-			Object.assign(result.changed, updated))
-		return result
-	}
-	export function remove(roots: Delegation[], id: string): { root: Delegation; removed: Delegation } | undefined {
-		let result: { root: Delegation; removed: Delegation } | undefined
-		const index = roots.findIndex(root => root.id == id && (result = { root: root, removed: root }))
-		index >= 0 && roots.splice(index, 1)
-		return result
-			? result
-			: roots.find(root => (result = remove(root.delegations, id)) && (result.root = root)) && result
-	}
-	export function spent(delegation: Delegation, includeOwnPurchases?: boolean): number {
-		return includeOwnPurchases
-			? delegation.purchases.reduce(
-					(aggregate, current) => (current.amount == undefined ? aggregate : aggregate + current.amount[0]),
-					delegation.delegations.reduce((aggregate, current) => aggregate + spent(current, true), 0)
-			  )
-			: delegation.delegations.reduce((aggregate, current) => aggregate + spent(current, true), 0)
-	}
-	export function balance(delegation: Delegation): number {
-		return delegation.delegations.reduce(
-			(aggregate, current) => aggregate - current.amount[0],
-			delegation.purchases.reduce(
-				(aggregate, current) => (current.payment.limit == undefined ? aggregate : aggregate - current.payment.limit[0]),
-				delegation.amount[0]
-			)
-		)
-	}
-	export function validate(delegation: Delegation, limit?: Amount, costCenter = false): boolean {
-		const equity = balance(delegation)
+	export function validate(delegation: Delegation, limit?: Amount): boolean {
+		const equity: Amount = [balance(delegation), delegation.amount[1]]
 		return (
 			!!delegation.id &&
 			delegation.created <= delegation.modified &&
 			delegation.modified <= isoly.DateTime.now() &&
 			!!delegation.from &&
 			!!delegation.costCenter &&
-			Delegation.Creatable.validate(delegation, limit, costCenter) &&
-			0 <= equity &&
-			(!limit || equity <= limit[0]) &&
-			balance(delegation) >= 0 &&
-			delegation.delegations.every(delegation => Delegation.validate(delegation, delegation.amount))
+			Delegation.Creatable.validate(delegation, limit) &&
+			0 <= equity[0] &&
+			(!limit || equity[0] <= limit[0]) &&
+			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
+		)
+	}
+	export const find = Object.assign(findDelegation, { node: findNode })
+	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: string): Delegation[] {
+		const result: Delegation[] = []
+		for (const root of roots) {
+			if ("costCenters" in root)
+				result.push(...findUser(root.costCenters, email))
+			else
+				root.to.includes(email) && result.push(root)
+			result.push(...findUser(root.delegations, email))
+		}
+		return result
+	}
+	export function findParent<
+		T extends Delegation | CostCenter,
+		TResult extends T extends Delegation ? Delegation | CostCenter : T
+	>(roots: T[], id: string): { root: TResult; found: TResult } | undefined {
+		let result: { root: TResult; found: TResult } | undefined
+		return roots.find(
+			root =>
+				root.delegations.find(delegation => delegation.id == id) &&
+				(result = { root: root as any as TResult, found: root as any as TResult })
+		)
+			? result
+			: roots.find(
+					root =>
+						(result = (result =>
+							!result ? result : ({ ...result, root } as unknown as { root: TResult; found: TResult }))(
+							findParent(root.delegations, id)
+						))
+			  ) && result
+	}
+	export function findParents<
+		T extends Delegation | CostCenter,
+		TResult extends T extends Delegation ? Delegation | CostCenter : T
+	>(roots: T[], id: string): TResult[] | undefined {
+		let result: TResult[] | undefined = roots.find(root => root.id == id) && []
+		return result
+			? result
+			: roots.find(
+					root => (result = findParents(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
+			  ) && result
+	}
+	export function path<
+		T extends Delegation | CostCenter,
+		TResult extends T extends Delegation ? Delegation | CostCenter : T
+	>(roots: T[], id: string): TResult[] | undefined {
+		const found = roots.find(root => root.id == id) as TResult
+		let result: TResult[] | undefined = found ? [found] : []
+		return result?.length
+			? result
+			: roots.find(
+					root => (result = path(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
+			  ) && result
+	}
+	export function spent<T extends Delegation | CostCenter>(root: T, includeOwnPurchases?: boolean): number {
+		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
+			(result, current) => result + spent(current, true),
+			includeOwnPurchases && "purchases" in root
+				? root.purchases.reduce(
+						(result, current) => (current.amount == undefined ? result : result + current.amount[0]),
+						0
+				  )
+				: 0
+		)
+	}
+	export function balance<T extends Delegation | CostCenter>(root: T): number {
+		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
+			(result, current) => result - current.amount[0],
+			"purchases" in root
+				? root.purchases.reduce((result, current) => result - current.payment.limit[0], root.amount[0])
+				: root.amount[0]
 		)
 	}
 }

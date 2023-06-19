@@ -1,19 +1,18 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { isly } from "isly"
 import { Amount } from "../Amount"
+import { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase {
+export interface Purchase extends Purchase.Creatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	payment: Payment
-	purpose: string
-	buyer: string //email
 	amount?: Amount
 	email: string
 	receipts: Receipt[]
@@ -21,92 +20,109 @@ export interface Purchase {
 }
 
 export namespace Purchase {
-	export function is(value: Purchase | any): value is Purchase & Record<string, any> {
-		return (
-			typeof value == "object" &&
-			value &&
-			typeof value.purpose == "string" &&
-			typeof value.buyer == "string" &&
-			cryptly.Identifier.is(value.id) &&
-			isoly.DateTime.is(value.created) &&
-			isoly.DateTime.is(value.modified) &&
-			Payment.is(value.payment) &&
-			(typeof value.amount == "undefined" || Amount.is(value.amount)) &&
-			typeof value.email == "string" &&
-			Array.isArray(value.receipts) &&
-			value.receipts.every((receipt: unknown) => Receipt.is(receipt)) &&
-			Array.isArray(value.transactions) &&
-			value.transactions.every((transaction: unknown) => Transaction.is(transaction))
-		)
-	}
+	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
+		id: isly.fromIs("Id", cryptly.Identifier.is),
+		created: isly.fromIs("DateTime", isoly.DateTime.is),
+		modified: isly.fromIs("DateTime", isoly.DateTime.is),
+		amount: Amount.type.optional(),
+		email: isly.string(),
+		receipts: isly.array(Receipt.type),
+		transactions: isly.array(Transaction.type),
+	})
+
+	export const is = type.is
+	export const flaw = type.flaw
 	export function create(
 		purchase: Purchase.Creatable,
-		payment: Payment,
 		organizationId: string,
-		to: string,
+		email: string,
+		override?: Partial<Purchase>,
 		idLength: cryptly.Identifier.Length = 8
 	): Purchase {
 		const now = isoly.DateTime.now()
 		const id = cryptly.Identifier.generate(idLength)
-		const [recipient, domain] = to.split("@")
+		const [recipient, domain] = email.split("@")
 		return {
-			id: id,
-			created: now,
-			modified: now,
 			...purchase,
-			payment: payment,
-			email: `${recipient}+${organizationId}_${id}@${domain}`,
-			receipts: [],
-			transactions: [],
+			...override,
+			id: override?.id ?? id,
+			created: override?.created ?? now,
+			modified: override?.modified ?? now,
+			email: override?.email ?? `${recipient}+${organizationId}_${id}@${domain}`,
+			receipts: override?.receipts ?? [],
+			transactions: override?.transactions ?? [],
 		}
 	}
-	export function find(roots: Delegation[], id: string): { root: Delegation; found: Purchase } | undefined {
-		let result: { root: Delegation; found: Purchase } | undefined
-		roots.find(root => root.purchases.find(purchase => purchase.id == id && (result = { root: root, found: purchase })))
-		return result ?? (roots.find(root => (result = find(root.delegations, id)) && (result.root = root)) && result)
+	export function find<T extends Delegation | CostCenter>(
+		roots: T[],
+		id: string
+	): { root: T; parent: Delegation; found: Purchase } | undefined {
+		let result: { root: T; parent: Delegation; found: Purchase } | undefined
+		roots.find(
+			root =>
+				"purchases" in root &&
+				root.purchases.find(
+					purchase => purchase.id == id && (result = { root, parent: root as Delegation, found: purchase })
+				)
+		) ??
+			roots.find(
+				root =>
+					(result = (result => (!result ? result : { ...result, root }))(find(root.delegations, id))) ??
+					("costCenters" in root &&
+						(result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id))))
+			)
+		return result
 	}
-	export function list<T = Purchase>(
-		roots: Iterable<Delegation>,
+	export function list<T = Purchase, TRoot extends Delegation | CostCenter = Delegation | CostCenter>(
+		roots: Iterable<TRoot>,
 		filter?: (purchase: Purchase, delegation: Delegation) => boolean | any,
 		map?: (purchase: Purchase, delegation: Delegation) => T
 	): T[] {
-		function* list(roots: Iterable<Delegation>): Generator<T> {
+		function* list<TRoot extends Delegation | CostCenter>(roots: Iterable<TRoot>): Generator<T> {
 			for (const root of roots) {
-				for (const purchase of root.purchases)
-					(!filter || filter(purchase, root)) && (yield map ? map(purchase, root) : (purchase as T))
+				if ("purchases" in root)
+					for (const purchase of root.purchases)
+						(!filter || filter(purchase, root)) && (yield map ? map(purchase, root) : (purchase as T))
 				yield* list(root.delegations)
+				if ("costCenters" in root)
+					yield* list(root.costCenters)
 			}
 		}
 		return Array.from(list(roots))
 	}
-	export function change(roots: Delegation[], updated: Purchase): { root: Delegation; changed: Purchase } | undefined
-	export function change(old: Purchase, updated: Purchase): Purchase
-	export function change(
-		roots: Delegation[] | Purchase,
-		updated: Purchase
-	): { root: Delegation; changed: Purchase } | Purchase | undefined {
-		let result: { root: Delegation; changed: Purchase } | Purchase | undefined
-		if (Array.isArray(roots)) {
-			const search = find(roots, updated.id)
-			search &&
-				(result = { root: search.root, changed: { ...search.found } }) &&
-				((Object.keys(search.found) as (keyof Purchase)[]).forEach(key => delete search.found[key]),
-				Object.assign(search.found, updated))
-		} else {
-			result = { ...roots }
-			;(Object.keys(roots) as (keyof Purchase)[]).forEach(key => delete roots[key])
-			Object.assign(roots, updated)
+	export function change<T extends Delegation | CostCenter>(
+		roots: T[],
+		change: Purchase
+	): { root: T; parent: Delegation; changed: Purchase } | undefined
+	export function change(purchase: Purchase, change: Purchase): Purchase
+	export function change<T extends Delegation | CostCenter>(
+		roots: T[] | Purchase,
+		change: Purchase
+	): { root: T; parent: Delegation; changed: Purchase } | Purchase | undefined {
+		let result: { root: T; parent: Delegation; changed: Purchase } | Purchase | undefined
+		if (!Array.isArray(roots))
+			result = Object.assign(roots, change)
+		else {
+			const search = find(roots, change.id)
+			if (search)
+				result = { root: search.root, parent: search.parent, changed: Object.assign(search.found, change) }
 		}
 		return result
 	}
-	export function remove(roots: Delegation[], id: string): { root: Delegation; removed: Purchase } | undefined {
-		let result: { root: Delegation; removed: Purchase } | undefined
-		roots.find(root =>
-			root.purchases.find(
-				(purchase, index) => purchase.id == id && (result = { root: root, removed: root.purchases.splice(index, 1)[0] })
-			)
-		)
-		return result ?? (roots.find(root => (result = remove(root.delegations, id))) && result)
+	export function remove<T extends Delegation | CostCenter>(
+		roots: T[],
+		id: string
+	): { root: T; parent: Delegation; removed: Purchase } | undefined {
+		const search = find(roots, id)
+		const index = search?.parent.purchases.findIndex(purchase => purchase == search.found) ?? -1
+
+		return !search || index < 0
+			? undefined
+			: search.parent.purchases.splice(index, 1) && {
+					root: search.root,
+					parent: search.parent,
+					removed: search.found,
+			  }
 	}
 	export function validate(purchase: Purchase, limit?: Amount): boolean {
 		return (

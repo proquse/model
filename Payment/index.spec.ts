@@ -7,6 +7,8 @@ describe("Payment", () => {
 	}
 	it("is", () => {
 		expect(issuefab.Payment.is(payment)).toEqual(true)
+		expect(issuefab.Payment.is({ ...payment, type: "invoice" })).toEqual(false)
+		expect(issuefab.Payment.is((({ type, ...payment }) => payment)(payment))).toEqual(false)
 	})
 
 	it("validate", () => {

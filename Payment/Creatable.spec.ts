@@ -8,5 +8,6 @@ describe("Payment.Creatable", () => {
 
 		expect(Creatable.is(creatableCard)).toBe(true)
 		expect(Creatable.is(creatablePrePaid)).toBe(true)
+		expect(Creatable.is({ ...creatablePrePaid, type: "Blaha" })).toBe(false)
 	})
 })

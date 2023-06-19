@@ -1,20 +1,16 @@
 import { isly } from "isly"
-import { Amount } from "../../Amount"
 import { Creatable as ExpenseCreatable } from "./Creatable"
 import { Paid as ExpensePaid } from "./Paid"
 
-export interface Expense {
-	type: "expense"
-	limit: Amount
+export interface Expense extends ExpenseCreatable {
 	Paid?: Expense.Paid
 }
 
 export namespace Expense {
-	export const type = isly.object<Expense>({
-		type: isly.string(["expense"]),
-		limit: Amount.type,
+	export const type: isly.object.ExtendableType<Expense> = ExpenseCreatable.type.extend<Expense>({
 		Paid: ExpensePaid.type.optional(),
 	})
+
 	export const is = type.is
 	export const flaw = type.flaw
 	export const validate = ExpenseCreatable.validate

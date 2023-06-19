@@ -19,6 +19,13 @@ describe("Transaction.Creatable", () => {
 			})
 		).toEqual(true)
 		expect(issuefab.Transaction.Creatable.is({ ...transaction, receiptId: "receiptId" })).toEqual(true)
+		expect(issuefab.Transaction.Creatable.is((({ amount, ...transaction }) => transaction)(transaction))).toEqual(false)
+		expect(issuefab.Transaction.Creatable.is((({ descriptor, ...transaction }) => transaction)(transaction))).toEqual(
+			false
+		)
+		expect(issuefab.Transaction.Creatable.is((({ purchaseId, ...transaction }) => transaction)(transaction))).toEqual(
+			true
+		)
 		expect(issuefab.Transaction.is({ ...transaction, reference: "referenceId" }))
 	})
 })

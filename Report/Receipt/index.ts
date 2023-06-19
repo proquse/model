@@ -1,5 +1,6 @@
 import { isly } from "isly"
 import { Creatable as ReceiptCreatable } from "./Creatable"
+import { PreviewData as ReceiptPreviewData } from "./PreviewData"
 
 export interface Receipt {
 	file: File
@@ -11,4 +12,6 @@ export namespace Receipt {
 	})
 	export type Creatable = ReceiptCreatable
 	export const Creatable = ReceiptCreatable
+	export type PreviewData = ReceiptPreviewData
+	export const PreviewData = ReceiptPreviewData
 }
