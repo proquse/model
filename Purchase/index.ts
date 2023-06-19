@@ -9,7 +9,7 @@ import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase extends PurchaseCreatable {
+export interface Purchase extends Purchase.Creatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
