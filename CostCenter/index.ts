@@ -11,7 +11,6 @@ export interface CostCenter extends CostCenter.Creatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	from: string
 	delegations: Delegation[]
 	to?: string[] // currently defined for backwards compatibility
 	costCenters: CostCenter[] // currently optional for backwards compatibility
@@ -23,7 +22,6 @@ export namespace CostCenter {
 		id: isly.fromIs<cryptly.Identifier>("Identifier", cryptly.Identifier.is),
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
-		from: isly.string(),
 		to: isly.array(isly.string(), { criteria: "length", value: 0 }).optional(),
 		delegations: isly.array(Delegation.type),
 		costCenters: isly.array(isly.lazy(() => type, "CostCenter")),
