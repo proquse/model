@@ -7,7 +7,6 @@ import { cryptly } from "cryptly"
 import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "./index"
 
-// add test for this one
 export function findNode<T extends Delegation | CostCenter>(
 	roots: T[],
 	id: string
