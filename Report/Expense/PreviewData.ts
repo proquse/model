@@ -3,7 +3,7 @@ import { isly } from "isly"
 import { Purchase } from "./../../Purchase"
 
 export interface PreviewData {
-	compileData: Record<string, Purchase[]>
+	compileData: Record<string, Purchase[] | undefined>
 	organization: string
 	dateRange: isoly.DateRange
 }

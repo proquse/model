@@ -3,12 +3,12 @@ import { Creatable as ExpenseCreatable } from "./Creatable"
 import { Paid as ExpensePaid } from "./Paid"
 
 export interface Expense extends Expense.Creatable {
-	Paid?: Expense.Paid
+	paid: Record<string, Expense.Paid | undefined>
 }
 
 export namespace Expense {
 	export const type: isly.object.ExtendableType<Expense> = ExpenseCreatable.type.extend<Expense>({
-		Paid: ExpensePaid.type.optional(),
+		paid: isly.record(isly.string(), ExpensePaid.type.optional()),
 	})
 
 	export const is = type.is
