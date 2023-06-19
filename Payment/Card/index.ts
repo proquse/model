@@ -3,7 +3,7 @@ import { Amount } from "../../Amount"
 import { Creatable as CardCreatable } from "./Creatable"
 import { Details as CardDetails } from "./Details"
 
-export interface Card extends CardCreatable {
+export interface Card extends Card.Creatable {
 	details?: Card.Details
 }
 export namespace Card {
