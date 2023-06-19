@@ -146,12 +146,5 @@ export namespace Delegation {
 				? root.purchases.reduce((result, current) => result - current.payment.limit[0], root.amount[0])
 				: root.amount[0]
 		)
-		// return root.delegations.reduce(
-		// 	(result, current) => result - current.amount[0],
-		// 	root.purchases.reduce(
-		// 		(result, current) => (current.payment.limit == undefined ? result : result - current.payment.limit[0]),
-		// 		root.amount[0]
-		// 	)
-		// )
 	}
 }
