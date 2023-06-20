@@ -1,4 +1,5 @@
 import { isly } from "isly"
+import { isly } from "isly"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Creatable as TransactionCreatable } from "./Creatable"
@@ -10,6 +11,13 @@ export interface Transaction extends Transaction.Creatable {
 }
 
 export namespace Transaction {
+	export const type: isly.object.ExtendableType<Transaction> = TransactionCreatable.type.extend<Transaction>({
+		id: isly.string(),
+		reference: isly.string(),
+	})
+	export const is = type.is
+	export const flaw = type.flaw
+
 	export const type: isly.object.ExtendableType<Transaction> = TransactionCreatable.type.extend<Transaction>({
 		id: isly.string(),
 		reference: isly.string(),
@@ -74,17 +82,17 @@ export namespace Transaction {
 			transaction.receiptId != ""
 		)
 	}
-	export function link(links: TransactionLink[], purchase: Purchase): TransactionLink[] {
-		return links.filter(link => {
-			let result = true
-			const transaction = purchase.transactions.find(transaction => transaction.id == link.transactionId)
-			if (transaction) {
-				const receipt = purchase.receipts.find(receipt => receipt.id == link.receiptId)
-				receipt && ((transaction.receiptId = receipt.id), (receipt.transactionId = transaction.id), (result = false))
-			}
-			return result
-		})
-	}
+	// export function link(links: TransactionLink[], purchase: Purchase): TransactionLink[] {
+	// 	return links.filter(link => {
+	// 		let result = true
+	// 		const transaction = purchase.transactions.find(transaction => transaction.id == link.transactionId)
+	// 		if (transaction) {
+	// 			const receipt = purchase.receipts.find(receipt => receipt.id == link.receiptId)
+	// 			receipt && ((transaction.receiptId = receipt.id), (receipt.transactionId = transaction.id), (result = false))
+	// 		}
+	// 		return result
+	// 	})
+	// }
 	export const Link = TransactionLink
 	export type Link = TransactionLink
 	export const Creatable = TransactionCreatable

@@ -7,21 +7,20 @@ describe("Delegation", () => {
 		costCenter: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
-		to: [],
+		to: ["jessie@example.com"],
 		purpose: "Total company Budget",
-		amount: [0, "EUR"],
+		amount: [100_000, "EUR"],
 		delegations: [],
 		purchases: [],
 	}
-	const topLevelDelegation: issuefab.Delegation = {
+	const topLevelDelegation: issuefab.CostCenter = {
 		id: "abcd0001",
 		from: "jane@example.com",
-		costCenter: "budget",
+		name: "budget",
 		created: "2021-12-20T13:37:42Z",
 		modified: "2021-12-20T13:37:42Z",
-		to: [],
-		purpose: "Total company Budget",
-		amount: [20000, "EUR"],
+		description: "Total company Budget",
+		amount: [20_000, "EUR"],
 		delegations: [
 			{
 				id: "abcd0002",
@@ -31,7 +30,7 @@ describe("Delegation", () => {
 				costCenter: "IT",
 				from: "john@example.com",
 				purpose: "hosting costs",
-				amount: [2000, "EUR"],
+				amount: [2_000, "EUR"],
 				delegations: [
 					{
 						id: "abcd0003",
@@ -123,7 +122,7 @@ describe("Delegation", () => {
 				costCenter: "IT",
 				from: "john@example.com",
 				purpose: "Cloudflare",
-				amount: [2000, "EUR"],
+				amount: [2_000, "EUR"],
 				delegations: [
 					{
 						id: "abcd0005",
@@ -133,7 +132,7 @@ describe("Delegation", () => {
 						costCenter: "IT",
 						from: "richard@example.com",
 						purpose: "Partial company budget",
-						amount: [1000, "EUR"],
+						amount: [1_000, "EUR"],
 						delegations: [
 							{
 								id: "abcd0006",
@@ -143,7 +142,7 @@ describe("Delegation", () => {
 								costCenter: "IT",
 								from: "john@example.com",
 								purpose: "Partial company budget",
-								amount: [1000, "EUR"],
+								amount: [1_000, "EUR"],
 								delegations: [],
 								purchases: [],
 							},
@@ -154,12 +153,14 @@ describe("Delegation", () => {
 				purchases: [],
 			},
 		],
-		purchases: [],
+		costCenters: [],
 	}
 
 	it("is", () => {
 		expect(issuefab.Delegation.is(initialDelegation)).toEqual(true)
-		expect(issuefab.Delegation.is(topLevelDelegation)).toEqual(true)
+		expect(issuefab.Delegation.is((({ from, ...delegation }) => delegation)(initialDelegation))).toEqual(false)
+		expect(issuefab.Delegation.is({ ...initialDelegation, to: [] })).toEqual(false)
+		expect(issuefab.Delegation.is(topLevelDelegation)).toEqual(false)
 	})
 
 	it("findUser", () => {
@@ -172,7 +173,7 @@ describe("Delegation", () => {
 		)
 	})
 	it("find", () => {
-		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0001")).toEqual({
+		expect(issuefab.CostCenter.find([topLevelDelegation], "abcd0001")).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation,
 		})
@@ -183,6 +184,11 @@ describe("Delegation", () => {
 		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0005")).toEqual({
 			root: topLevelDelegation,
 			found: topLevelDelegation.delegations[1].delegations[0],
+		})
+		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0001")).toEqual(undefined)
+		expect(issuefab.Delegation.find.node([topLevelDelegation], "abcd0001")).toEqual({
+			root: topLevelDelegation,
+			found: topLevelDelegation,
 		})
 	})
 	it("findParent", () => {
@@ -205,7 +211,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [
 				{
 					id: "abcd0002",
@@ -215,7 +221,7 @@ describe("Delegation", () => {
 					modified: "2021-12-20T13:37:42Z",
 					to: ["jane@example.com"],
 					purpose: "Partial company Budget",
-					amount: [2000, "EUR"],
+					amount: [2_000, "EUR"],
 					delegations: [],
 					purchases: [],
 				},
@@ -230,7 +236,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["jane@example.com"],
 			purpose: "Partial company Budget",
-			amount: [3000, "EUR"],
+			amount: [3_000, "EUR"],
 			delegations: [],
 			purchases: [],
 		}
@@ -242,7 +248,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
@@ -262,7 +268,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [
 				{
 					id: "abcd0002",
@@ -272,7 +278,7 @@ describe("Delegation", () => {
 					modified: "2021-12-20T13:37:42Z",
 					to: ["jane@example.com"],
 					purpose: "Partial company Budget",
-					amount: [2000, "EUR"],
+					amount: [2_000, "EUR"],
 					delegations: [],
 					purchases: [],
 				},
@@ -287,7 +293,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["jane@example.com"],
 			purpose: "Partial company Budget",
-			amount: [3000, "EUR"],
+			amount: [3_000, "EUR"],
 			delegations: [],
 			purchases: [],
 		}
@@ -299,7 +305,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
@@ -308,7 +314,7 @@ describe("Delegation", () => {
 		updated = { ...updated, id: "abcd0001" }
 		after = { ...updated }
 		result = issuefab.Delegation.change([before], updated)
-		expect(result).toEqual({ root: after, changed: after })
+		expect(result).toEqual(undefined)
 	})
 	it("remove", () => {
 		const toBeRemoved: issuefab.Delegation = {
@@ -319,7 +325,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["jane@example.com"],
 			purpose: "Partial company Budget",
-			amount: [2000, "EUR"],
+			amount: [2_000, "EUR"],
 			delegations: [],
 			purchases: [],
 		}
@@ -331,7 +337,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [
 				{
 					id: "abcd0002",
@@ -341,7 +347,7 @@ describe("Delegation", () => {
 					modified: "2021-12-20T13:37:42Z",
 					to: ["jane@example.com"],
 					purpose: "Partial company Budget",
-					amount: [2000, "EUR"],
+					amount: [2_000, "EUR"],
 					delegations: [],
 					purchases: [],
 				},
@@ -371,7 +377,15 @@ describe("Delegation", () => {
 	})
 	it("create", () => {
 		expect(
-			issuefab.Delegation.is(issuefab.Delegation.create(issuefab.Delegation.Creatable.create(), "mary@example.com"))
+			issuefab.Delegation.is(
+				issuefab.Delegation.create({
+					to: ["james@example.com"],
+					amount: [123, "EUR"],
+					costCenter: "gear",
+					from: "jessie@example.com",
+					purpose: "Money!",
+				})
+			)
 		).toEqual(true)
 	})
 	it("findParents", () => {
@@ -434,7 +448,7 @@ describe("Delegation", () => {
 			costCenter: "budget",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2021-12-20T13:37:42Z",
-			to: [],
+			to: ["jessie@example.com"],
 			purpose: "Total company Budget",
 			amount: [20000, "EUR"],
 			delegations: [
@@ -453,9 +467,8 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		expect(issuefab.Delegation.validate(topLevelDelegation, undefined, true)).toEqual(true)
-		expect(issuefab.Delegation.validate(initialDelegation, undefined, true)).toEqual(true)
+		expect(issuefab.Delegation.validate(initialDelegation, undefined)).toEqual(true)
 		expect(issuefab.Delegation.validate(testFrom)).toEqual(false)
-		expect(issuefab.Delegation.validate(testCostCenter, undefined, true)).toEqual(false)
+		expect(issuefab.Delegation.validate(testCostCenter, undefined)).toEqual(false)
 	})
 })

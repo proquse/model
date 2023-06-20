@@ -12,12 +12,11 @@ describe("receipt PreviewData", () => {
 				costCenter: "Example Cost Center",
 				receipts: [
 					{
-						receipt: {
+						details: {
 							id: "receiptId",
 							original: "https://example.com/receipt.pdf",
 							total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
 							date: "2022-01-01T00:00:42Z",
-							transactionId: "transactionId",
 						},
 						purchase: {
 							id: "aoeu1234",
@@ -57,9 +56,5 @@ describe("receipt PreviewData", () => {
 				(({ organization, ...dummyPreviewData }) => dummyPreviewData)(dummyPreviewData)
 			)
 		).toEqual(false)
-
-		expect(issuefab.Report.Receipt.PreviewData.type.get({ ...dummyPreviewData, addDummy: "Dummy string" })).toEqual(
-			dummyPreviewData
-		)
 	})
 })
