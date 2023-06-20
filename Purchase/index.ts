@@ -9,7 +9,7 @@ import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
-export interface Purchase extends Purchase.Creatable {
+export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
@@ -17,6 +17,7 @@ export interface Purchase extends Purchase.Creatable {
 	email: string
 	receipts: Receipt[]
 	transactions: Transaction[]
+	payment: Payment
 }
 
 export namespace Purchase {
@@ -28,6 +29,7 @@ export namespace Purchase {
 		email: isly.string(),
 		receipts: isly.array(Receipt.type),
 		transactions: isly.array(Transaction.type),
+		payment: Payment.type,
 	})
 
 	export const is = type.is

@@ -9,7 +9,11 @@ export interface Creatable {
 }
 
 export namespace Creatable {
-	export const type = isly.object<Creatable>({ purpose: isly.string(), payment: Payment.type, buyer: isly.string() })
+	export const type = isly.object<Creatable>({
+		purpose: isly.string(),
+		payment: Payment.Creatable.type,
+		buyer: isly.string(),
+	})
 	export const is = type.is
 	export const flaw = type.flaw
 
