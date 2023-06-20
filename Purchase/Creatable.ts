@@ -4,7 +4,7 @@ import { Payment } from "../Payment"
 
 export interface Creatable {
 	purpose: string
-	payment: Payment
+	payment: Payment.Creatable
 	buyer: string
 }
 
