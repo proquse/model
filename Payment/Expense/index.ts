@@ -3,7 +3,7 @@ import { Creatable as ExpenseCreatable } from "./Creatable"
 import { Paid as ExpensePaid } from "./Paid"
 
 export interface Expense extends Expense.Creatable {
-	paid: Record<string, Expense.Paid | undefined>
+	paid?: Record<string, Expense.Paid | undefined>
 }
 
 export namespace Expense {

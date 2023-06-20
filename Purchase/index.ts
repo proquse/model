@@ -130,7 +130,7 @@ export namespace Purchase {
 			!!purchase.buyer &&
 			purchase.created <= purchase.modified &&
 			purchase.modified <= isoly.DateTime.now() &&
-			Payment.validate(purchase.payment, limit) &&
+			Payment.Creatable.validate(purchase.payment, limit) &&
 			(!purchase.amount || Amount.validate(purchase.amount, purchase.payment.limit)) &&
 			!!purchase.email &&
 			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&

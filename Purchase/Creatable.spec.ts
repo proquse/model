@@ -4,12 +4,24 @@ describe("Purchase.Creatable", () => {
 	const creatable: issuefab.Purchase.Creatable = {
 		purpose: "buy things",
 		payment: {
-			type: "card",
+			type: "expense",
 			limit: [10, "EUR"],
 		},
 		buyer: "jane@example.com",
 	}
 	it("is", () => {
+		console.log(
+			issuefab.Purchase.Creatable.type.get({
+				purpose: "buy things",
+				payment: {
+					type: "expense",
+					limit: [10, "EUR"],
+					paid: {},
+				},
+				buyer: "jane@example.com",
+			})
+		)
+
 		expect(issuefab.Purchase.Creatable.is(creatable)).toEqual(true)
 		expect(issuefab.Purchase.Creatable.is((({ payment, ...creatable }) => creatable)(creatable))).toEqual(false)
 	})

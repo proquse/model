@@ -1,5 +1,4 @@
 import { isly } from "isly"
-import { isly } from "isly"
 import { Delegation } from "../Delegation"
 import { Purchase } from "../Purchase"
 import { Creatable as TransactionCreatable } from "./Creatable"
@@ -11,13 +10,6 @@ export interface Transaction extends Transaction.Creatable {
 }
 
 export namespace Transaction {
-	export const type: isly.object.ExtendableType<Transaction> = TransactionCreatable.type.extend<Transaction>({
-		id: isly.string(),
-		reference: isly.string(),
-	})
-	export const is = type.is
-	export const flaw = type.flaw
-
 	export const type: isly.object.ExtendableType<Transaction> = TransactionCreatable.type.extend<Transaction>({
 		id: isly.string(),
 		reference: isly.string(),
