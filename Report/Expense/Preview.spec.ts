@@ -20,7 +20,7 @@ describe("Expense Preview", () => {
 		transactions: [],
 	}
 	const preview: issuefab.Report.Expense.Preview = {
-		compileData: {
+		userExpenses: {
 			category1: [purchase, purchase],
 			category2: [purchase],
 		},
@@ -36,6 +36,6 @@ describe("Expense Preview", () => {
 		expect(issuefab.Report.Expense.Preview.is((({ organization, ...preview }) => preview)(preview))).toEqual(false)
 		expect(issuefab.Report.Expense.Preview.type.get({ ...preview, test: "dummy text" })).toEqual(preview)
 		expect(issuefab.Report.Expense.Preview.is((({ dateRange, ...preview }) => preview)(preview))).toEqual(false)
-		expect(issuefab.Report.Expense.Preview.is((({ compileData, ...preview }) => preview)(preview))).toEqual(false)
+		expect(issuefab.Report.Expense.Preview.is((({ userExpenses, ...preview }) => preview)(preview))).toEqual(false)
 	})
 })

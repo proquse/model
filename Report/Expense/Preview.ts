@@ -3,14 +3,14 @@ import { isly } from "isly"
 import { Purchase } from "../../Purchase"
 
 export interface Preview {
-	compileData: Record<string, Purchase[] | undefined>
+	userExpenses: Record<string, Purchase[] | undefined>
 	organization: string
 	dateRange: isoly.DateRange
 }
 
 export namespace Preview {
 	export const type = isly.object<Preview>({
-		compileData: isly.record(isly.string(), isly.array(Purchase.type)),
+		userExpenses: isly.record(isly.string(), isly.array(Purchase.type)),
 		organization: isly.string(),
 		dateRange: isly.fromIs("DateRange", isoly.DateRange.is),
 	})
