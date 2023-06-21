@@ -12,7 +12,7 @@ describe("receipt PreviewData", () => {
 				costCenter: "Example Cost Center",
 				receipts: [
 					{
-						details: {
+						receipt: {
 							id: "receiptId",
 							original: "https://example.com/receipt.pdf",
 							total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],

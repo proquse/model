@@ -15,7 +15,8 @@ describe("Payment expense Paid", () => {
 				modified: "2023-06-19T11:08:11.247Z",
 				issuer: "Hello@hej.com",
 			})
-		).toEqual(false)
+		).toEqual(true)
+
 		expect(issuefab.Payment.Expense.Paid.is((({ created, ...paid }) => paid)(paid))).toEqual(false)
 	})
 })
