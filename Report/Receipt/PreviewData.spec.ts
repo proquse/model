@@ -1,15 +1,21 @@
-import { FormData } from "formdata-polyfill/esm.min.js"
-import { Blob, File } from "web-file-polyfill"
 import { issuefab } from "../../index"
 import { PreviewData } from "./PreviewData"
-globalThis.Blob = Blob
-globalThis.FormData = FormData
-globalThis.File = File
+
 describe("receipt PreviewData", () => {
 	const dummyPreviewData: PreviewData = {
 		receiptsData: [
 			{
-				costCenter: "Example Cost Center",
+				costCenter: {
+					id: "1",
+					amount: [10, "USD"],
+					name: "Development",
+					created: "2021-12-20T13:37:42Z",
+					modified: "2022-12-20T13:37:42Z",
+					from: "jessie@example.com",
+					description: "description",
+					delegations: [],
+					costCenters: [],
+				},
 				receipts: [
 					{
 						receipt: {
@@ -37,7 +43,6 @@ describe("receipt PreviewData", () => {
 							],
 							transactions: [],
 						},
-						file: new File([new Uint8Array([97])], "file"),
 					},
 				],
 			},
