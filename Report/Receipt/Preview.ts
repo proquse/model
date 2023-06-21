@@ -5,7 +5,7 @@ import { Purchase } from "../../Purchase"
 import { Receipt } from "../../Receipt"
 
 export interface Preview {
-	receiptsData: {
+	costCenters: {
 		costCenter: CostCenter
 		receipts: { receipt: Receipt; purchase: Purchase }[]
 	}[]
@@ -15,10 +15,10 @@ export interface Preview {
 
 export namespace Preview {
 	export const type = isly.object<Preview>({
-		receiptsData: isly.array(
+		costCenters: isly.array(
 			isly.object({
 				costCenter: CostCenter.type,
-				receipts: isly.array<Preview["receiptsData"][number]["receipts"]>(
+				receipts: isly.array<Preview["costCenters"][number]["receipts"]>(
 					isly.object({
 						receipt: Receipt.type,
 						purchase: Purchase.type,

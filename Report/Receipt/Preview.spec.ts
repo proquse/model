@@ -3,7 +3,7 @@ import { Preview } from "./Preview"
 
 describe("receipt Preview", () => {
 	const dummyPreview: Preview = {
-		receiptsData: [
+		costCenters: [
 			{
 				costCenter: {
 					id: "1",
