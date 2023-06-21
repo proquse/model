@@ -1,5 +1,5 @@
 import { issuefab } from "../../index"
-describe("Expense PreviewData", () => {
+describe("Expense Preview", () => {
 	const purchase: issuefab.Purchase = {
 		id: "aoeu1234",
 		created: "2022-01-01T00:00:42Z",
@@ -19,7 +19,7 @@ describe("Expense PreviewData", () => {
 		],
 		transactions: [],
 	}
-	const previewData: issuefab.Report.Expense.PreviewData = {
+	const preview: issuefab.Report.Expense.Preview = {
 		compileData: {
 			category1: [purchase, purchase],
 			category2: [purchase],
@@ -32,16 +32,10 @@ describe("Expense PreviewData", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Report.Expense.PreviewData.is(previewData)).toEqual(true)
-		expect(
-			issuefab.Report.Expense.PreviewData.is((({ organization, ...previewData }) => previewData)(previewData))
-		).toEqual(false)
-		expect(issuefab.Report.Expense.PreviewData.type.get({ ...previewData, test: "dummy text" })).toEqual(previewData)
-		expect(
-			issuefab.Report.Expense.PreviewData.is((({ dateRange, ...previewData }) => previewData)(previewData))
-		).toEqual(false)
-		expect(
-			issuefab.Report.Expense.PreviewData.is((({ compileData, ...previewData }) => previewData)(previewData))
-		).toEqual(false)
+		expect(issuefab.Report.Expense.Preview.is(preview)).toEqual(true)
+		expect(issuefab.Report.Expense.Preview.is((({ organization, ...preview }) => preview)(preview))).toEqual(false)
+		expect(issuefab.Report.Expense.Preview.type.get({ ...preview, test: "dummy text" })).toEqual(preview)
+		expect(issuefab.Report.Expense.Preview.is((({ dateRange, ...preview }) => preview)(preview))).toEqual(false)
+		expect(issuefab.Report.Expense.Preview.is((({ compileData, ...preview }) => preview)(preview))).toEqual(false)
 	})
 })

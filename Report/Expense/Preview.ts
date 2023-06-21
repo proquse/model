@@ -1,15 +1,15 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Purchase } from "./../../Purchase"
+import { Purchase } from "../../Purchase"
 
-export interface PreviewData {
+export interface Preview {
 	compileData: Record<string, Purchase[] | undefined>
 	organization: string
 	dateRange: isoly.DateRange
 }
 
-export namespace PreviewData {
-	export const type = isly.object<PreviewData>({
+export namespace Preview {
+	export const type = isly.object<Preview>({
 		compileData: isly.record(isly.string(), isly.array(Purchase.type)),
 		organization: isly.string(),
 		dateRange: isly.fromIs("DateRange", isoly.DateRange.is),

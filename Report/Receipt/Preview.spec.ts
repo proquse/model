@@ -1,8 +1,8 @@
 import { issuefab } from "../../index"
-import { PreviewData } from "./PreviewData"
+import { Preview } from "./Preview"
 
-describe("receipt PreviewData", () => {
-	const dummyPreviewData: PreviewData = {
+describe("receipt Preview", () => {
+	const dummyPreview: Preview = {
 		receiptsData: [
 			{
 				costCenter: {
@@ -55,11 +55,9 @@ describe("receipt PreviewData", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Report.Receipt.PreviewData.is(dummyPreviewData)).toEqual(true)
+		expect(issuefab.Report.Receipt.Preview.is(dummyPreview)).toEqual(true)
 		expect(
-			issuefab.Report.Receipt.PreviewData.is(
-				(({ organization, ...dummyPreviewData }) => dummyPreviewData)(dummyPreviewData)
-			)
+			issuefab.Report.Receipt.Preview.is((({ organization, ...dummyPreview }) => dummyPreview)(dummyPreview))
 		).toEqual(false)
 	})
 })
