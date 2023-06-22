@@ -128,23 +128,62 @@ export namespace Delegation {
 					root => (result = path(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
 			  ) && result
 	}
-	export function spent<T extends Delegation | CostCenter>(root: T, includeOwnPurchases?: boolean): number {
+	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
+	function calculateSpent(root: Delegation | CostCenter, options?: { rootPurchases?: boolean; vat?: boolean }): number {
 		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-			(result, current) => result + spent(current, true),
-			includeOwnPurchases && "purchases" in root
-				? root.purchases.reduce(
-						(result, current) => (current.amount == undefined ? result : result + current.amount[0]),
+			(result, current) => result + spent(current, { ...options, rootPurchases: true }),
+			!options?.rootPurchases || !("purchases" in root)
+				? 0
+				: root.purchases.reduce(
+						(result, purchase) => result + Purchase.spent(purchase, root.amount[1], { vat: options.vat }),
 						0
 				  )
-				: 0
 		)
 	}
-	export function balance<T extends Delegation | CostCenter>(root: T): number {
-		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-			(result, current) => result - current.amount[0],
-			"purchases" in root
-				? root.purchases.reduce((result, current) => result - current.payment.limit[0], root.amount[0])
-				: root.amount[0]
+	function calculateSpentBalance(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
+		return isoly.Currency.subtract(root.amount[1], root.amount[0], spent(root, options))
+	}
+	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
+	function calculateAllocated(root: Delegation | CostCenter): number {
+		return (
+			("purchases" in root
+				? root.purchases.reduce(
+						(result, purchase) => isoly.Currency.add(root.amount[1], result, purchase.payment.limit[0]),
+						0
+				  )
+				: root.costCenters.reduce(
+						(result, costCenter) => isoly.Currency.add(root.amount[1], result, costCenter.amount[0]),
+						0
+				  )) +
+			root.delegations.reduce(
+				(result, delegation) => isoly.Currency.add(root.amount[1], result, delegation.amount[0]),
+				0
+			)
 		)
+	}
+	function calculateAllocatedBalance(root: Delegation | CostCenter): number {
+		return isoly.Currency.subtract(root.amount[1], root.amount[0], allocated(root))
+	}
+
+	// return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
+	// 	() => 1,
+	// 	!options?.rootPurchases || !("purchases" in root)
+	// 		? 0
+	// 		: root.purchases.reduce(
+	// 				(result, purchase) => isoly.Currency.add(root.amount[1], result, purchase.payment.limit[0]),
+	// 				0
+	// 		  )
+	// )
+
+	// export function balance<T extends Delegation | CostCenter>(root: T): number {
+	// 	return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
+	// 		(result, child) => result - child.amount[0],
+	// 		"purchases" in root
+	// 			? root.purchases.reduce((result, current) => result - current.payment.limit[0], root.amount[0])
+	// 			: root.amount[0]
+	// 	)
+	// }
+	export function balance(root: Delegation | CostCenter): number {
+		return isoly.Currency.subtract(root.amount[1], root.amount[0], spent(root, { rootPurchases: true }))
 	}
 }
