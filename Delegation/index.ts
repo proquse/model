@@ -183,7 +183,4 @@ export namespace Delegation {
 	// 			: root.amount[0]
 	// 	)
 	// }
-	export function balance(root: Delegation | CostCenter): number {
-		return isoly.Currency.subtract(root.amount[1], root.amount[0], spent(root, { rootPurchases: true }))
-	}
 }
