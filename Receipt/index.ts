@@ -1,10 +1,10 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { CostCenter } from "../CostCenter"
-import { Delegation } from "../Delegation"
-import { Purchase } from "../Purchase"
-import { Creatable as CreatableRequest } from "./Creatable"
+import type { CostCenter } from "../CostCenter"
+import type { Delegation } from "../Delegation"
+import type { Purchase } from "../Purchase"
+import { Creatable as ReceiptCreatable } from "./Creatable"
 import { Total as ReceiptTotal } from "./Total"
 export interface Receipt extends Omit<Receipt.Creatable, "file"> {
 	id: cryptly.Identifier
@@ -90,10 +90,8 @@ export namespace Receipt {
 			(!receipt.total.length || !currency || receipt.total.every(total => Total.validate(total, currency)))
 		)
 	}
-	// export type Link = Transaction.Link
-	// export const link = Transaction.link
-	export type Creatable = CreatableRequest
-	export const Creatable = CreatableRequest
+	export type Creatable = ReceiptCreatable
+	export const Creatable = ReceiptCreatable
 	export type Total = ReceiptTotal
 	export const Total = ReceiptTotal
 }

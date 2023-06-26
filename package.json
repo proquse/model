@@ -77,5 +77,8 @@
 		"isly": "^0.1.7",
 		"isoly": "^2.0.16",
 		"web-file-polyfill": "^1.0.4"
+	},
+	"overrides": {
+		"semver": "7.5.3"
 	}
 }

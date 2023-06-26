@@ -2,7 +2,7 @@ import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
 import { Amount } from "../Amount"
-import { CostCenter } from "../CostCenter"
+import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
@@ -142,11 +142,28 @@ export namespace Purchase {
 			purchase.transactions.every(transaction => Transaction.validate(transaction))
 		)
 	}
-	export function spent(purchase: Purchase): Amount {
-		return (purchase.amount = [
-			purchase.transactions.reduce((aggregate, current) => aggregate + current.amount[0], 0) * -1,
-			purchase.amount?.[1] ?? purchase.payment.limit[1],
-		])
+	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
+	function calculateSpent(purchase: Purchase, currency: isoly.Currency, options?: { vat?: boolean }): number {
+		return purchase.receipts.reduce(
+			(result, receipt) =>
+				isoly.Currency.add(
+					currency,
+					result,
+					receipt.total.reduce(
+						(result, { net, vat }) =>
+							isoly.Currency.add(
+								currency,
+								result,
+								isoly.Currency.add(currency, net[0], options?.vat != false ? vat[0] : 0)
+							),
+						0
+					)
+				),
+			0
+		)
+	}
+	export function calculateSpentBalance(purchase: Purchase, currency: isoly.Currency): number {
+		return isoly.Currency.subtract(currency, purchase.payment.limit[0], spent(purchase, currency))
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable

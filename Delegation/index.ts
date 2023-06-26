@@ -60,20 +60,6 @@ export namespace Delegation {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.delegations, id)))
 			  ) && result
 	}
-	export function validate(delegation: Delegation, limit?: Amount): boolean {
-		const equity: Amount = [balance(delegation), delegation.amount[1]]
-		return (
-			!!delegation.id &&
-			delegation.created <= delegation.modified &&
-			delegation.modified <= isoly.DateTime.now() &&
-			!!delegation.from &&
-			!!delegation.costCenter &&
-			Delegation.Creatable.validate(delegation, limit) &&
-			0 <= equity[0] &&
-			(!limit || equity[0] <= limit[0]) &&
-			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
-		)
-	}
 	export const find = Object.assign(findDelegation, { node: findNode })
 	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: string): Delegation[] {
 		const result: Delegation[] = []
@@ -128,23 +114,59 @@ export namespace Delegation {
 					root => (result = path(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
 			  ) && result
 	}
-	export function spent<T extends Delegation | CostCenter>(root: T, includeOwnPurchases?: boolean): number {
+	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
+	function calculateSpent(root: Delegation | CostCenter, options?: { rootPurchases?: boolean; vat?: boolean }): number {
 		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-			(result, current) => result + spent(current, true),
-			includeOwnPurchases && "purchases" in root
-				? root.purchases.reduce(
-						(result, current) => (current.amount == undefined ? result : result + current.amount[0]),
+			(result, current) => result + spent(current, { ...options, rootPurchases: true }),
+			!options?.rootPurchases || !("purchases" in root)
+				? 0
+				: root.purchases.reduce(
+						(result, purchase) =>
+							isoly.Currency.add(
+								root.amount[1],
+								result,
+								Purchase.spent(purchase, root.amount[1], { vat: options.vat })
+							),
 						0
 				  )
-				: 0
 		)
 	}
-	export function balance<T extends Delegation | CostCenter>(root: T): number {
-		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-			(result, current) => result - current.amount[0],
-			"purchases" in root
-				? root.purchases.reduce((result, current) => result - current.payment.limit[0], root.amount[0])
-				: root.amount[0]
+	function calculateSpentBalance(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
+		return isoly.Currency.subtract(root.amount[1], root.amount[0], spent(root, options))
+	}
+	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
+	function calculateAllocated(root: Delegation | CostCenter): number {
+		return (
+			("purchases" in root
+				? root.purchases.reduce(
+						(result, purchase) => isoly.Currency.add(root.amount[1], result, purchase.payment.limit[0]),
+						0
+				  )
+				: root.costCenters.reduce(
+						(result, costCenter) => isoly.Currency.add(root.amount[1], result, costCenter.amount[0]),
+						0
+				  )) +
+			root.delegations.reduce(
+				(result, delegation) => isoly.Currency.add(root.amount[1], result, delegation.amount[0]),
+				0
+			)
+		)
+	}
+	function calculateAllocatedBalance(root: Delegation | CostCenter): number {
+		return isoly.Currency.subtract(root.amount[1], root.amount[0], allocated(root))
+	}
+	export function validate(delegation: Delegation, limit?: Amount): boolean {
+		const equity: Amount = [allocated.balance(delegation), delegation.amount[1]]
+		return (
+			!!delegation.id &&
+			delegation.created <= delegation.modified &&
+			delegation.modified <= isoly.DateTime.now() &&
+			!!delegation.from &&
+			!!delegation.costCenter &&
+			Delegation.Creatable.validate(delegation, limit) &&
+			0 <= equity[0] &&
+			(!limit || equity[0] <= limit[0]) &&
+			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
 		)
 	}
 }
