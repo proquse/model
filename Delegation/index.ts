@@ -121,7 +121,12 @@ export namespace Delegation {
 			!options?.rootPurchases || !("purchases" in root)
 				? 0
 				: root.purchases.reduce(
-						(result, purchase) => result + Purchase.spent(purchase, root.amount[1], { vat: options.vat }),
+						(result, purchase) =>
+							isoly.Currency.add(
+								root.amount[1],
+								result,
+								Purchase.spent(purchase, root.amount[1], { vat: options.vat })
+							),
 						0
 				  )
 		)
