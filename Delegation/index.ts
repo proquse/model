@@ -60,20 +60,6 @@ export namespace Delegation {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.delegations, id)))
 			  ) && result
 	}
-	export function validate(delegation: Delegation, limit?: Amount): boolean {
-		const equity: Amount = [balance(delegation), delegation.amount[1]]
-		return (
-			!!delegation.id &&
-			delegation.created <= delegation.modified &&
-			delegation.modified <= isoly.DateTime.now() &&
-			!!delegation.from &&
-			!!delegation.costCenter &&
-			Delegation.Creatable.validate(delegation, limit) &&
-			0 <= equity[0] &&
-			(!limit || equity[0] <= limit[0]) &&
-			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
-		)
-	}
 	export const find = Object.assign(findDelegation, { node: findNode })
 	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: string): Delegation[] {
 		const result: Delegation[] = []
@@ -164,23 +150,18 @@ export namespace Delegation {
 	function calculateAllocatedBalance(root: Delegation | CostCenter): number {
 		return isoly.Currency.subtract(root.amount[1], root.amount[0], allocated(root))
 	}
-
-	// return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-	// 	() => 1,
-	// 	!options?.rootPurchases || !("purchases" in root)
-	// 		? 0
-	// 		: root.purchases.reduce(
-	// 				(result, purchase) => isoly.Currency.add(root.amount[1], result, purchase.payment.limit[0]),
-	// 				0
-	// 		  )
-	// )
-
-	// export function balance<T extends Delegation | CostCenter>(root: T): number {
-	// 	return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-	// 		(result, child) => result - child.amount[0],
-	// 		"purchases" in root
-	// 			? root.purchases.reduce((result, current) => result - current.payment.limit[0], root.amount[0])
-	// 			: root.amount[0]
-	// 	)
-	// }
+	export function validate(delegation: Delegation, limit?: Amount): boolean {
+		const equity: Amount = [allocated.balance(delegation), delegation.amount[1]]
+		return (
+			!!delegation.id &&
+			delegation.created <= delegation.modified &&
+			delegation.modified <= isoly.DateTime.now() &&
+			!!delegation.from &&
+			!!delegation.costCenter &&
+			Delegation.Creatable.validate(delegation, limit) &&
+			0 <= equity[0] &&
+			(!limit || equity[0] <= limit[0]) &&
+			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
+		)
+	}
 }

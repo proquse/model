@@ -56,7 +56,7 @@ export namespace CostCenter {
 			  ) && result
 	}
 	export function validate(costCenter: CostCenter, limit?: Amount): boolean {
-		const equity: Amount = [balance(costCenter), costCenter.amount[1]]
+		const equity: Amount = [allocated.balance(costCenter), costCenter.amount[1]]
 		return (
 			!!costCenter.id &&
 			costCenter.created <= costCenter.modified &&
@@ -75,5 +75,5 @@ export namespace CostCenter {
 	export const findParents = Delegation.findParents
 	export const path = Delegation.path
 	export const spent = Delegation.spent
-	export const balance = Delegation.balance
+	export const allocated = Delegation.allocated
 }
