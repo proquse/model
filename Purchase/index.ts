@@ -25,7 +25,7 @@ export namespace Purchase {
 		id: isly.fromIs("Id", cryptly.Identifier.is),
 		created: isly.fromIs("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs("DateTime", isoly.DateTime.is),
-		amount: Amount.type.optional(),
+		amount: Cadence.type.optional(),
 		email: isly.string(),
 		receipts: isly.array(Receipt.type),
 		transactions: isly.array(Transaction.type),
@@ -126,21 +126,36 @@ export namespace Purchase {
 					removed: search.found,
 			  }
 	}
-	export function validate(purchase: Purchase, limit?: Cadence): boolean {
+	export function validate(purchase: Purchase, date: isoly.Date, limit?: Cadence): boolean {
+		const cap = !limit ? undefined : Cadence.allocated(limit, date)
 		return (
 			!!purchase.id &&
 			!!purchase.buyer &&
 			purchase.created <= purchase.modified &&
 			purchase.modified <= isoly.DateTime.now() &&
-			Payment.Creatable.validate(purchase.payment, limit) &&
-			(!purchase.amount || Amount.validate(purchase.amount, purchase.payment.limit)) &&
+			Payment.Creatable.validate(purchase.payment, date, limit) &&
+			(!purchase.amount || Cadence.validate(purchase.amount, date, purchase.payment.limit)) &&
 			!!purchase.email &&
 			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&
-			(limit == undefined ||
-				purchase.receipts.reduce(
-					(total, receipt) => total + receipt.total.reduce((total, { net: [net], vat: [vat] }) => total + net + vat, 0),
+			(cap == undefined ||
+				(purchase.receipts.reduce(
+					(result, receipt) =>
+						isoly.Currency.add(
+							purchase.payment.limit.currency,
+							result,
+							receipt.total.reduce(
+								(result, total) =>
+									isoly.Currency.add(
+										purchase.payment.limit.currency,
+										result,
+										isoly.Currency.add(purchase.payment.limit.currency, total.net.value, total.vat.value)
+									),
+								0
+							)
+						),
 					0
-				) <= limit[0]) &&
+				) <= cap &&
+					purchase.payment.limit.currency == limit?.currency)) &&
 			purchase.transactions.every(transaction => Transaction.validate(transaction))
 		)
 	}
@@ -156,7 +171,7 @@ export namespace Purchase {
 							isoly.Currency.add(
 								currency,
 								result,
-								isoly.Currency.add(currency, net[0], options?.vat != false ? vat[0] : 0)
+								isoly.Currency.add(currency, net.value, options?.vat != false ? vat.value : 0)
 							),
 						0
 					)
@@ -165,7 +180,7 @@ export namespace Purchase {
 		)
 	}
 	export function calculateSpentBalance(purchase: Purchase, currency: isoly.Currency): number {
-		return isoly.Currency.subtract(currency, purchase.payment.limit[0], spent(purchase, currency))
+		return isoly.Currency.subtract(currency, purchase.payment.limit.value, spent(purchase, currency))
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable
