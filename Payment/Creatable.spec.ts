@@ -6,8 +6,9 @@ describe("Payment.Creatable", () => {
 		const creatableCard: issuefab.Payment.Creatable.Card = { type: "card", limit: [123, "SEK"] }
 		const creatablePrePaid: issuefab.Payment.Creatable.PrePaid = { type: "pre-paid", limit: [123, "SEK"] }
 
-		expect(Creatable.is(creatableCard)).toBe(true)
-		expect(Creatable.is(creatablePrePaid)).toBe(true)
-		expect(Creatable.is({ ...creatablePrePaid, type: "Blaha" })).toBe(false)
+		expect(Creatable.is(creatableCard)).toEqual(true)
+		expect(Creatable.is(creatablePrePaid)).toEqual(true)
+		expect(Creatable.is({ ...creatableCard, type: "expense" })).toEqual(true)
+		expect(Creatable.is({ ...creatablePrePaid, type: "Blaha" })).toEqual(false)
 	})
 })
