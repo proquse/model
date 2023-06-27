@@ -4,7 +4,7 @@ describe("Purchase.Creatable", () => {
 	const creatable: issuefab.Purchase.Creatable = {
 		purpose: "buy things",
 		payment: {
-			type: "card",
+			type: "expense",
 			limit: [10, "EUR"],
 		},
 		buyer: "jane@example.com",

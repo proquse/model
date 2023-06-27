@@ -11,12 +11,13 @@ export namespace Report {
 	export const Receipt = ReportReceipt
 	export namespace Receipt {
 		export type Creatable = ReportReceipt.Creatable
+		export type Preview = ReportReceipt.Preview
 	}
 	export type Expense = ReportExpense
 	export const Expense = ReportExpense
 	export namespace Expense {
 		export type Creatable = ReportExpense.Creatable
-		export type PreviewData = ReportExpense.PreviewData
+		export type Preview = ReportExpense.Preview
 	}
 	export type Creatable = ReportCreatable
 	export const Creatable = ReportCreatable
