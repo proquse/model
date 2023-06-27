@@ -127,7 +127,7 @@ export namespace Purchase {
 			  }
 	}
 	export function validate(purchase: Purchase, date: isoly.Date, limit?: Cadence): boolean {
-		const cap = !limit ? undefined : Cadence.allocated(limit, date)
+		const equity = !limit ? undefined : Cadence.allocated(limit, date)
 		return (
 			!!purchase.id &&
 			!!purchase.buyer &&
@@ -137,7 +137,7 @@ export namespace Purchase {
 			(!purchase.amount || Cadence.validate(purchase.amount, date, purchase.payment.limit)) &&
 			!!purchase.email &&
 			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&
-			(cap == undefined ||
+			(equity == undefined ||
 				(purchase.receipts.reduce(
 					(result, receipt) =>
 						isoly.Currency.add(
@@ -154,7 +154,7 @@ export namespace Purchase {
 							)
 						),
 					0
-				) <= cap &&
+				) <= equity &&
 					purchase.payment.limit.currency == limit?.currency)) &&
 			purchase.transactions.every(transaction => Transaction.validate(transaction))
 		)
@@ -181,6 +181,9 @@ export namespace Purchase {
 	}
 	export function calculateSpentBalance(purchase: Purchase, currency: isoly.Currency): number {
 		return isoly.Currency.subtract(currency, purchase.payment.limit.value, spent(purchase, currency))
+	}
+	export function allocated(purchase: Purchase, date: isoly.Date): number {
+		return Cadence.allocated(purchase.payment.limit, date)
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable

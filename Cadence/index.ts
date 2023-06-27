@@ -13,26 +13,26 @@ export namespace Cadence {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function allocated(amount: Cadence, date: isoly.Date): number {
+	export function allocated(cadence: Cadence, date: isoly.Date): number {
 		let result = 0
-		if (amount.created <= date) {
-			if (amount.cadence == "year")
-				for (let d = isoly.Date.firstOfYear(amount.created); d <= date; d = isoly.Date.nextYear(d))
-					result += amount.value
-			else if (amount.cadence == "month")
-				for (let d = isoly.Date.firstOfMonth(amount.created); d <= date; d = isoly.Date.nextMonth(d))
-					result += amount.value
-			else if (amount.cadence == "week") {
-				for (let d = isoly.Date.firstOfWeek(amount.created); d <= date; d = isoly.Date.next(d, 7))
-					result += amount.value
+		if (cadence.created <= date) {
+			if (cadence.cadence == "year")
+				for (let d = isoly.Date.firstOfYear(cadence.created); d <= date; d = isoly.Date.nextYear(d))
+					result += cadence.value
+			else if (cadence.cadence == "month")
+				for (let d = isoly.Date.firstOfMonth(cadence.created); d <= date; d = isoly.Date.nextMonth(d))
+					result += cadence.value
+			else if (cadence.cadence == "week") {
+				for (let d = isoly.Date.firstOfWeek(cadence.created); d <= date; d = isoly.Date.next(d, 7))
+					result += cadence.value
 			} else
-				result = amount.value
+				result = cadence.value
 		}
 		return result
 	}
-	export function validate(amount: Cadence, date: isoly.Date, limit?: Cadence): boolean {
+	export function validate(cadence: Cadence, date: isoly.Date, limit?: Cadence): boolean {
 		const cap = !limit ? undefined : Cadence.allocated(limit, date)
-		const allocated = Cadence.allocated(amount, date)
-		return allocated > 0 && (!cap || (allocated <= cap && amount.currency == limit?.currency))
+		const allocated = Cadence.allocated(cadence, date)
+		return allocated > 0 && (!cap || (allocated <= cap && cadence.currency == limit?.currency))
 	}
 }

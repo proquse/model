@@ -55,18 +55,20 @@ export namespace CostCenter {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
 			  ) && result
 	}
-	export function validate(costCenter: CostCenter, limit?: Cadence): boolean {
-		const equity: Cadence = [allocated.balance(costCenter), costCenter.amount[1]]
+	export function validate(costCenter: CostCenter, date: isoly.Date, limit?: Cadence): boolean {
+		const equity = allocated.balance(costCenter, date)
 		return (
 			!!costCenter.id &&
 			costCenter.created <= costCenter.modified &&
 			costCenter.modified <= isoly.DateTime.now() &&
 			!!costCenter.from &&
 			!!costCenter.name &&
-			0 <= equity[0] &&
-			(!limit || (costCenter.amount[1] == limit[1] && equity[0] <= limit[0])) &&
-			costCenter.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]])) &&
-			costCenter.costCenters.every(costCenter => validate(costCenter, [costCenter.amount[0], equity[1]]))
+			0 <= equity &&
+			(!limit || (costCenter.amount.currency == limit.currency && equity <= Cadence.allocated(limit, date))) &&
+			costCenter.delegations.every(d =>
+				Delegation.validate(d, date, { ...d.amount, currency: costCenter.amount.currency })
+			) &&
+			costCenter.costCenters.every(c => validate(c, date, { ...c.amount, currency: costCenter.amount.currency }))
 		)
 	}
 	export const find = Object.assign(findCostCenter, { node: findNode })
