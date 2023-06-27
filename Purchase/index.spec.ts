@@ -13,7 +13,10 @@ describe("Purchase", () => {
 		receipts: [
 			{
 				id: "id",
-				total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+				total: [
+					{ net: [10, "USD"], vat: [2.5, "USD"] },
+					{ net: [20, "USD"], vat: [5, "USD"] },
+				],
 				date: "2022-01-01T00:00:42Z",
 				original: "https://example.com/receipt.pdf",
 			},
@@ -366,5 +369,10 @@ describe("Purchase", () => {
 		)
 		expect(result.length).toEqual(1)
 		expect(result.every(purchase => issuefab.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
+	})
+	it("spent", () => {
+		expect(issuefab.Purchase.spent(purchase, "USD")).toEqual(37.5)
+		expect(issuefab.Purchase.spent(purchase, "USD", { vat: false })).toEqual(30)
+		expect(issuefab.Purchase.spent(delegation.delegations[0].purchases[0], "USD")).toEqual(12.5)
 	})
 })

@@ -12,7 +12,7 @@ describe("CostCenter", () => {
 		expect(issuefab.CostCenter.findParent).toEqual(issuefab.Delegation.findParent)
 		expect(issuefab.CostCenter.findParents).toEqual(issuefab.Delegation.findParents)
 		expect(issuefab.CostCenter.path).toEqual(issuefab.Delegation.path)
-		expect(issuefab.CostCenter.balance).toEqual(issuefab.Delegation.balance)
+		expect(issuefab.CostCenter.allocated).toEqual(issuefab.Delegation.allocated)
 		expect(issuefab.CostCenter.spent).toEqual(issuefab.Delegation.spent)
 	})
 	it("is", () => {

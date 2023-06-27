@@ -1,6 +1,6 @@
 {
 	"name": "@issuefab/model",
-	"version": "0.1.17",
+	"version": "0.1.18",
 	"description": "Model for the issuefab app.",
 	"author": "Issuefab Contributors",
 	"license": "MIT",
@@ -78,5 +78,8 @@
 		"isly": "^0.1.7",
 		"isoly": "^2.0.16",
 		"web-file-polyfill": "^1.0.4"
+	},
+	"overrides": {
+		"semver": "7.5.3"
 	}
 }

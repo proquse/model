@@ -13,7 +13,7 @@ describe("Delegation", () => {
 		delegations: [],
 		purchases: [],
 	}
-	const topLevelDelegation: issuefab.CostCenter = {
+	const costCenter: issuefab.CostCenter = {
 		id: "abcd0001",
 		from: "jane@example.com",
 		name: "budget",
@@ -153,54 +153,66 @@ describe("Delegation", () => {
 				purchases: [],
 			},
 		],
-		costCenters: [],
+		costCenters: [
+			{
+				id: "abcd0050",
+				from: "jane@example.com",
+				name: "partial budget",
+				created: "2021-12-20T13:37:42Z",
+				modified: "2021-12-20T13:37:42Z",
+				description: "Partial company budget",
+				amount: [2_000, "EUR"],
+				costCenters: [],
+				delegations: [],
+			},
+		],
 	}
 
 	it("is", () => {
 		expect(issuefab.Delegation.is(initialDelegation)).toEqual(true)
 		expect(issuefab.Delegation.is((({ from, ...delegation }) => delegation)(initialDelegation))).toEqual(false)
 		expect(issuefab.Delegation.is({ ...initialDelegation, to: [] })).toEqual(false)
-		expect(issuefab.Delegation.is(topLevelDelegation)).toEqual(false)
+		expect(issuefab.Delegation.is(costCenter)).toEqual(false)
 	})
 
 	it("findUser", () => {
-		expect(issuefab.Delegation.findUser([topLevelDelegation], "john@example.com")).toEqual([
-			topLevelDelegation.delegations[0].delegations[0].delegations[0],
-			topLevelDelegation.delegations[1].delegations[0],
+		expect(issuefab.Delegation.findUser([costCenter], "john@example.com")).toEqual([
+			costCenter.delegations[0].delegations[0].delegations[0],
+			costCenter.delegations[1].delegations[0],
 		])
-		expect(new Set(issuefab.Delegation.findUser([topLevelDelegation], "richard@example.com"))).toEqual(
-			new Set([topLevelDelegation.delegations[1], topLevelDelegation.delegations[0].delegations[0]])
+		expect(new Set(issuefab.Delegation.findUser([costCenter], "richard@example.com"))).toEqual(
+			new Set([costCenter.delegations[1], costCenter.delegations[0].delegations[0]])
 		)
 	})
 	it("find", () => {
-		expect(issuefab.CostCenter.find([topLevelDelegation], "abcd0001")).toEqual({
-			root: topLevelDelegation,
-			found: topLevelDelegation,
+		expect(issuefab.CostCenter.find([costCenter], "abcd0001")).toEqual({
+			root: costCenter,
+			found: costCenter,
 		})
-		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0002")).toEqual({
-			root: topLevelDelegation,
-			found: topLevelDelegation.delegations[0],
+		expect(issuefab.Delegation.find([costCenter], "abcd0002")).toEqual({
+			root: costCenter,
+			found: costCenter.delegations[0],
 		})
-		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0005")).toEqual({
-			root: topLevelDelegation,
-			found: topLevelDelegation.delegations[1].delegations[0],
+		expect(issuefab.Delegation.find([costCenter], "abcd0005")).toEqual({
+			root: costCenter,
+			found: costCenter.delegations[1].delegations[0],
 		})
-		expect(issuefab.Delegation.find([topLevelDelegation], "abcd0001")).toEqual(undefined)
-		expect(issuefab.Delegation.find.node([topLevelDelegation], "abcd0001")).toEqual({
-			root: topLevelDelegation,
-			found: topLevelDelegation,
+		expect(issuefab.Delegation.find([costCenter], "abcd0001")).toEqual(undefined)
+		expect(issuefab.Delegation.find.node([costCenter], "abcd0001")).toEqual({
+			root: costCenter,
+			found: costCenter,
 		})
 	})
 	it("findParent", () => {
-		expect(issuefab.Delegation.findParent([topLevelDelegation], topLevelDelegation.delegations[0].id)).toEqual({
-			root: topLevelDelegation,
-			found: topLevelDelegation,
+		expect(issuefab.Delegation.findParent([costCenter], costCenter.delegations[0].id)).toEqual({
+			root: costCenter,
+			found: costCenter,
 		})
-		expect(issuefab.Delegation.findParent([topLevelDelegation.delegations[1]], "abcd0006")).toEqual({
-			root: topLevelDelegation.delegations[1],
-			found: topLevelDelegation.delegations[1].delegations[0],
+		expect(issuefab.Delegation.findParent([costCenter.delegations[1]], "abcd0006")).toEqual({
+			root: costCenter.delegations[1],
+			found: costCenter.delegations[1].delegations[0],
 		})
-		expect(issuefab.Delegation.findParent([topLevelDelegation.delegations[0]], "abcd0006")).toEqual(undefined)
+		expect(issuefab.Delegation.findParent([costCenter.delegations[0]], "abcd0006")).toEqual(undefined)
 	})
 	it("change", () => {
 		let before: issuefab.Delegation = {
@@ -364,16 +376,26 @@ describe("Delegation", () => {
 		expect(issuefab.Delegation.remove([after], "xyz")).toEqual(undefined)
 	})
 	it("spent", () => {
-		expect(issuefab.Delegation.spent(topLevelDelegation)).toEqual(29)
-		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[1])).toEqual(0)
-		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[0])).toEqual(19.5)
-		expect(issuefab.Delegation.spent(topLevelDelegation, true)).toEqual(29)
-		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[0].delegations[0], true)).toEqual(19.5)
-		expect(issuefab.Delegation.spent(topLevelDelegation.delegations[0], true)).toEqual(29)
+		expect(issuefab.Delegation.spent(costCenter, { rootPurchases: true })).toEqual(25)
+		expect(issuefab.Delegation.spent(costCenter, { rootPurchases: true, vat: false })).toEqual(20)
+		expect(issuefab.Delegation.spent(costCenter.delegations[1])).toEqual(0)
+		expect(issuefab.Delegation.spent(costCenter.delegations[0])).toEqual(12.5)
+		expect(issuefab.Delegation.spent(costCenter, { rootPurchases: true, vat: false })).toEqual(20)
+		expect(issuefab.Delegation.spent(costCenter.delegations[0].delegations[0], { rootPurchases: true })).toEqual(12.5)
+		expect(
+			issuefab.Delegation.spent(costCenter.delegations[0].delegations[0], { rootPurchases: true, vat: false })
+		).toEqual(10)
+		expect(issuefab.Delegation.spent.balance(costCenter)).toEqual(19_975)
+		expect(issuefab.Delegation.spent.balance(costCenter.delegations[0])).toEqual(1_987.5)
+		expect(issuefab.Delegation.spent.balance(costCenter, { vat: false })).toEqual(19_980)
+		expect(issuefab.Delegation.spent.balance(costCenter.delegations[0], { vat: false })).toEqual(1_990)
 	})
-	it("balance", () => {
-		expect(issuefab.Delegation.balance(topLevelDelegation)).toEqual(16000)
-		expect(issuefab.Delegation.balance(topLevelDelegation.delegations[1].delegations[0].delegations[0])).toEqual(1000)
+	it("allocated", () => {
+		expect(issuefab.Delegation.allocated(costCenter)).toEqual(6_000)
+		expect(issuefab.Delegation.allocated.balance(costCenter)).toEqual(14_000)
+		expect(issuefab.Delegation.allocated.balance(costCenter.delegations[1].delegations[0].delegations[0])).toEqual(
+			1_000
+		)
 	})
 	it("create", () => {
 		expect(
@@ -389,31 +411,28 @@ describe("Delegation", () => {
 		).toEqual(true)
 	})
 	it("findParents", () => {
-		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0003")).toEqual([
-			topLevelDelegation,
-			topLevelDelegation.delegations[0],
+		expect(issuefab.Delegation.findParents([costCenter], "abcd0003")).toEqual([costCenter, costCenter.delegations[0]])
+		expect(issuefab.Delegation.findParents([costCenter], "abcd0001")).toEqual([])
+		expect(issuefab.Delegation.findParents([costCenter], "abcd0006")).toEqual([
+			costCenter,
+			costCenter.delegations[1],
+			costCenter.delegations[1].delegations[0],
 		])
-		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0001")).toEqual([])
-		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0006")).toEqual([
-			topLevelDelegation,
-			topLevelDelegation.delegations[1],
-			topLevelDelegation.delegations[1].delegations[0],
-		])
-		expect(issuefab.Delegation.findParents([topLevelDelegation], "abcd0002")).toEqual([topLevelDelegation])
-		expect(issuefab.Delegation.findParents([topLevelDelegation], "xyz")).toEqual(undefined)
+		expect(issuefab.Delegation.findParents([costCenter], "abcd0002")).toEqual([costCenter])
+		expect(issuefab.Delegation.findParents([costCenter], "xyz")).toEqual(undefined)
 	})
 	it("path", () => {
-		expect(issuefab.Delegation.path([topLevelDelegation], "abcd0001")).toEqual([topLevelDelegation])
-		expect(issuefab.Delegation.path([topLevelDelegation], "abcd0003")).toEqual([
-			topLevelDelegation,
-			topLevelDelegation.delegations[0],
-			topLevelDelegation.delegations[0].delegations[0],
+		expect(issuefab.Delegation.path([costCenter], "abcd0001")).toEqual([costCenter])
+		expect(issuefab.Delegation.path([costCenter], "abcd0003")).toEqual([
+			costCenter,
+			costCenter.delegations[0],
+			costCenter.delegations[0].delegations[0],
 		])
-		expect(issuefab.Delegation.path([topLevelDelegation], "abcd0006")).toEqual([
-			topLevelDelegation,
-			topLevelDelegation.delegations[1],
-			topLevelDelegation.delegations[1].delegations[0],
-			topLevelDelegation.delegations[1].delegations[0].delegations[0],
+		expect(issuefab.Delegation.path([costCenter], "abcd0006")).toEqual([
+			costCenter,
+			costCenter.delegations[1],
+			costCenter.delegations[1].delegations[0],
+			costCenter.delegations[1].delegations[0].delegations[0],
 		])
 	})
 	it("validate", () => {
@@ -425,7 +444,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [
 				{
 					id: "abcd0002",
@@ -435,7 +454,7 @@ describe("Delegation", () => {
 					costCenter: "IT",
 					from: "",
 					purpose: "Partial company Budget",
-					amount: [2000, "EUR"],
+					amount: [2_000, "EUR"],
 					delegations: [],
 					purchases: [],
 				},
@@ -450,7 +469,7 @@ describe("Delegation", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["jessie@example.com"],
 			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			amount: [20_000, "EUR"],
 			delegations: [
 				{
 					id: "abcd0002",
@@ -460,7 +479,7 @@ describe("Delegation", () => {
 					costCenter: "",
 					from: "John@example.com",
 					purpose: "Partial company Budget",
-					amount: [2000, "EUR"],
+					amount: [2_000, "EUR"],
 					delegations: [],
 					purchases: [],
 				},
