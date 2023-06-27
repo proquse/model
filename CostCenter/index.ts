@@ -1,7 +1,7 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 import { Delegation } from "../Delegation"
 import { changeCostCenter } from "../Delegation/change"
 import { findCostCenter, findNode } from "../Delegation/find"
@@ -55,8 +55,8 @@ export namespace CostCenter {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
 			  ) && result
 	}
-	export function validate(costCenter: CostCenter, limit?: Amount): boolean {
-		const equity: Amount = [allocated.balance(costCenter), costCenter.amount[1]]
+	export function validate(costCenter: CostCenter, limit?: Cadence): boolean {
+		const equity: Cadence = [allocated.balance(costCenter), costCenter.amount[1]]
 		return (
 			!!costCenter.id &&
 			costCenter.created <= costCenter.modified &&

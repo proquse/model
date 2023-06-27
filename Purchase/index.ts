@@ -1,7 +1,7 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
@@ -13,7 +13,7 @@ export interface Purchase extends Purchase.Creatable {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	amount?: Amount
+	amount?: Cadence
 	email: string
 	receipts: Receipt[]
 	transactions: Transaction[]
@@ -124,7 +124,7 @@ export namespace Purchase {
 					removed: search.found,
 			  }
 	}
-	export function validate(purchase: Purchase, limit?: Amount): boolean {
+	export function validate(purchase: Purchase, limit?: Cadence): boolean {
 		return (
 			!!purchase.id &&
 			!!purchase.buyer &&

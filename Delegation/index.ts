@@ -1,7 +1,7 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
 import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
@@ -155,8 +155,8 @@ export namespace Delegation {
 	function calculateAllocatedBalance(root: Delegation | CostCenter): number {
 		return isoly.Currency.subtract(root.amount[1], root.amount[0], allocated(root))
 	}
-	export function validate(delegation: Delegation, limit?: Amount): boolean {
-		const equity: Amount = [allocated.balance(delegation), delegation.amount[1]]
+	export function validate(delegation: Delegation, limit?: Cadence): boolean {
+		const equity: Cadence = [allocated.balance(delegation), delegation.amount[1]]
 		return (
 			!!delegation.id &&
 			delegation.created <= delegation.modified &&

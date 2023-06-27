@@ -1,5 +1,5 @@
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 import { Card as PaymentCard } from "./Card"
 import { Expense as PaymentExpense } from "./Expense"
 import { PrePaid as PaymentPrePaid } from "./PrePaid"
@@ -15,7 +15,7 @@ export namespace Creatable {
 	export const is = type.is
 	export const flaw = type.flaw
 
-	export function validate(payment: Creatable, limit?: Amount): boolean {
+	export function validate(payment: Creatable, limit?: Cadence): boolean {
 		return Card.is(payment)
 			? Card.validate(payment, limit)
 			: PrePaid.is(payment)

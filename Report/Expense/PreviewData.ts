@@ -1,9 +1,9 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Amount } from "../../Amount"
+import { Cadence } from "../../Cadence"
 
 export interface PreviewData {
-	compileData: Record<string, { purpose: string; date: isoly.Date; amount: Amount }[]>
+	compileData: Record<string, { purpose: string; date: isoly.Date; amount: Cadence }[]>
 	organization: string
 	dateRange: isoly.DateRange
 }

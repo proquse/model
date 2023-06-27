@@ -1,11 +1,11 @@
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 
 export interface Creatable {
 	from: string
 	to: string[]
 	purpose: string
-	amount: Amount
+	amount: Cadence
 	costCenter: string
 }
 export namespace Creatable {
@@ -29,7 +29,7 @@ export namespace Creatable {
 			first.to.every((value, index) => value == second.to[index])
 		)
 	}
-	export function validate(delegation: Creatable, limit?: Amount): boolean {
+	export function validate(delegation: Creatable, limit?: Cadence): boolean {
 		return (
 			!!delegation.from &&
 			delegation.to.length > 0 &&

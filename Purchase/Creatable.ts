@@ -1,5 +1,5 @@
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 import { Payment } from "../Payment"
 
 export interface Creatable {
@@ -13,7 +13,7 @@ export namespace Creatable {
 	export const is = type.is
 	export const flaw = type.flaw
 
-	export function validate(purchase: Creatable, limit?: Amount): boolean {
+	export function validate(purchase: Creatable, limit?: Cadence): boolean {
 		return !!purchase.buyer && Payment.Creatable.validate(purchase.payment, limit)
 	}
 }

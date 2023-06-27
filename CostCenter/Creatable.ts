@@ -1,10 +1,10 @@
 import { isly } from "isly"
-import { Amount } from "../Amount"
+import { Cadence } from "../Cadence"
 
 export interface Creatable {
 	from: string //email
 	name: string
-	amount: Amount
+	amount: Cadence
 	description?: string
 }
 export namespace Creatable {
@@ -16,7 +16,7 @@ export namespace Creatable {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function validate(costCenter: Creatable, limit?: Amount): boolean {
+	export function validate(costCenter: Creatable, limit?: Cadence): boolean {
 		return !!costCenter.from && !!costCenter.name && Amount.validate(costCenter.amount, limit)
 	}
 }

@@ -1,15 +1,16 @@
+import { isoly } from "isoly"
 import { isly } from "isly"
-import { Amount } from "../../Amount"
+import { Cadence } from "../../Cadence"
 
 export interface Creatable {
 	type: "card"
-	limit: Amount
+	limit: Cadence
 }
 export namespace Creatable {
-	export const type = isly.object<Creatable>({ type: isly.string(["card"]), limit: Amount.type })
+	export const type = isly.object<Creatable>({ type: isly.string(["card"]), limit: Cadence.type })
 	export const is = type.is
 	export const flaw = type.flaw
-	export function validate(card: Creatable, limit?: Amount): boolean {
-		return Amount.validate(card.limit, limit)
+	export function validate(card: Creatable, date: isoly.Date, limit?: Cadence): boolean {
+		return Cadence.validate(card.limit, date, limit)
 	}
 }
