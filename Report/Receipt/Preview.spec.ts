@@ -1,18 +1,24 @@
-import { FormData } from "formdata-polyfill/esm.min.js"
-import { Blob, File } from "web-file-polyfill"
 import { issuefab } from "../../index"
-import { PreviewData } from "./PreviewData"
-globalThis.Blob = Blob
-globalThis.FormData = FormData
-globalThis.File = File
-describe("receipt PreviewData", () => {
-	const dummyPreviewData: PreviewData = {
-		receiptsData: [
+import { Preview } from "./Preview"
+
+describe("receipt Preview", () => {
+	const dummyPreview: Preview = {
+		costCenters: [
 			{
-				costCenter: "Example Cost Center",
+				costCenter: {
+					id: "1",
+					amount: [10, "USD"],
+					name: "Development",
+					created: "2021-12-20T13:37:42Z",
+					modified: "2022-12-20T13:37:42Z",
+					from: "jessie@example.com",
+					description: "description",
+					delegations: [],
+					costCenters: [],
+				},
 				receipts: [
 					{
-						details: {
+						receipt: {
 							id: "receiptId",
 							original: "https://example.com/receipt.pdf",
 							total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
@@ -37,7 +43,6 @@ describe("receipt PreviewData", () => {
 							],
 							transactions: [],
 						},
-						file: new File([new Uint8Array([97])], "file"),
 					},
 				],
 			},
@@ -50,11 +55,9 @@ describe("receipt PreviewData", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Report.Receipt.PreviewData.is(dummyPreviewData)).toEqual(true)
+		expect(issuefab.Report.Receipt.Preview.is(dummyPreview)).toEqual(true)
 		expect(
-			issuefab.Report.Receipt.PreviewData.is(
-				(({ organization, ...dummyPreviewData }) => dummyPreviewData)(dummyPreviewData)
-			)
+			issuefab.Report.Receipt.Preview.is((({ organization, ...dummyPreview }) => dummyPreview)(dummyPreview))
 		).toEqual(false)
 	})
 })

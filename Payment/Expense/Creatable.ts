@@ -8,7 +8,7 @@ export interface Creatable {
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		type: isly.string(["expense"]),
+		type: isly.string("expense"),
 		limit: Cadence.type,
 	})
 	export const is = type.is

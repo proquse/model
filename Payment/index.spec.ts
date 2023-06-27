@@ -5,8 +5,14 @@ describe("Payment", () => {
 		type: "card",
 		limit: [10, "EUR"],
 	}
+	const expense: issuefab.Payment = {
+		type: "expense",
+		limit: [10, "EUR"],
+	}
 	it("is", () => {
 		expect(issuefab.Payment.is(payment)).toEqual(true)
+		expect(issuefab.Payment.is({ ...expense, type: "pre-paid" })).toEqual(true)
+		expect(issuefab.Payment.is(expense)).toEqual(true)
 		expect(issuefab.Payment.is({ ...payment, type: "invoice" })).toEqual(false)
 		expect(issuefab.Payment.is((({ type, ...payment }) => payment)(payment))).toEqual(false)
 	})

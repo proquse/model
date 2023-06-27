@@ -1,6 +1,6 @@
 {
 	"name": "@issuefab/model",
-	"version": "0.1.18",
+	"version": "0.1.20",
 	"description": "Model for the issuefab app.",
 	"author": "Issuefab Contributors",
 	"license": "MIT",
@@ -48,11 +48,12 @@
 		"dev": "watch 'npm run build' .",
 		"lint": "eslint '**/*.{ts,tsx}'",
 		"fix": "eslint '**/*.{ts,tsx}' --fix",
-		"build": "tsc -p .",
+		"build": "npm run clean:dist ; tsc -p .",
 		"test": "jest",
 		"test:watch": "watch jest",
 		"prepare": "npm run build",
-		"clean": "rimraf dist node_modules coverage"
+		"clean": "rimraf dist node_modules coverage",
+		"clean:dist": "rimraf dist"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.0",

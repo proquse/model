@@ -7,7 +7,7 @@ export interface Creatable {
 	limit: Cadence
 }
 export namespace Creatable {
-	export const type = isly.object<Creatable>({ type: isly.string(["pre-paid"]), limit: Cadence.type })
+	export const type = isly.object<Creatable>({ type: isly.string("pre-paid"), limit: Cadence.type })
 	export const is = type.is
 	export const flaw = type.flaw
 
