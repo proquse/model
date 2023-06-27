@@ -8,7 +8,7 @@ export interface Expense extends Expense.Creatable {
 
 export namespace Expense {
 	export const type: isly.object.ExtendableType<Expense> = ExpenseCreatable.type.extend<Expense>({
-		paid: isly.record(isly.string(), ExpensePaid.type.optional()),
+		paid: isly.record(isly.string(), ExpensePaid.type.optional()).optional(),
 	})
 
 	export const is = type.is

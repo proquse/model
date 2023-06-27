@@ -7,10 +7,10 @@ import { PrePaid as PaymentPrePaid } from "./PrePaid"
 export type Creatable = Creatable.Card | Creatable.PrePaid | Creatable.Expense
 
 export namespace Creatable {
-	export const type = isly.union<Creatable, Creatable.Card, Creatable.PrePaid, Creatable.Expense>(
+	export const type = isly.union(
+		PaymentExpense.Creatable.type,
 		PaymentCard.Creatable.type,
-		PaymentPrePaid.Creatable.type,
-		PaymentExpense.Creatable.type
+		PaymentPrePaid.Creatable.type
 	)
 	export const is = type.is
 	export const flaw = type.flaw
