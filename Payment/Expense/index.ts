@@ -1,9 +1,10 @@
 import { isly } from "isly"
+import { Receipt } from "./../../Receipt"
 import { Creatable as ExpenseCreatable } from "./Creatable"
 import { Paid as ExpensePaid } from "./Paid"
 
 export interface Expense extends Expense.Creatable {
-	paid?: Record<string, Expense.Paid | undefined>
+	paid?: Record<Receipt["id"], Expense.Paid | undefined>
 }
 
 export namespace Expense {
