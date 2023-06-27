@@ -1,4 +1,5 @@
 // import { issuefab } from "../index"
+import { isoly } from "isoly"
 import { Amount } from "./index"
 
 describe("Amount", () => {
@@ -34,14 +35,39 @@ describe("Amount", () => {
 		expect(Amount.is([1, "EUR"])).toEqual(false)
 	})
 	it("validate", () => {
-		// expect(issuefab.Amount.validate([0, "EUR"])).toEqual(false)
-		// expect(issuefab.Amount.validate([1, "EUR"])).toEqual(true)
-		// expect(issuefab.Amount.validate([1, "EUR"], [10, "EUR"])).toEqual(true)
-		// expect(issuefab.Amount.validate([1, "EUR"], [10, "SEK"])).toEqual(false)
-		// expect(issuefab.Amount.validate([11, "EUR"], [10, "EUR"])).toEqual(false)
-		// expect(issuefab.Amount.validate([11, "EUR"], [10, "SEK"])).toEqual(false)
-		// expect(issuefab.Amount.validate([-1, "EUR"])).toEqual(false)
-		// expect(issuefab.Amount.validate([1, "EUR"], undefined)).toEqual(true)
+		const date = "2023-05-10"
+		const past = "2023-01-01"
+
+		const budget: Amount = {
+			cadence: "year",
+			value: 1_000,
+			currency: "EUR",
+			created: "2023-01-01",
+		}
+
+		expect(Amount.validate(year, past)).toEqual(false)
+		expect(Amount.validate(month, past)).toEqual(false)
+		expect(Amount.validate(week, past)).toEqual(false)
+		expect(Amount.validate(single, past)).toEqual(false)
+
+		expect(Amount.validate(year, date)).toEqual(true)
+		expect(Amount.validate(month, date)).toEqual(true)
+		expect(Amount.validate(week, date)).toEqual(true)
+		expect(Amount.validate(single, date)).toEqual(true)
+
+		expect(Amount.validate(month, date, year)).toEqual(false)
+		expect(Amount.validate(week, date, year)).toEqual(false)
+		expect(Amount.validate(single, date, year)).toEqual(true)
+		expect(Amount.validate(month, "2023-03-04", year)).toEqual(true)
+		expect(Amount.validate(week, "2023-03-04", year)).toEqual(true)
+		// real use-cases
+		expect(Amount.validate(year, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
+		expect(Amount.validate(month, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
+		expect(Amount.validate(week, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
+		expect(Amount.validate(single, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
+		expect(Amount.validate({ ...year, value: 1_001 }, isoly.Date.lastOfYear(budget.created), budget)).toEqual(false)
+		expect(Amount.validate({ ...month, value: 200 }, isoly.Date.lastOfYear(budget.created), budget)).toEqual(false)
+		expect(Amount.validate({ ...week, value: 50 }, isoly.Date.lastOfYear(budget.created), budget)).toEqual(false)
 	})
 	it("allocated", () => {
 		// past

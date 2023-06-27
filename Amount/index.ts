@@ -33,10 +33,9 @@ export namespace Amount {
 		}
 		return result
 	}
-	// export const type = isly.tuple<Amount>(isly.number(), isly.fromIs<isoly.Currency>("Currency", isoly.Currency.is))
-	// export const is = type.is
-	// export const flaw = type.flaw
-	// export function validate(amount: Amount, limit?: Amount): boolean {
-	// 	return amount[0] > 0 && (limit == undefined || (amount[0] <= limit[0] && amount[1] == limit[1]))
-	// }
+	export function validate(amount: Amount, date: isoly.Date, limit?: Amount): boolean {
+		const cap = !limit ? undefined : Amount.allocated(limit, date)
+		const allocated = Amount.allocated(amount, date)
+		return allocated > 0 && (!cap || (allocated <= cap && amount.currency == limit?.currency))
+	}
 }
