@@ -1,7 +1,8 @@
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 
 export interface Creatable {
-	issuer: string
+	issuer: userwidgets.User["email"]
 }
 
 export namespace Creatable {
