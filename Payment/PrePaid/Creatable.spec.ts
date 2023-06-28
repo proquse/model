@@ -1,12 +1,12 @@
 import { issuefab } from "../../index"
 
 describe("Payment.PrePaid.Creatable", () => {
-	const prePaid: issuefab.Payment.PrePaid = {
+	const payment: issuefab.Payment.PrePaid = {
 		type: "pre-paid",
-		limit: [10, "EUR"],
+		limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 	}
 	it("is", () => {
-		expect(issuefab.Payment.PrePaid.is(prePaid)).toEqual(true)
-		expect(issuefab.Payment.PrePaid.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
+		expect(issuefab.Payment.PrePaid.is(payment)).toEqual(true)
+		expect(issuefab.Payment.PrePaid.is({ ...payment, type: "invoice" })).toEqual(false)
 	})
 })

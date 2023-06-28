@@ -30,9 +30,4 @@ export namespace Cadence {
 		}
 		return result
 	}
-	export function validate(cadence: Cadence, date: isoly.Date, limit?: Cadence): boolean {
-		const cap = !limit ? undefined : Cadence.allocated(limit, date)
-		const allocated = Cadence.allocated(cadence, date)
-		return allocated > 0 && (!cap || (allocated <= cap && cadence.currency == limit?.currency))
-	}
 }

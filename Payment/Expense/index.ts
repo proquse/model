@@ -13,7 +13,6 @@ export namespace Expense {
 
 	export const is = type.is
 	export const flaw = type.flaw
-	export const validate = ExpenseCreatable.validate
 	export type Creatable = ExpenseCreatable
 	export const Creatable = ExpenseCreatable
 	export type Paid = ExpensePaid

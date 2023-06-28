@@ -1,13 +1,13 @@
 import { issuefab } from "../../index"
 
 describe("Payment.Expense", () => {
-	const expense: issuefab.Payment.Expense = {
+	const payment: issuefab.Payment.Expense = {
 		type: "expense",
-		limit: [10, "EUR"],
+		limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 		paid: {},
 	}
 	it("is", () => {
-		expect(issuefab.Payment.Expense.is(expense)).toEqual(true)
-		expect(issuefab.Payment.Expense.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
+		expect(issuefab.Payment.Expense.is(payment)).toEqual(true)
+		expect(issuefab.Payment.Expense.is({ ...payment, type: "invoice" })).toEqual(false)
 	})
 })

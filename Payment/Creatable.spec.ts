@@ -3,12 +3,18 @@ import { Creatable } from "./Creatable"
 
 describe("Payment.Creatable", () => {
 	it("is", () => {
-		const creatableCard: issuefab.Payment.Creatable.Card = { type: "card", limit: [123, "SEK"] }
-		const creatablePrePaid: issuefab.Payment.Creatable.PrePaid = { type: "pre-paid", limit: [123, "SEK"] }
+		const card: issuefab.Payment.Creatable.Card = {
+			type: "card",
+			limit: { cadence: "month", value: 123, currency: "SEK", created: "2023-01-01" },
+		}
+		const prePaid: issuefab.Payment.Creatable.PrePaid = {
+			...card,
+			type: "pre-paid",
+		}
 
-		expect(Creatable.is(creatableCard)).toEqual(true)
-		expect(Creatable.is(creatablePrePaid)).toEqual(true)
-		expect(Creatable.is({ ...creatableCard, type: "expense" })).toEqual(true)
-		expect(Creatable.is({ ...creatablePrePaid, type: "Blaha" })).toEqual(false)
+		expect(Creatable.is(card)).toEqual(true)
+		expect(Creatable.is(prePaid)).toEqual(true)
+		expect(Creatable.is({ ...card, type: "expense" })).toEqual(true)
+		expect(Creatable.is({ ...prePaid, type: "Blaha" })).toEqual(false)
 	})
 })
