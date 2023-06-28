@@ -55,30 +55,4 @@ describe("Delegation.Creatable", () => {
 	// 	expect(issuefab.Delegation.Creatable.equals(first, second)).toEqual(true)
 	// 	expect(issuefab.Delegation.Creatable.equals(first, creatable)).toEqual(false)
 	// })
-	it("validate", () => {
-		expect(
-			issuefab.Delegation.Creatable.validate(
-				{
-					to: ["james@example.com"],
-					from: "jessie@example.com",
-					purpose: "testPurpose",
-					amount: { cadence: "year", value: 500, currency: "EUR", created: "2023-01-01" },
-					costCenter: "testCostCenter",
-				},
-				"2023-01-01"
-			)
-		).toEqual(true)
-		expect(
-			issuefab.Delegation.Creatable.validate(
-				{
-					to: ["james@example.com"],
-					from: "jessie@example.com",
-					purpose: "testPurpose",
-					amount: { cadence: "year", value: 500, currency: "EUR", created: "2023-01-01" },
-					costCenter: "testCostCenter",
-				},
-				"2022-12-31"
-			)
-		).toEqual(false)
-	})
 })

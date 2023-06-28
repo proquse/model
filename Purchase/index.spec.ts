@@ -20,7 +20,6 @@ describe("Purchase", () => {
 				original: "https://example.com/receipt.pdf",
 			},
 		],
-		transactions: [],
 	}
 	const costCenter: issuefab.CostCenter = {
 		id: "c1",
@@ -150,7 +149,6 @@ describe("Purchase", () => {
 										original: "https://example.com/receipt.pdf",
 									},
 								],
-								transactions: [],
 							},
 							{
 								id: "p2",
@@ -164,7 +162,6 @@ describe("Purchase", () => {
 									limit: { cadence: "month", value: 30, currency: "EUR", created: "2023-01-01" },
 								},
 								receipts: [],
-								transactions: [],
 							},
 						],
 					},
@@ -192,7 +189,6 @@ describe("Purchase", () => {
 								original: "https://example.com/receipt.pdf",
 							},
 						],
-						transactions: [],
 					},
 				],
 			},
@@ -260,7 +256,6 @@ describe("Purchase", () => {
 		expect(issuefab.Purchase.is((({ email, ...purchase }) => purchase)(purchase))).toEqual(false)
 		expect(issuefab.Purchase.is((({ payment, ...purchase }) => purchase)(purchase))).toEqual(false)
 		expect(issuefab.Purchase.is((({ receipts, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ transactions, ...purchase }) => purchase)(purchase))).toEqual(false)
 	})
 	it("create", () => {
 		const purchase: issuefab.Purchase.Creatable = {
