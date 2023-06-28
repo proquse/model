@@ -13,7 +13,6 @@ export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	id: cryptly.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	amount?: Cadence
 	email: string
 	receipts: Receipt[]
 	transactions: Transaction[]
@@ -25,7 +24,6 @@ export namespace Purchase {
 		id: isly.fromIs("Id", cryptly.Identifier.is),
 		created: isly.fromIs("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs("DateTime", isoly.DateTime.is),
-		amount: Cadence.type.optional(),
 		email: isly.string(),
 		receipts: isly.array(Receipt.type),
 		transactions: isly.array(Transaction.type),
@@ -134,7 +132,6 @@ export namespace Purchase {
 			purchase.created <= purchase.modified &&
 			purchase.modified <= isoly.DateTime.now() &&
 			Payment.Creatable.validate(purchase.payment, date, limit) &&
-			(!purchase.amount || Cadence.validate(purchase.amount, date, purchase.payment.limit)) &&
 			!!purchase.email &&
 			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&
 			(equity == undefined ||
@@ -160,18 +157,18 @@ export namespace Purchase {
 		)
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
-	function calculateSpent(purchase: Purchase, currency: isoly.Currency, options?: { vat?: boolean }): number {
+	function calculateSpent(purchase: Purchase, options?: { vat?: boolean }): number {
 		return purchase.receipts.reduce(
 			(result, receipt) =>
 				isoly.Currency.add(
-					currency,
+					purchase.payment.limit.currency,
 					result,
 					receipt.total.reduce(
 						(result, { net, vat }) =>
 							isoly.Currency.add(
-								currency,
+								purchase.payment.limit.currency,
 								result,
-								isoly.Currency.add(currency, net.value, options?.vat != false ? vat.value : 0)
+								isoly.Currency.add(purchase.payment.limit.currency, net.value, options?.vat != false ? vat.value : 0)
 							),
 						0
 					)
@@ -179,11 +176,12 @@ export namespace Purchase {
 			0
 		)
 	}
-	export function calculateSpentBalance(purchase: Purchase, currency: isoly.Currency): number {
-		return isoly.Currency.subtract(currency, purchase.payment.limit.value, spent(purchase, currency))
-	}
-	export function allocated(purchase: Purchase, date: isoly.Date): number {
-		return Cadence.allocated(purchase.payment.limit, date)
+	export function calculateSpentBalance(purchase: Purchase, date: isoly.Date): number {
+		return isoly.Currency.subtract(
+			purchase.payment.limit.currency,
+			Cadence.allocated(purchase.payment.limit, date),
+			spent(purchase)
+		)
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable

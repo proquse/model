@@ -15,10 +15,11 @@ export interface CostCenter extends CostCenter.Creatable {
 	costCenters: CostCenter[]
 }
 export namespace CostCenter {
+	const idLength = 8
 	export type Creatable = CostCenterCreatable
 	export const Creatable = CostCenterCreatable
 	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
-		id: isly.fromIs<cryptly.Identifier>("Identifier", cryptly.Identifier.is),
+		id: isly.fromIs<cryptly.Identifier>("Identifier", value => cryptly.Identifier.is(value, idLength)),
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		delegations: isly.array(Delegation.type),
@@ -27,11 +28,7 @@ export namespace CostCenter {
 	export const is = type.is
 	export const flaw = type.flaw
 
-	export function create(
-		costCenter: CostCenter.Creatable,
-		override?: Partial<CostCenter>,
-		idLength: cryptly.Identifier.Length = 8
-	): CostCenter {
+	export function create(costCenter: CostCenter.Creatable, override?: Partial<CostCenter>): CostCenter {
 		const now = isoly.DateTime.now()
 		return {
 			...costCenter,
