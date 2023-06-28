@@ -17,7 +17,7 @@ describe("CostCenter", () => {
 	})
 	it("is", () => {
 		const costCenter: issuefab.CostCenter = {
-			id: "1",
+			id: "11111111",
 			amount: { cadence: "year", value: 10, currency: "USD", created: "2023-01-01" },
 			name: "Development",
 			created: "2021-12-20T13:37:42Z",
@@ -250,22 +250,9 @@ describe("CostCenter", () => {
 			],
 		}
 		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(true)
-		expect(
-			issuefab.CostCenter.validate(costCenter, "2023-01-01", {
-				cadence: "year",
-				value: 400,
-				currency: "USD",
-				created: "2023-01-1",
-			})
-		).toEqual(false)
-		expect(
-			issuefab.CostCenter.validate(costCenter, "2023-01-01", {
-				cadence: "year",
-				value: 600,
-				currency: "EUR",
-				created: "2023-01-01",
-			})
-		).toEqual(false)
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01", { spent: true })).toEqual(true)
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01", { limit: 400, currency: "USD" })).toEqual(false)
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01", { limit: 600, currency: "EUR" })).toEqual(false)
 		issuefab.CostCenter.change([costCenter], {
 			...costCenter.costCenters[0],
 			amount: { cadence: "year", value: 700, currency: "USD", created: "2023-01-01" },

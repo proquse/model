@@ -82,13 +82,9 @@ export namespace Receipt {
 		}
 		return Array.from(list(roots))
 	}
-	export function validate(receipt: Receipt, currency?: isoly.Currency): boolean {
-		return (
-			!!receipt.id &&
-			!!receipt.original &&
-			receipt.date < isoly.DateTime.now() &&
-			(!receipt.total.length || !currency || receipt.total.every(total => Total.validate(total, currency)))
-		)
+	// maybe expand on this to shorten purchase validate
+	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
+		return receipt.total.every(total => Total.validate(total, currency))
 	}
 	export type Creatable = ReceiptCreatable
 	export const Creatable = ReceiptCreatable

@@ -52,20 +52,28 @@ export namespace CostCenter {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
 			  ) && result
 	}
-	export function validate(costCenter: CostCenter, date: isoly.Date, limit?: Cadence): boolean {
-		const equity = allocated.balance(costCenter, date)
+	export function validate(
+		costCenter: CostCenter,
+		date: isoly.Date,
+		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+	): boolean {
+		const cadence = Cadence.allocated(costCenter.amount, date)
+		const balance = isoly.Currency.subtract(
+			options?.currency ?? costCenter.amount.currency,
+			cadence,
+			CostCenter.allocated(costCenter, date)
+		)
 		return (
-			!!costCenter.id &&
-			costCenter.created <= costCenter.modified &&
-			costCenter.modified <= isoly.DateTime.now() &&
-			!!costCenter.from &&
-			!!costCenter.name &&
-			0 <= equity &&
-			(!limit || (costCenter.amount.currency == limit.currency && equity <= Cadence.allocated(limit, date))) &&
+			cadence > 0 &&
+			balance >= 0 &&
+			(!options?.currency || costCenter.amount.currency == options.currency) &&
+			(options?.limit == undefined || cadence <= options.limit) &&
 			costCenter.delegations.every(d =>
-				Delegation.validate(d, date, { ...d.amount, currency: costCenter.amount.currency })
+				Delegation.validate(d, date, { currency: costCenter.amount.currency, spent: options?.spent })
 			) &&
-			costCenter.costCenters.every(c => validate(c, date, { ...c.amount, currency: costCenter.amount.currency }))
+			costCenter.costCenters.every(c =>
+				CostCenter.validate(c, date, { currency: costCenter.amount.currency, spent: options?.spent })
+			)
 		)
 	}
 	export const find = Object.assign(findCostCenter, { node: findNode })

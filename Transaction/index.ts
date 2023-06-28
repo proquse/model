@@ -1,6 +1,6 @@
 import { isly } from "isly"
-import { Delegation } from "../Delegation"
-import { Purchase } from "../Purchase"
+// import { Delegation } from "../Delegation"
+// import { Purchase } from "../Purchase"
 import { Creatable as TransactionCreatable } from "./Creatable"
 import { Link as TransactionLink } from "./Link"
 
@@ -29,41 +29,41 @@ export namespace Transaction {
 			receiptId: transaction.receiptId,
 		}
 	}
-	function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
-		let result: S | undefined
-		elements.find(single => (result = finder(single)))
-		return result
-	}
-	export function find(
-		roots: Delegation[],
-		id: string
-	): { root: Delegation; purchase: Purchase; found: Transaction } | undefined {
-		return findInner(roots, root => {
-			let result = findInner(root.purchases, purchase =>
-				findInner(purchase.transactions, transaction =>
-					transaction.id != id ? undefined : { root: root, purchase: purchase, found: transaction }
-				)
-			)
-			return result ?? ((result = find(root.delegations, id)) && { ...result, root: root })
-		})
-	}
-	export function list<T = Transaction>(
-		roots: Iterable<Delegation>,
-		filter?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => any,
-		map?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => T
-	): T[] {
-		function* list(roots: Iterable<Delegation>): Generator<T> {
-			for (const root of roots) {
-				for (const purchase of root.purchases)
-					for (const transaction of purchase.transactions)
-						(!filter || filter(transaction, purchase, root)) &&
-							(yield map ? map(transaction, purchase, root) : (transaction as T))
+	// function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
+	// 	let result: S | undefined
+	// 	elements.find(single => (result = finder(single)))
+	// 	return result
+	// }
+	// export function find(
+	// 	roots: Delegation[],
+	// 	id: string
+	// ): { root: Delegation; purchase: Purchase; found: Transaction } | undefined {
+	// 	return findInner(roots, root => {
+	// 		let result = findInner(root.purchases, purchase =>
+	// 			findInner(purchase.transactions, transaction =>
+	// 				transaction.id != id ? undefined : { root: root, purchase: purchase, found: transaction }
+	// 			)
+	// 		)
+	// 		return result ?? ((result = find(root.delegations, id)) && { ...result, root: root })
+	// 	})
+	// }
+	// export function list<T = Transaction>(
+	// 	roots: Iterable<Delegation>,
+	// 	filter?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => any,
+	// 	map?: (transaction: Transaction, purchase: Purchase, delegation: Delegation) => T
+	// ): T[] {
+	// 	function* list(roots: Iterable<Delegation>): Generator<T> {
+	// 		for (const root of roots) {
+	// 			for (const purchase of root.purchases)
+	// 				for (const transaction of purchase.transactions)
+	// 					(!filter || filter(transaction, purchase, root)) &&
+	// 						(yield map ? map(transaction, purchase, root) : (transaction as T))
 
-				yield* list(root.delegations)
-			}
-		}
-		return Array.from(list(roots))
-	}
+	// 			yield* list(root.delegations)
+	// 		}
+	// 	}
+	// 	return Array.from(list(roots))
+	// }
 	export function validate(transaction: Transaction): boolean {
 		return (
 			!!transaction.id &&

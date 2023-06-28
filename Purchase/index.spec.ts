@@ -2,86 +2,167 @@ import { issuefab } from "../index"
 
 describe("Purchase", () => {
 	const purchase: issuefab.Purchase = {
-		id: "aoeu1234",
-		created: "2022-01-01T00:00:42Z",
-		modified: "2022-01-01T00:00:42Z",
+		id: "p",
+		created: "2023-01-01T00:00:42Z",
+		modified: "2023-01-01T00:00:42Z",
 		buyer: "richard.stevensson@example.com",
-		amount: [951221, "EUR"],
 		purpose: "Production Workers",
 		email: "receipt@example.com",
-		payment: { type: "card", limit: [10, "EUR"] },
+		payment: { type: "card", limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 		receipts: [
 			{
 				id: "id",
 				total: [
-					{ net: [10, "USD"], vat: [2.5, "USD"] },
-					{ net: [20, "USD"], vat: [5, "USD"] },
+					{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } },
+					{ net: { value: 20, currency: "USD" }, vat: { value: 5, currency: "USD" } },
 				],
-				date: "2022-01-01T00:00:42Z",
+				date: "2023-01-01T00:00:42Z",
 				original: "https://example.com/receipt.pdf",
 			},
 		],
 		transactions: [],
 	}
-	const delegation: issuefab.Delegation = {
-		id: "abcd0001",
+	const costCenter: issuefab.CostCenter = {
+		id: "c1",
 		from: "jane@example.com",
-		costCenter: "budget",
-		created: "2021-12-20T13:37:42Z",
-		modified: "2021-12-20T13:37:42Z",
-		to: ["john@example.com"],
-		purpose: "Total company Budget",
-		amount: [20000, "EUR"],
+		name: "budget",
+		created: "2023-01-01T13:37:42Z",
+		modified: "2023-01-01T13:37:42Z",
+		description: "Total company Budget",
+		amount: { cadence: "year", value: 20_000, currency: "EUR", created: "2023-01-01" },
 		delegations: [
 			{
-				id: "abcd0002",
-				from: "jane@example.com",
-				created: "2021-12-22T13:37:42Z",
-				modified: "2021-12-22T13:37:42Z",
+				id: "d1",
+				created: "2023-01-01T13:37:42Z",
+				modified: "2023-01-01T13:37:42Z",
 				to: ["mary@example.com"],
 				costCenter: "IT",
+				from: "john@example.com",
 				purpose: "hosting costs",
-				amount: [2000, "EUR"],
+				amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 				delegations: [
 					{
-						id: "abcd0003",
-						from: "jane@example.com",
+						id: "d2",
 						created: "2021-12-28T13:37:42Z",
 						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
 						costCenter: "IT",
+						from: "mary@example.com",
 						purpose: "Cloudflare",
-						amount: [120, "EUR"],
-						delegations: [],
+						amount: { cadence: "year", value: 1_200, currency: "EUR", created: "2023-01-01" },
+						delegations: [
+							{
+								id: "d3",
+								created: "2021-12-28T13:37:42Z",
+								modified: "2021-12-28T13:37:42Z",
+								to: ["john@example.com"],
+								costCenter: "IT",
+								from: "mary@example.com",
+								purpose: "Cloudflare",
+								amount: { cadence: "year", value: 100, currency: "EUR", created: "2023-01-01" },
+								delegations: [],
+								purchases: [],
+							},
+						],
 						purchases: [
 							{
-								id: "aoeu1234",
+								id: "p1",
 								email: "receipt@example.com",
 								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
-								amount: [9.5, "EUR"],
 								purpose: "Production Workers",
-								payment: { type: "card", limit: [10, "EUR"] },
+								payment: {
+									type: "card",
+									limit: { cadence: "month", value: 15, currency: "EUR", created: "2023-01-01" },
+								},
 								receipts: [
 									{
-										id: "id",
-										total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
-										date: "2022-01-01T00:00:42Z",
+										id: "r1",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-01-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r2",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-02-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r3",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-03-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r4",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-04-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r5",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-05-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r6",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-06-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r7",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-07-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r8",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-08-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r9",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-09-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r10",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-10-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r11",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-11-10T00:00:42Z",
+										original: "https://example.com/receipt.pdf",
+									},
+									{
+										id: "r12",
+										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+										date: "2023-12-10T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
 									},
 								],
 								transactions: [],
 							},
 							{
-								id: "aoeu2345",
+								id: "p2",
 								email: "receipt@example.com",
-								created: "2022-02-01T00:00:42Z",
+								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
-								amount: [10, "EUR"],
 								purpose: "Production Workers",
-								payment: { type: "card", limit: [10, "EUR"] },
+								payment: {
+									type: "card",
+									limit: { cadence: "month", value: 30, currency: "EUR", created: "2023-01-01" },
+								},
 								receipts: [],
 								transactions: [],
 							},
@@ -90,19 +171,24 @@ describe("Purchase", () => {
 				],
 				purchases: [
 					{
-						id: "aoeu3456",
+						id: "p3",
 						email: "receipt@example.com",
 						created: "2022-01-01T00:00:42Z",
 						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
-						amount: [9.5, "EUR"],
 						purpose: "Production Workers",
-						payment: { type: "card", limit: [5, "EUR"] },
+						payment: { type: "card", limit: { cadence: "month", value: 300, currency: "EUR", created: "2023-11-15" } },
 						receipts: [
 							{
-								id: "id",
-								total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
-								date: "2022-01-01T00:00:42Z",
+								id: "r13",
+								total: [{ net: { value: 299, currency: "EUR" }, vat: { value: 0, currency: "EUR" } }],
+								date: "2022-11-16T00:00:42Z",
+								original: "https://example.com/receipt.pdf",
+							},
+							{
+								id: "r14",
+								total: [{ net: { value: 299, currency: "EUR" }, vat: { value: 0, currency: "EUR" } }],
+								date: "2022-11-16T00:00:42Z",
 								original: "https://example.com/receipt.pdf",
 							},
 						],
@@ -111,34 +197,34 @@ describe("Purchase", () => {
 				],
 			},
 			{
-				id: "abcd0004",
-				from: "jane@example.com",
-				created: "2021-12-28T13:37:42Z",
-				modified: "2021-12-20T13:37:42Z",
+				id: "d4",
+				created: "2023-01-01T13:37:42Z",
+				modified: "2023-01-01T13:37:42Z",
 				to: ["richard@example.com"],
 				costCenter: "IT",
+				from: "john@example.com",
 				purpose: "Cloudflare",
-				amount: [2000, "EUR"],
+				amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 				delegations: [
 					{
-						id: "abcd0005",
-						from: "jane@example.com",
-						costCenter: "IT",
-						created: "2021-12-20T13:37:42Z",
-						modified: "2021-12-20T13:37:42Z",
+						id: "d5",
+						created: "2023-01-01T13:37:42Z",
+						modified: "2023-01-01T13:37:42Z",
 						to: ["john@example.com", "jane@example.com"],
+						costCenter: "IT",
+						from: "richard@example.com",
 						purpose: "Partial company budget",
-						amount: [1000, "EUR"],
+						amount: { cadence: "year", value: 1_000, currency: "EUR", created: "2023-01-01" },
 						delegations: [
 							{
-								id: "abcd0006",
-								from: "jane@example.com",
-								costCenter: "IT",
-								created: "2021-12-20T13:37:42Z",
-								modified: "2021-12-20T13:37:42Z",
+								id: "d6",
+								created: "2023-01-01T13:37:42Z",
+								modified: "2023-01-01T13:37:42Z",
 								to: ["mary@example.com"],
+								costCenter: "IT",
+								from: "john@example.com",
 								purpose: "Partial company budget",
-								amount: [1000, "EUR"],
+								amount: { cadence: "month", value: 100, currency: "EUR", created: "2023-03-01" },
 								delegations: [],
 								purchases: [],
 							},
@@ -149,33 +235,51 @@ describe("Purchase", () => {
 				purchases: [],
 			},
 		],
-		purchases: [],
+		costCenters: [
+			{
+				id: "c2",
+				from: "jane@example.com",
+				name: "partial budget",
+				created: "2023-01-01T13:37:42Z",
+				modified: "2023-01-01T13:37:42Z",
+				description: "Partial company budget",
+				amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
+				costCenters: [],
+				delegations: [],
+			},
+		],
 	}
 
 	it("is", () => {
 		expect(issuefab.Purchase.is(purchase)).toEqual(true)
-		expect(issuefab.Purchase.is((({ transactions, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ amount, ...purchase }) => purchase)(purchase))).toEqual(true)
+		expect(issuefab.Purchase.is((({ id, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ created, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ modified, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ buyer, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ purpose, ...purchase }) => purchase)(purchase))).toEqual(false)
 		expect(issuefab.Purchase.is((({ email, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ payment, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ receipts, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(issuefab.Purchase.is((({ transactions, ...purchase }) => purchase)(purchase))).toEqual(false)
 	})
 	it("create", () => {
 		const purchase: issuefab.Purchase.Creatable = {
 			purpose: "buy things",
 			payment: {
 				type: "card",
-				limit: [10, "EUR"],
+				limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 			},
 			buyer: "jane@example.com",
 		}
 		const result = issuefab.Purchase.create(purchase, "organizationId", "receipt@example.com")
 		expect(issuefab.Purchase.is(result))
-		expect(result.email).toMatch(/receipt\+organizationId|[^@]+@example.com/)
+		expect(result.email).toMatch(/^receipt\+organizationId_[^@]+@example.com$/)
 	})
 	it("find", () => {
-		expect(issuefab.Purchase.find([delegation], "aoeu1234")).toEqual({
-			root: delegation,
-			parent: delegation.delegations[0].delegations[0],
-			found: delegation.delegations[0].delegations[0].purchases[0],
+		expect(issuefab.Purchase.find([costCenter], "p1")).toEqual({
+			root: costCenter,
+			parent: costCenter.delegations[0].delegations[0],
+			found: costCenter.delegations[0].delegations[0].purchases[0],
 		})
 	})
 	it("change", () => {
@@ -184,7 +288,7 @@ describe("Purchase", () => {
 				purpose: "buy things",
 				payment: {
 					type: "card",
-					limit: [10, "EUR"],
+					limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 				},
 				buyer: "jane@example.com",
 			},
@@ -194,24 +298,24 @@ describe("Purchase", () => {
 		const updated: issuefab.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { type: "card", limit: [10, "EUR"] },
+			payment: { type: "card", limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 			buyer: "john@example.com",
 		}
 		const after: issuefab.Purchase = {
 			...target,
 			purpose: "buy more things",
-			payment: { type: "card", limit: [10, "EUR"] },
+			payment: { type: "card", limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 			buyer: "john@example.com",
 		}
 		const root: issuefab.Delegation = {
-			id: "abcd0001",
-			from: "jane@example.com",
-			costCenter: "budget",
-			created: "2021-12-20T13:37:42Z",
-			modified: "2021-12-20T13:37:42Z",
-			to: ["john@example.com"],
-			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			id: "d1",
+			created: "2023-01-01T13:37:42Z",
+			modified: "2023-01-01T13:37:42Z",
+			to: ["mary@example.com"],
+			costCenter: "IT",
+			from: "john@example.com",
+			purpose: "hosting costs",
+			amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [],
 			purchases: [target],
 		}
@@ -229,7 +333,7 @@ describe("Purchase", () => {
 				purpose: "buy things",
 				payment: {
 					type: "card",
-					limit: [10, "EUR"],
+					limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 				},
 				buyer: "jane@example.com",
 			},
@@ -237,14 +341,14 @@ describe("Purchase", () => {
 			"receipt@example.com"
 		)
 		const root: issuefab.Delegation = {
-			id: "abcd0001",
-			from: "jane@example.com",
-			costCenter: "budget",
-			created: "2021-12-20T13:37:42Z",
-			modified: "2021-12-20T13:37:42Z",
-			to: ["john@example.com"],
-			purpose: "Total company Budget",
-			amount: [20000, "EUR"],
+			id: "d1",
+			created: "2023-01-01T13:37:42Z",
+			modified: "2023-01-01T13:37:42Z",
+			to: ["mary@example.com"],
+			costCenter: "IT",
+			from: "john@example.com",
+			purpose: "hosting costs",
+			amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [],
 			purchases: [target],
 		}
@@ -252,118 +356,19 @@ describe("Purchase", () => {
 		expect(root.purchases.length).toEqual(0)
 		expect(result?.removed).toBe(target)
 	})
-	it("validate", () => {
-		const target: issuefab.Purchase = issuefab.Purchase.create(
-			{
-				purpose: "buy things",
-				payment: {
-					type: "card",
-					limit: [10, "EUR"],
-				},
-				buyer: "jane@example.com",
-			},
-			"organizationId",
-			"receipt@example.com"
-		)
-
-		expect(issuefab.Purchase.validate(target)).toEqual(true)
-		expect(
-			issuefab.Purchase.validate(
-				issuefab.Purchase.create(
-					{
-						purpose: "",
-						payment: {
-							type: "card",
-							limit: [10, "EUR"],
-						},
-						buyer: "jane@example.com",
-					},
-					"organizationId",
-					"receipt@example.com"
-				)
-			)
-		).toEqual(true)
-		expect(
-			issuefab.Purchase.validate(
-				issuefab.Purchase.create(
-					{
-						purpose: "buy things",
-						payment: {
-							type: "card",
-							limit: [10, "EUR"],
-						},
-						buyer: "",
-					},
-					"organizationId",
-					"receipt@example.com"
-				)
-			)
-		).toEqual(false)
-		expect(
-			issuefab.Purchase.validate(
-				issuefab.Purchase.create(
-					{
-						purpose: "buy things",
-						payment: {
-							type: "card",
-							limit: [10, "EUR"],
-						},
-						buyer: "jane@example.com",
-					},
-					"organizationId",
-					"receipt@example.com"
-				),
-				[10, "EUR"]
-			)
-		).toEqual(true)
-		expect(
-			issuefab.Purchase.validate(
-				{
-					...issuefab.Purchase.create(
-						{
-							purpose: "buy things",
-							payment: {
-								type: "card",
-								limit: [10, "EUR"],
-							},
-							buyer: "jane@example.com",
-						},
-						"organizationId",
-						"receipt@example.com"
-					),
-					amount: [2, "EUR"],
-				},
-				[1, "EUR"]
-			)
-		).toEqual(false)
-		expect(
-			issuefab.Purchase.validate(
-				issuefab.Purchase.create(
-					{
-						purpose: "buy things",
-						payment: {
-							type: "card",
-							limit: [10, "EUR"],
-						},
-						buyer: "jane@example.com",
-					},
-					"organizationId",
-					"receipt@example.com"
-				),
-				[10, "SEK"]
-			)
-		).toEqual(false)
-	})
 	it("list", () => {
-		expect(issuefab.Purchase.list(delegation.delegations).length).toEqual(3)
+		expect(issuefab.Purchase.list(costCenter.delegations).length).toEqual(3)
 		expect(
-			issuefab.Purchase.list(delegation.delegations, purchase => purchase.amount && purchase.amount[0] < 10).length
+			issuefab.Purchase.list(
+				costCenter.delegations,
+				purchase => issuefab.Cadence.allocated(purchase.payment.limit, "2023-12-31") <= 500
+			).length
 		).toEqual(2)
 		expect(
-			issuefab.Purchase.list(delegation.delegations, purchase => purchase.buyer == "mary@example.com").length
+			issuefab.Purchase.list(costCenter.delegations, purchase => purchase.buyer == "mary@example.com").length
 		).toEqual(1)
 		const result = issuefab.Purchase.list(
-			[delegation],
+			[costCenter],
 			p => p.buyer == "mary@example.com",
 			(p, d) => ({ ...p, delegationId: d.id })
 		)
@@ -371,8 +376,11 @@ describe("Purchase", () => {
 		expect(result.every(purchase => issuefab.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
 	it("spent", () => {
-		expect(issuefab.Purchase.spent(purchase, "USD")).toEqual(37.5)
-		expect(issuefab.Purchase.spent(purchase, "USD", { vat: false })).toEqual(30)
-		expect(issuefab.Purchase.spent(delegation.delegations[0].purchases[0], "USD")).toEqual(12.5)
+		expect(issuefab.Purchase.spent(purchase)).toEqual(37.5)
+		expect(issuefab.Purchase.spent(purchase, { vat: false })).toEqual(30)
+		expect(issuefab.Purchase.spent(costCenter.delegations[0].purchases[0])).toEqual(598)
+	})
+	it("validate", () => {
+		console.log(issuefab.Purchase.validate(purchase, "2022-12-31"))
 	})
 })

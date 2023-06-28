@@ -154,19 +154,27 @@ export namespace Delegation {
 	function calculateAllocatedBalance(root: Delegation | CostCenter, date: isoly.Date): number {
 		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
 	}
-	export function validate(delegation: Delegation, date: isoly.Date, limit?: Cadence): boolean {
-		const equity = allocated.balance(delegation, date)
+	export function validate(
+		delegation: Delegation,
+		date: isoly.Date,
+		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+	): boolean {
+		const cadence = Cadence.allocated(delegation.amount, date)
+		const balance = isoly.Currency.subtract(
+			options?.currency ?? delegation.amount.currency,
+			cadence,
+			Delegation.allocated(delegation, date)
+		)
 		return (
-			!!delegation.id &&
-			delegation.created <= delegation.modified &&
-			delegation.modified <= isoly.DateTime.now() &&
-			!!delegation.from &&
-			!!delegation.costCenter &&
-			Delegation.Creatable.validate(delegation, date, limit) &&
-			0 <= equity &&
-			(!limit || equity <= limit.value) &&
+			cadence > 0 &&
+			balance >= 0 &&
+			(!options?.currency || delegation.amount.currency == options.currency) &&
+			(options?.limit == undefined || cadence <= options.limit) &&
+			delegation.purchases.every(p =>
+				Purchase.validate(p, date, { currency: delegation.amount.currency, spent: options?.spent })
+			) &&
 			delegation.delegations.every(d =>
-				Delegation.validate(d, date, { ...d.amount, currency: delegation.amount.currency })
+				Delegation.validate(d, date, { currency: delegation.amount.currency, spent: options?.spent })
 			)
 		)
 	}

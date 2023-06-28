@@ -6,7 +6,6 @@ import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
-import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 
 export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
@@ -15,7 +14,6 @@ export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	modified: isoly.DateTime
 	email: string
 	receipts: Receipt[]
-	transactions: Transaction[]
 	payment: Payment
 }
 
@@ -26,7 +24,6 @@ export namespace Purchase {
 		modified: isly.fromIs("DateTime", isoly.DateTime.is),
 		email: isly.string(),
 		receipts: isly.array(Receipt.type),
-		transactions: isly.array(Transaction.type),
 		payment: Payment.type,
 	})
 
@@ -50,7 +47,6 @@ export namespace Purchase {
 			modified: override?.modified ?? now,
 			email: override?.email ?? `${recipient}+${organizationId}_${id}@${domain}`,
 			receipts: override?.receipts ?? [],
-			transactions: override?.transactions ?? [],
 		}
 	}
 	export function find<T extends Delegation | CostCenter>(
@@ -124,36 +120,35 @@ export namespace Purchase {
 					removed: search.found,
 			  }
 	}
-	export function validate(purchase: Purchase, date: isoly.Date, limit?: Cadence): boolean {
-		const equity = !limit ? undefined : Cadence.allocated(limit, date)
+	export function validate(
+		purchase: Purchase,
+		date: isoly.Date,
+		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+	): boolean {
+		const cadence = Cadence.allocated(purchase.payment.limit, date)
 		return (
-			!!purchase.id &&
-			!!purchase.buyer &&
-			purchase.created <= purchase.modified &&
-			purchase.modified <= isoly.DateTime.now() &&
-			Payment.Creatable.validate(purchase.payment, date, limit) &&
-			!!purchase.email &&
-			purchase.receipts.every(receipt => Receipt.validate(receipt)) &&
-			(equity == undefined ||
-				(purchase.receipts.reduce(
-					(result, receipt) =>
-						isoly.Currency.add(
-							purchase.payment.limit.currency,
-							result,
-							receipt.total.reduce(
-								(result, total) =>
-									isoly.Currency.add(
-										purchase.payment.limit.currency,
-										result,
-										isoly.Currency.add(purchase.payment.limit.currency, total.net.value, total.vat.value)
-									),
-								0
-							)
-						),
-					0
-				) <= equity &&
-					purchase.payment.limit.currency == limit?.currency)) &&
-			purchase.transactions.every(transaction => Transaction.validate(transaction))
+			cadence > 0 &&
+			(!options?.currency || purchase.payment.limit.currency == options.currency) &&
+			(options?.limit == undefined || cadence <= options.limit) &&
+			(!options?.spent ||
+				(purchase.receipts.every(receipt => Receipt.validate(receipt, purchase.payment.limit.currency)) &&
+					purchase.receipts.reduce(
+						(result, receipt) =>
+							isoly.Currency.add(
+								purchase.payment.limit.currency,
+								result,
+								receipt.total.reduce(
+									(result, total) =>
+										isoly.Currency.add(
+											purchase.payment.limit.currency,
+											result,
+											isoly.Currency.add(purchase.payment.limit.currency, total.net.value, total.vat.value)
+										),
+									0
+								)
+							),
+						0
+					) <= cadence))
 		)
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })

@@ -141,7 +141,6 @@ describe("Delegation", () => {
 										original: "https://example.com/receipt.pdf",
 									},
 								],
-								transactions: [],
 							},
 							{
 								id: "p2",
@@ -155,7 +154,6 @@ describe("Delegation", () => {
 									limit: { cadence: "month", value: 30, currency: "EUR", created: "2023-01-01" },
 								},
 								receipts: [],
-								transactions: [],
 							},
 						],
 					},
@@ -183,7 +181,6 @@ describe("Delegation", () => {
 								original: "https://example.com/receipt.pdf",
 							},
 						],
-						transactions: [],
 					},
 				],
 			},
