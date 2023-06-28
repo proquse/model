@@ -60,4 +60,3 @@ export function findCostCenter(
 			result)
 	)
 }
-// export const find = Object.assign(findNode, { delegation: findDelegation, costCenter: findCostCenter })

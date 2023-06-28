@@ -1,18 +1,18 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
-import { Cadence } from "../Cadence"
+import { Amount } from "../Amount"
 
 export interface Creatable {
 	reference?: string
 	purchaseId?: string
 	descriptor: string
-	amount: Cadence
+	amount: Amount
 	date: {
 		transaction: isoly.DateTime
 		payment?: isoly.DateTime
 	}
 	receiptId?: string
-	balance: Cadence
+	balance: Amount
 }
 
 export namespace Creatable {

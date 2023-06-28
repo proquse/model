@@ -114,7 +114,6 @@ export namespace Delegation {
 					root => (result = path(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
 			  ) && result
 	}
-	// these functions does not take time into calculation. add date!
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(root: Delegation | CostCenter, options?: { rootPurchases?: boolean; vat?: boolean }): number {
 		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
