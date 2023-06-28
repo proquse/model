@@ -18,7 +18,7 @@ describe("CostCenter", () => {
 	it("is", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "1",
-			amount: [10, "USD"],
+			amount: { cadence: "year", value: 10, currency: "USD", created: "2023-01-01" },
 			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
@@ -43,7 +43,7 @@ describe("CostCenter", () => {
 	it("change", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
-			amount: [10, "USD"],
+			amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
 			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
@@ -53,7 +53,7 @@ describe("CostCenter", () => {
 			costCenters: [
 				{
 					id: "c2",
-					amount: [4, "USD"],
+					amount: { cadence: "year", value: 400, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
@@ -62,7 +62,7 @@ describe("CostCenter", () => {
 					delegations: [
 						{
 							id: "d1",
-							amount: [3, "USD"],
+							amount: { cadence: "year", value: 300, currency: "USD", created: "2023-01-01" },
 							costCenter: "Development",
 							created: "2021-12-20T13:37:42Z",
 							modified: "2022-12-20T13:37:42Z",
@@ -77,10 +77,13 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		let result = issuefab.CostCenter.change([costCenter], { ...costCenter, amount: [11, "USD"] })
+		let result = issuefab.CostCenter.change([costCenter], {
+			...costCenter,
+			amount: { cadence: "year", value: 600, currency: "USD", created: "2023-01-01" },
+		})
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).toBe(result?.changed)
-		expect(result?.root?.amount).toEqual([11, "USD"])
+		expect(result?.root?.amount.value).toEqual(600)
 		result = issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], name: "development" })
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).not.toBe(result?.changed)
@@ -91,12 +94,11 @@ describe("CostCenter", () => {
 	})
 	it("create", () => {
 		const creatable: issuefab.CostCenter.Creatable = {
-			amount: [16, "USD"],
+			amount: { cadence: "year", value: 1_600, currency: "USD", created: "2023-01-01" },
 			from: "jessie@example.com",
 			description: "buy things",
 			name: "fun",
 		}
-
 		expect(issuefab.CostCenter.is(issuefab.CostCenter.create(creatable))).toEqual(true)
 		expect(issuefab.CostCenter.create(creatable, { id: "d4" }).id).toEqual("d4")
 		expect(issuefab.CostCenter.create(creatable, { from: "james@issuefab.com" }).from).toEqual("james@issuefab.com")
@@ -105,7 +107,7 @@ describe("CostCenter", () => {
 	it("find", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
-			amount: [10, "USD"],
+			amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
 			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
@@ -115,7 +117,7 @@ describe("CostCenter", () => {
 			costCenters: [
 				{
 					id: "c2",
-					amount: [4, "USD"],
+					amount: { cadence: "year", value: 400, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
@@ -124,7 +126,7 @@ describe("CostCenter", () => {
 					delegations: [
 						{
 							id: "d1",
-							amount: [3, "USD"],
+							amount: { cadence: "year", value: 300, currency: "USD", created: "2023-01-01" },
 							costCenter: "Development",
 							created: "2021-12-20T13:37:42Z",
 							modified: "2022-12-20T13:37:42Z",
@@ -162,7 +164,7 @@ describe("CostCenter", () => {
 	it("remove", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
-			amount: [10, "USD"],
+			amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
 			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
@@ -172,7 +174,7 @@ describe("CostCenter", () => {
 			costCenters: [
 				{
 					id: "c2",
-					amount: [4, "USD"],
+					amount: { cadence: "year", value: 400, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
@@ -181,7 +183,7 @@ describe("CostCenter", () => {
 					delegations: [
 						{
 							id: "d1",
-							amount: [3, "USD"],
+							amount: { cadence: "year", value: 300, currency: "USD", created: "2023-01-01" },
 							costCenter: "Development",
 							created: "2021-12-20T13:37:42Z",
 							modified: "2022-12-20T13:37:42Z",
@@ -213,7 +215,7 @@ describe("CostCenter", () => {
 	it("validate", () => {
 		const costCenter: issuefab.CostCenter = {
 			id: "c1",
-			amount: [10, "USD"],
+			amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
 			name: "Development",
 			created: "2021-12-20T13:37:42Z",
 			modified: "2022-12-20T13:37:42Z",
@@ -223,7 +225,7 @@ describe("CostCenter", () => {
 			costCenters: [
 				{
 					id: "c2",
-					amount: [4, "USD"],
+					amount: { cadence: "year", value: 400, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
@@ -232,7 +234,7 @@ describe("CostCenter", () => {
 					delegations: [
 						{
 							id: "d1",
-							amount: [3, "USD"],
+							amount: { cadence: "year", value: 300, currency: "USD", created: "2023-01-01" },
 							costCenter: "Development",
 							created: "2021-12-20T13:37:42Z",
 							modified: "2022-12-20T13:37:42Z",
@@ -247,20 +249,52 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(true)
-		expect(issuefab.CostCenter.validate(costCenter, [5, "USD"])).toEqual(false)
-		expect(issuefab.CostCenter.validate(costCenter, [20, "EUR"])).toEqual(false)
-		issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], amount: [15, "USD"] })
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(false)
-		issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], amount: [4, "EUR"] })
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(false)
-		issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], amount: [10, "USD"] })
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(true)
-		issuefab.Delegation.change([costCenter], { ...costCenter.costCenters[0].delegations[0], amount: [11, "USD"] })
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(false)
-		issuefab.Delegation.change([costCenter], { ...costCenter.costCenters[0].delegations[0], amount: [4, "EUR"] })
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(false)
-		issuefab.Delegation.change([costCenter], { ...costCenter.costCenters[0].delegations[0], amount: [4, "USD"] })
-		expect(issuefab.CostCenter.validate(costCenter)).toEqual(true)
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(true)
+		expect(
+			issuefab.CostCenter.validate(costCenter, "2023-01-01", {
+				cadence: "year",
+				value: 400,
+				currency: "USD",
+				created: "2023-01-1",
+			})
+		).toEqual(false)
+		expect(
+			issuefab.CostCenter.validate(costCenter, "2023-01-01", {
+				cadence: "year",
+				value: 600,
+				currency: "EUR",
+				created: "2023-01-01",
+			})
+		).toEqual(false)
+		issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			amount: { cadence: "year", value: 700, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(false)
+		issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			amount: { cadence: "year", value: 200, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(false)
+		issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(true)
+		issuefab.Delegation.change([costCenter], {
+			...costCenter.costCenters[0].delegations[0],
+			amount: { cadence: "year", value: 600, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(false)
+		issuefab.Delegation.change([costCenter], {
+			...costCenter.costCenters[0].delegations[0],
+			amount: { cadence: "year", value: 400, currency: "EUR", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(false)
+		issuefab.Delegation.change([costCenter], {
+			...costCenter.costCenters[0].delegations[0],
+			amount: { cadence: "year", value: 200, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, "2023-01-01")).toEqual(true)
 	})
 })
