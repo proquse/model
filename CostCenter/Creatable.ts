@@ -1,4 +1,3 @@
-import { isoly } from "isoly"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
 
@@ -17,7 +16,4 @@ export namespace Creatable {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function validate(costCenter: Creatable, date: isoly.Date, limit?: Cadence): boolean {
-		return !!costCenter.from && !!costCenter.name && Cadence.validate(costCenter.amount, date, limit)
-	}
 }
