@@ -1,17 +1,18 @@
 import { isly } from "isly"
+import { Email } from "../Email"
 import { Payment } from "../Payment"
 
 export interface Creatable {
 	purpose: string
 	payment: Payment.Creatable
-	buyer: string
+	buyer: Email
 }
 
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		purpose: isly.string(),
+		purpose: isly.string(/.+/),
 		payment: Payment.Creatable.type,
-		buyer: isly.string(),
+		buyer: Email.type,
 	})
 	export const is = type.is
 	export const flaw = type.flaw

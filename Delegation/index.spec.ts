@@ -2,7 +2,7 @@ import { issuefab } from "../index"
 
 describe("Delegation", () => {
 	const initialDelegation: issuefab.Delegation = {
-		id: "d1",
+		id: "---d1---",
 		from: "jane@example.com",
 		costCenter: "budget",
 		created: "2023-01-01T13:37:42Z",

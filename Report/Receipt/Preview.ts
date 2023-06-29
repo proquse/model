@@ -1,4 +1,5 @@
 import { isoly } from "isoly"
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { CostCenter } from "../../CostCenter"
 import { Purchase } from "../../Purchase"
@@ -7,9 +8,10 @@ import { Receipt } from "../../Receipt"
 export interface Preview {
 	costCenters: {
 		costCenter: CostCenter
+		// change to: purchases: Purchase[] and filter out the irrelevant receipts from its array instead
 		receipts: { receipt: Receipt; purchase: Purchase }[]
 	}[]
-	organization: string
+	organization: userwidgets.Organization["id"]
 	dateRange: isoly.DateRange
 }
 
@@ -26,7 +28,7 @@ export namespace Preview {
 				),
 			})
 		),
-		organization: isly.string(),
+		organization: isly.string(/.+/),
 		dateRange: isly.fromIs("DateRange", isoly.DateRange.is),
 	})
 

@@ -6,20 +6,22 @@ import { Delegation } from "../Delegation"
 import { changeCostCenter } from "../Delegation/change"
 import { findCostCenter, findNode } from "../Delegation/find"
 import { Creatable as CostCenterCreatable } from "./Creatable"
+import { Identifier as CostCenterIdentifier } from "./Identifier"
 
 export interface CostCenter extends CostCenter.Creatable {
-	id: cryptly.Identifier
+	id: CostCenter.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
 	delegations: Delegation[]
 	costCenters: CostCenter[]
 }
 export namespace CostCenter {
-	const idLength = 8
+	export type Identifier = CostCenterIdentifier
+	export const Identifier = CostCenterIdentifier
 	export type Creatable = CostCenterCreatable
 	export const Creatable = CostCenterCreatable
 	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
-		id: isly.fromIs<cryptly.Identifier>("Identifier", value => cryptly.Identifier.is(value, idLength)),
+		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		delegations: isly.array(Delegation.type),
@@ -33,7 +35,7 @@ export namespace CostCenter {
 		return {
 			...costCenter,
 			...override,
-			id: override?.id ?? cryptly.Identifier.generate(idLength),
+			id: override?.id ?? cryptly.Identifier.generate(Identifier.length),
 			created: override?.created ?? now,
 			modified: override?.modified ?? now,
 			delegations: override?.delegations ?? [],

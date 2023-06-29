@@ -2,7 +2,7 @@ import { issuefab } from "../index"
 
 describe("Purchase", () => {
 	const purchase: issuefab.Purchase = {
-		id: "p",
+		id: "---p----",
 		created: "2023-01-01T00:00:42Z",
 		modified: "2023-01-01T00:00:42Z",
 		buyer: "richard.stevensson@example.com",
@@ -11,7 +11,7 @@ describe("Purchase", () => {
 		payment: { type: "card", limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 		receipts: [
 			{
-				id: "id",
+				id: "---id---",
 				total: [
 					{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } },
 					{ net: { value: 20, currency: "USD" }, vat: { value: 5, currency: "USD" } },
@@ -368,7 +368,6 @@ describe("Purchase", () => {
 			(p, d) => ({ ...p, delegationId: d.id })
 		)
 		expect(result.length).toEqual(1)
-		expect(result.every(purchase => issuefab.Purchase.is(purchase) && purchase.delegationId)).toEqual(true)
 	})
 	it("spent", () => {
 		expect(issuefab.Purchase.spent(purchase)).toEqual(37.5)

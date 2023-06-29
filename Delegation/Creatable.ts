@@ -1,18 +1,19 @@
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
+import { Email } from "../Email"
 
 export interface Creatable {
-	from: string
-	to: string[]
+	from: Email
+	to: Email[]
 	purpose: string
 	amount: Cadence
 	costCenter: string
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		from: isly.string(),
-		to: isly.array(isly.string(), { criteria: "minLength", value: 1 }),
-		purpose: isly.string(),
+		from: Email.type,
+		to: isly.array(Email.type, { criteria: "minLength", value: 1 }),
+		purpose: isly.string(/.+/),
 		amount: Cadence.type,
 		costCenter: isly.string(),
 	})

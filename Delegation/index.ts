@@ -7,19 +7,22 @@ import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { findDelegation, findNode } from "./find"
+import { Identifier as DelegationIdentifier } from "./Identifier"
 
 export interface Delegation extends Delegation.Creatable {
-	id: cryptly.Identifier
+	id: Delegation.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
 	purchases: Purchase[]
 	delegations: Delegation[]
 }
 export namespace Delegation {
+	export type Identifier = DelegationIdentifier
+	export const Identifier = DelegationIdentifier
 	export type Creatable = DelegationCreatable
 	export const Creatable = DelegationCreatable
 	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
-		id: isly.fromIs<cryptly.Identifier>("Identifier", cryptly.Identifier.is),
+		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		purchases: isly.array(isly.fromIs("Purchase", Purchase.is)),
@@ -27,16 +30,12 @@ export namespace Delegation {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function create(
-		delegation: Delegation.Creatable,
-		override?: Partial<Delegation>,
-		idLength: cryptly.Identifier.Length = 8
-	): Delegation {
+	export function create(delegation: Delegation.Creatable, override?: Partial<Delegation>): Delegation {
 		const now = isoly.DateTime.now()
 		return {
 			...delegation,
 			...override,
-			id: override?.id ?? cryptly.Identifier.generate(idLength),
+			id: override?.id ?? cryptly.Identifier.generate(Identifier.length),
 			created: override?.created ?? now,
 			modified: override?.modified ?? now,
 			purchases: override?.purchases ?? [],

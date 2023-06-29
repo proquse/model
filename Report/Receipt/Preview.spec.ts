@@ -5,7 +5,7 @@ describe("receipt Preview", () => {
 		costCenters: [
 			{
 				costCenter: {
-					id: "11111111",
+					id: "---c1---",
 					amount: { cadence: "year", value: 10, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
@@ -18,13 +18,13 @@ describe("receipt Preview", () => {
 				receipts: [
 					{
 						receipt: {
-							id: "receiptId",
+							id: "---r1---",
 							original: "https://example.com/receipt.pdf",
 							total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 							date: "2022-01-01T00:00:42Z",
 						},
 						purchase: {
-							id: "aoeu1234",
+							id: "---p1---",
 							created: "2022-01-01T00:00:42Z",
 							modified: "2022-01-01T00:00:42Z",
 							buyer: "richard.stevensson@example.com",
@@ -33,10 +33,10 @@ describe("receipt Preview", () => {
 							payment: { type: "card", limit: { cadence: "month", value: 20, currency: "EUR", created: "2023-01-01" } },
 							receipts: [
 								{
-									id: "id",
+									id: "---r1---",
+									original: "https://example.com/receipt.pdf",
 									total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 									date: "2022-01-01T00:00:42Z",
-									original: "https://example.com/receipt.pdf",
 								},
 							],
 						},
