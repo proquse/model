@@ -1,13 +1,12 @@
 import { issuefab } from "../../index"
-import { Preview } from "./Preview"
 
 describe("receipt Preview", () => {
-	const dummyPreview: Preview = {
+	const dummyPreview: issuefab.Report.Receipt.Preview = {
 		costCenters: [
 			{
 				costCenter: {
-					id: "1",
-					amount: [10, "USD"],
+					id: "11111111",
+					amount: { cadence: "year", value: 10, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
@@ -21,7 +20,7 @@ describe("receipt Preview", () => {
 						receipt: {
 							id: "receiptId",
 							original: "https://example.com/receipt.pdf",
-							total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+							total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 							date: "2022-01-01T00:00:42Z",
 						},
 						purchase: {
@@ -29,19 +28,17 @@ describe("receipt Preview", () => {
 							created: "2022-01-01T00:00:42Z",
 							modified: "2022-01-01T00:00:42Z",
 							buyer: "richard.stevensson@example.com",
-							amount: [951221, "EUR"],
 							purpose: "Production Workers",
 							email: "receipt@example.com",
-							payment: { type: "card", limit: [10, "EUR"] },
+							payment: { type: "card", limit: { cadence: "month", value: 20, currency: "EUR", created: "2023-01-01" } },
 							receipts: [
 								{
 									id: "id",
-									total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+									total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 									date: "2022-01-01T00:00:42Z",
 									original: "https://example.com/receipt.pdf",
 								},
 							],
-							transactions: [],
 						},
 					},
 				],

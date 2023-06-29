@@ -376,6 +376,20 @@ describe("Purchase", () => {
 		expect(issuefab.Purchase.spent(costCenter.delegations[0].purchases[0])).toEqual(598)
 	})
 	it("validate", () => {
-		console.log(issuefab.Purchase.validate(purchase, "2022-12-31"))
+		expect(issuefab.Purchase.validate(purchase, "2023-12-31")).toEqual(true)
+		expect(issuefab.Purchase.validate(purchase, "2022-12-31")).toEqual(false)
+		expect(
+			issuefab.Purchase.validate(
+				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, cadence: "year" } } },
+				"2023-12-31"
+			)
+		).toEqual(true)
+		expect(
+			issuefab.Purchase.validate(
+				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, cadence: "year" } } },
+				"2023-12-31",
+				{ spent: true }
+			)
+		).toEqual(false)
 	})
 })

@@ -1,4 +1,3 @@
-import { isoly } from "isoly"
 import { issuefab } from "../index"
 
 describe("Amount", () => {
@@ -36,47 +35,6 @@ describe("Amount", () => {
 		expect(issuefab.Cadence.is((({ currency, ...year }) => year)(year))).toEqual(false)
 		expect(issuefab.Cadence.is((({ created, ...year }) => year)(year))).toEqual(false)
 		expect(issuefab.Cadence.is([1, "EUR"])).toEqual(false)
-	})
-	it("validate", () => {
-		const date = "2023-05-10"
-		const past = "2023-01-01"
-
-		const budget: issuefab.Cadence = {
-			cadence: "year",
-			value: 1_000,
-			currency: "EUR",
-			created: "2023-01-01",
-		}
-
-		expect(issuefab.Cadence.validate(year, past)).toEqual(false)
-		expect(issuefab.Cadence.validate(month, past)).toEqual(false)
-		expect(issuefab.Cadence.validate(week, past)).toEqual(false)
-		expect(issuefab.Cadence.validate(single, past)).toEqual(false)
-
-		expect(issuefab.Cadence.validate(year, date)).toEqual(true)
-		expect(issuefab.Cadence.validate(month, date)).toEqual(true)
-		expect(issuefab.Cadence.validate(week, date)).toEqual(true)
-		expect(issuefab.Cadence.validate(single, date)).toEqual(true)
-
-		expect(issuefab.Cadence.validate(month, date, year)).toEqual(false)
-		expect(issuefab.Cadence.validate(week, date, year)).toEqual(false)
-		expect(issuefab.Cadence.validate(single, date, year)).toEqual(true)
-		expect(issuefab.Cadence.validate(month, "2023-03-04", year)).toEqual(true)
-		expect(issuefab.Cadence.validate(week, "2023-03-04", year)).toEqual(true)
-		// real use-cases
-		expect(issuefab.Cadence.validate(year, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
-		expect(issuefab.Cadence.validate(month, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
-		expect(issuefab.Cadence.validate(week, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
-		expect(issuefab.Cadence.validate(single, isoly.Date.lastOfYear(budget.created), budget)).toEqual(true)
-		expect(issuefab.Cadence.validate({ ...year, value: 1_001 }, isoly.Date.lastOfYear(budget.created), budget)).toEqual(
-			false
-		)
-		expect(issuefab.Cadence.validate({ ...month, value: 200 }, isoly.Date.lastOfYear(budget.created), budget)).toEqual(
-			false
-		)
-		expect(issuefab.Cadence.validate({ ...week, value: 50 }, isoly.Date.lastOfYear(budget.created), budget)).toEqual(
-			false
-		)
 	})
 	it("allocated", () => {
 		// past

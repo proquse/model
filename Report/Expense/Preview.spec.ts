@@ -1,23 +1,22 @@
 import { issuefab } from "../../index"
+
 describe("Expense Preview", () => {
 	const purchase: issuefab.Purchase = {
 		id: "aoeu1234",
 		created: "2022-01-01T00:00:42Z",
 		modified: "2022-01-01T00:00:42Z",
 		buyer: "richard.stevensson@example.com",
-		amount: [951221, "EUR"],
 		purpose: "Production Workers",
 		email: "receipt@example.com",
-		payment: { type: "card", limit: [10, "EUR"] },
+		payment: { type: "card", limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 		receipts: [
 			{
 				id: "id",
-				total: [{ net: [10, "USD"], vat: [2.5, "USD"] }],
+				total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 				date: "2022-01-01T00:00:42Z",
 				original: "https://example.com/receipt.pdf",
 			},
 		],
-		transactions: [],
 	}
 	const preview: issuefab.Report.Expense.Preview = {
 		userExpenses: {

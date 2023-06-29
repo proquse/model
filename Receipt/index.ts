@@ -86,6 +86,17 @@ export namespace Receipt {
 	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
 		return receipt.total.every(total => Total.validate(total, currency))
 	}
+	export function spent(receipt: Receipt, currency: isoly.Currency, options?: { vat?: boolean }): number {
+		return receipt.total.reduce(
+			(result, { net, vat }) =>
+				isoly.Currency.add(
+					currency,
+					result,
+					isoly.Currency.add(currency, net.value, options?.vat != false ? vat.value : 0)
+				),
+			0
+		)
+	}
 	export type Creatable = ReceiptCreatable
 	export const Creatable = ReceiptCreatable
 	export type Total = ReceiptTotal

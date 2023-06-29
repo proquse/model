@@ -137,15 +137,7 @@ export namespace Purchase {
 							isoly.Currency.add(
 								purchase.payment.limit.currency,
 								result,
-								receipt.total.reduce(
-									(result, total) =>
-										isoly.Currency.add(
-											purchase.payment.limit.currency,
-											result,
-											isoly.Currency.add(purchase.payment.limit.currency, total.net.value, total.vat.value)
-										),
-									0
-								)
+								Receipt.spent(receipt, purchase.payment.limit.currency)
 							),
 						0
 					) <= cadence))
@@ -158,15 +150,7 @@ export namespace Purchase {
 				isoly.Currency.add(
 					purchase.payment.limit.currency,
 					result,
-					receipt.total.reduce(
-						(result, { net, vat }) =>
-							isoly.Currency.add(
-								purchase.payment.limit.currency,
-								result,
-								isoly.Currency.add(purchase.payment.limit.currency, net.value, options?.vat != false ? vat.value : 0)
-							),
-						0
-					)
+					Receipt.spent(receipt, purchase.payment.limit.currency, options)
 				),
 			0
 		)
