@@ -31,10 +31,10 @@ export namespace Payment {
 	export type Expense = PaymentExpense
 	export const Expense = PaymentExpense
 	export namespace Expense {
-		export type Paid = PaymentExpense.Paid
+		export type Reimbursement = PaymentExpense.Reimbursement
 		export type Creatable = PaymentExpense.Creatable
-		export namespace Paid {
-			export type Creatable = PaymentExpense.Paid.Creatable
+		export namespace Reimbursement {
+			export type Creatable = PaymentExpense.Reimbursement.Creatable
 		}
 	}
 	export type Creatable = PaymentCreatable

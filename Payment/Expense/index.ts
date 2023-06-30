@@ -1,15 +1,15 @@
 import { isly } from "isly"
 import { Receipt } from "./../../Receipt"
 import { Creatable as ExpenseCreatable } from "./Creatable"
-import { Paid as ExpensePaid } from "./Paid"
+import { Reimbursement as ExpenseReimbursement } from "./Reimbursement"
 
 export interface Expense extends Expense.Creatable {
-	paid?: Record<Receipt["id"], Expense.Paid | undefined>
+	reimbursement?: Record<Receipt["id"], Expense.Reimbursement | undefined>
 }
 
 export namespace Expense {
 	export const type: isly.object.ExtendableType<Expense> = ExpenseCreatable.type.extend<Expense>({
-		paid: isly.record(isly.string(), ExpensePaid.type.optional()).optional(),
+		reimbursement: isly.record(isly.string(), ExpenseReimbursement.type.optional()).optional(),
 	})
 
 	export const is = type.is
@@ -17,9 +17,9 @@ export namespace Expense {
 	export const validate = ExpenseCreatable.validate
 	export type Creatable = ExpenseCreatable
 	export const Creatable = ExpenseCreatable
-	export type Paid = ExpensePaid
-	export const Paid = ExpensePaid
-	export namespace Paid {
-		export type Creatable = ExpensePaid.Creatable
+	export type Reimbursement = ExpenseReimbursement
+	export const Reimbursement = ExpenseReimbursement
+	export namespace Reimbursement {
+		export type Creatable = ExpenseReimbursement.Creatable
 	}
 }
