@@ -1,10 +1,11 @@
 import { isoly } from "isoly"
+import { Organization } from "@userwidgets/model"
 import { isly } from "isly"
 import { Purchase } from "../../Purchase"
 
 export interface Preview {
-	userExpenses: Record<string, Purchase[] | undefined>
-	organization: string
+	userExpenses: Record<Purchase["buyer"], Purchase[] | undefined>
+	organization: Organization["id"]
 	dateRange: isoly.DateRange
 }
 
