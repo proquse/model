@@ -60,7 +60,7 @@
 		"@typescript-eslint/eslint-plugin": "5.60.1",
 		"@typescript-eslint/parser": "5.60.1",
 		"babel-jest": "^29.5.0",
-		"eslint": "^8.43.0",
+		"eslint": "^8.44.0",
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-20221229",
 		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"formdata-polyfill": "^4.0.10",
