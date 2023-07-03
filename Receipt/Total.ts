@@ -12,4 +12,8 @@ export namespace Total {
 	export function validate(total: Total, currency: isoly.Currency): boolean {
 		return currency == total.net.currency && currency == total.vat.currency
 	}
+	// missing tests. maybe use in purchase? unused.
+	export function spent(total: Total, currency: isoly.Currency): number {
+		return isoly.Currency.add(currency, total.net.value, total.vat.value)
+	}
 }
