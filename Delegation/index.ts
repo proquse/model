@@ -1,5 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
 import { CostCenter } from "../CostCenter"
@@ -60,7 +61,7 @@ export namespace Delegation {
 			  ) && result
 	}
 	export const find = Object.assign(findDelegation, { node: findNode })
-	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: string): Delegation[] {
+	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: userwidgets.Email): Delegation[] {
 		const result: Delegation[] = []
 		for (const root of roots) {
 			if ("costCenters" in root)

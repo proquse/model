@@ -1,5 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { Organization, userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
@@ -13,7 +14,7 @@ export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	id: Purchase.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	email: string
+	email: userwidgets.Email
 	receipts: Receipt[]
 	payment: Payment
 }
@@ -25,7 +26,7 @@ export namespace Purchase {
 		id: Identifier.type,
 		created: isly.fromIs("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs("DateTime", isoly.DateTime.is),
-		email: isly.string(/^.+@.+$/),
+		email: userwidgets.Email.type,
 		receipts: isly.array(Receipt.type),
 		payment: Payment.type,
 	})
@@ -34,8 +35,8 @@ export namespace Purchase {
 	export const flaw = type.flaw
 	export function create(
 		purchase: Purchase.Creatable,
-		organizationId: string,
-		email: string,
+		organization: Organization["id"],
+		email: userwidgets.Email,
 		override?: Partial<Purchase>
 	): Purchase {
 		const now = isoly.DateTime.now()
@@ -47,7 +48,7 @@ export namespace Purchase {
 			id: override?.id ?? id,
 			created: override?.created ?? now,
 			modified: override?.modified ?? now,
-			email: override?.email ?? `${recipient}+${organizationId}_${id}@${domain}`,
+			email: override?.email ?? `${recipient}+${organization}_${id}@${domain}`,
 			receipts: override?.receipts ?? [],
 		}
 	}

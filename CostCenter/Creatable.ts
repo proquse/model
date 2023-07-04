@@ -1,15 +1,15 @@
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
-import { Email } from "../Email"
 export interface Creatable {
-	from: Email
+	from: userwidgets.Email
 	name: string
 	amount: Cadence
 	description?: string
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		from: Email.type,
+		from: userwidgets.Email.type,
 		name: isly.string(/.+/),
 		amount: Cadence.type,
 		description: isly.string().optional(),
