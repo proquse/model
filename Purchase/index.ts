@@ -1,6 +1,6 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
-import { Organization, userwidgets } from "@userwidgets/model"
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
@@ -35,7 +35,7 @@ export namespace Purchase {
 	export const flaw = type.flaw
 	export function create(
 		purchase: Purchase.Creatable,
-		organization: Organization["id"],
+		organization: userwidgets.Organization["id"],
 		email: userwidgets.Email,
 		override?: Partial<Purchase>
 	): Purchase {
