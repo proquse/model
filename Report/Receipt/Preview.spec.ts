@@ -6,7 +6,7 @@ describe("receipt Preview", () => {
 			{
 				costCenter: {
 					id: "---c1---",
-					amount: { cadence: "year", value: 10, currency: "USD", created: "2023-01-01" },
+					amount: { interval: "year", value: 10, currency: "USD", created: "2023-01-01" },
 					name: "Development",
 					created: "2021-12-20T13:37:42Z",
 					modified: "2022-12-20T13:37:42Z",
@@ -30,7 +30,10 @@ describe("receipt Preview", () => {
 							buyer: "richard.stevensson@example.com",
 							purpose: "Production Workers",
 							email: "receipt@example.com",
-							payment: { type: "card", limit: { cadence: "month", value: 20, currency: "EUR", created: "2023-01-01" } },
+							payment: {
+								type: "card",
+								limit: { interval: "month", value: 20, currency: "EUR", created: "2023-01-01" },
+							},
 							receipts: [
 								{
 									id: "---r1---",

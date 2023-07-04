@@ -5,7 +5,7 @@ describe("Delegation.Creatable", () => {
 		to: ["jessie@example.com"],
 		from: "james@example.com",
 		purpose: "testing",
-		amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
+		amount: { interval: "year", value: 500, currency: "USD", created: "2023-01-01" },
 		costCenter: "budget",
 	}
 	it("is", () => {
@@ -17,7 +17,7 @@ describe("Delegation.Creatable", () => {
 			modified: "2021-12-20T13:37:42Z",
 			to: ["james@example.com"],
 			purpose: "testing",
-			amount: { cadence: "year", value: 500, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "year", value: 500, currency: "EUR", created: "2023-01-01" },
 			delegations: [],
 			purchases: [],
 		}
@@ -34,21 +34,21 @@ describe("Delegation.Creatable", () => {
 	// 		to: ["james@example.com"],
 	// 		from: "jessie@example.com",
 	// 		purpose: "testing",
-	// 		amount: { cadence: "year", value: 500, currency: "EUR", created: "2023-01-01" },
+	// 		amount: { interval: "year", value: 500, currency: "EUR", created: "2023-01-01" },
 	// 		costCenter: "budget",
 	// 	}
 	// 	const second: issuefab.Delegation.Creatable = {
 	// 		to: ["james@example.com"],
 	// 		from: "jessie@example.com",
 	// 		purpose: "testing",
-	// 		amount: { cadence: "year", value: 500, currency: "EUR", created: "2023-01-01" },
+	// 		amount: { interval: "year", value: 500, currency: "EUR", created: "2023-01-01" },
 	// 		costCenter: "budget",
 	// 	}
 	// 	const third: issuefab.Delegation.Creatable = {
 	// 		to: [],
 	// 		from: "jessie@example.com",
 	// 		purpose: "testing",
-	// 		amount: { cadence: "year", value: 500, currency: "EUR", created: "2023-01-01" },
+	// 		amount: { interval: "year", value: 500, currency: "EUR", created: "2023-01-01" },
 	// 		costCenter: "budget",
 	// 	}
 	// 	expect(issuefab.Delegation.Creatable.equals(third, first)).toEqual(false)

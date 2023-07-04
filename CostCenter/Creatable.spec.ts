@@ -5,7 +5,7 @@ describe("CostCenter.Creatable", () => {
 		from: "jessie@rocket.com",
 		name: "Development",
 		description: "Description",
-		amount: { cadence: "year", value: 500, currency: "USD", created: "2023-01-01" },
+		amount: { interval: "year", value: 500, currency: "USD", created: "2023-01-01" },
 	}
 	it("is", () => {
 		expect(issuefab.CostCenter.Creatable.is(creatable)).toEqual(true)

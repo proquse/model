@@ -5,7 +5,7 @@ describe("Purchase.Creatable", () => {
 		purpose: "buy things",
 		payment: {
 			type: "expense",
-			limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+			limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 		},
 		buyer: "jane@example.com",
 	}

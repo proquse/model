@@ -3,7 +3,7 @@ import { issuefab } from "../../index"
 describe("Payment.Expense", () => {
 	const payment: issuefab.Payment.Creatable.Expense = {
 		type: "expense",
-		limit: { cadence: "month", value: 20, currency: "EUR", created: "2023-01-01" },
+		limit: { interval: "month", value: 20, currency: "EUR", created: "2023-01-01" },
 	}
 	it("is", () => {
 		expect(issuefab.Payment.Creatable.Expense.is(payment)).toEqual(true)

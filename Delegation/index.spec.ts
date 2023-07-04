@@ -9,7 +9,7 @@ describe("Delegation", () => {
 		modified: "2023-01-01T13:37:42Z",
 		to: ["jessie@example.com"],
 		purpose: "Total company Budget",
-		amount: { cadence: "year", value: 100_000, currency: "EUR", created: "2023-01-01" },
+		amount: { interval: "year", value: 100_000, currency: "EUR", created: "2023-01-01" },
 		delegations: [],
 		purchases: [],
 	}
@@ -20,7 +20,7 @@ describe("Delegation", () => {
 		created: "2023-01-01T13:37:42Z",
 		modified: "2023-01-01T13:37:42Z",
 		description: "Total company Budget",
-		amount: { cadence: "year", value: 20_000, currency: "EUR", created: "2023-01-01" },
+		amount: { interval: "year", value: 20_000, currency: "EUR", created: "2023-01-01" },
 		delegations: [
 			{
 				id: "d1",
@@ -30,7 +30,7 @@ describe("Delegation", () => {
 				costCenter: "IT",
 				from: "john@example.com",
 				purpose: "hosting costs",
-				amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
+				amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 				delegations: [
 					{
 						id: "d2",
@@ -40,7 +40,7 @@ describe("Delegation", () => {
 						costCenter: "IT",
 						from: "mary@example.com",
 						purpose: "Cloudflare",
-						amount: { cadence: "year", value: 1_200, currency: "EUR", created: "2023-01-01" },
+						amount: { interval: "year", value: 1_200, currency: "EUR", created: "2023-01-01" },
 						delegations: [
 							{
 								id: "d3",
@@ -50,7 +50,7 @@ describe("Delegation", () => {
 								costCenter: "IT",
 								from: "mary@example.com",
 								purpose: "Cloudflare",
-								amount: { cadence: "year", value: 100, currency: "EUR", created: "2023-01-01" },
+								amount: { interval: "year", value: 100, currency: "EUR", created: "2023-01-01" },
 								delegations: [],
 								purchases: [],
 							},
@@ -65,7 +65,7 @@ describe("Delegation", () => {
 								purpose: "Production Workers",
 								payment: {
 									type: "card",
-									limit: { cadence: "month", value: 15, currency: "EUR", created: "2023-01-01" },
+									limit: { interval: "month", value: 15, currency: "EUR", created: "2023-01-01" },
 								},
 								receipts: [
 									{
@@ -151,7 +151,7 @@ describe("Delegation", () => {
 								purpose: "Production Workers",
 								payment: {
 									type: "card",
-									limit: { cadence: "month", value: 30, currency: "EUR", created: "2023-01-01" },
+									limit: { interval: "month", value: 30, currency: "EUR", created: "2023-01-01" },
 								},
 								receipts: [],
 							},
@@ -166,7 +166,7 @@ describe("Delegation", () => {
 						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
 						purpose: "Production Workers",
-						payment: { type: "card", limit: { cadence: "month", value: 300, currency: "EUR", created: "2023-11-15" } },
+						payment: { type: "card", limit: { interval: "month", value: 300, currency: "EUR", created: "2023-11-15" } },
 						receipts: [
 							{
 								id: "r13",
@@ -192,7 +192,7 @@ describe("Delegation", () => {
 				costCenter: "IT",
 				from: "john@example.com",
 				purpose: "Cloudflare",
-				amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
+				amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 				delegations: [
 					{
 						id: "d5",
@@ -202,7 +202,7 @@ describe("Delegation", () => {
 						costCenter: "IT",
 						from: "richard@example.com",
 						purpose: "Partial company budget",
-						amount: { cadence: "year", value: 1_000, currency: "EUR", created: "2023-01-01" },
+						amount: { interval: "year", value: 1_000, currency: "EUR", created: "2023-01-01" },
 						delegations: [
 							{
 								id: "d6",
@@ -212,7 +212,7 @@ describe("Delegation", () => {
 								costCenter: "IT",
 								from: "john@example.com",
 								purpose: "Partial company budget",
-								amount: { cadence: "month", value: 100, currency: "EUR", created: "2023-03-01" },
+								amount: { interval: "month", value: 100, currency: "EUR", created: "2023-03-01" },
 								delegations: [],
 								purchases: [],
 							},
@@ -231,7 +231,7 @@ describe("Delegation", () => {
 				created: "2023-01-01T13:37:42Z",
 				modified: "2023-01-01T13:37:42Z",
 				description: "Partial company budget",
-				amount: { cadence: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
+				amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
 				costCenters: [],
 				delegations: [],
 			},
@@ -293,7 +293,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: { cadence: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [
 				{
 					id: "abcd0002",
@@ -303,7 +303,7 @@ describe("Delegation", () => {
 					modified: "2023-01-01T13:37:42Z",
 					to: ["jane@example.com"],
 					purpose: "Partial company Budget",
-					amount: { cadence: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
+					amount: { interval: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
 					delegations: [],
 					purchases: [],
 				},
@@ -318,7 +318,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["jane@example.com"],
 			purpose: "Partial company Budget",
-			amount: { cadence: "single", value: 3_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 3_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [],
 			purchases: [],
 		}
@@ -330,7 +330,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: { cadence: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
@@ -350,7 +350,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: { cadence: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [
 				{
 					id: "abcd0002",
@@ -360,7 +360,7 @@ describe("Delegation", () => {
 					modified: "2023-01-01T13:37:42Z",
 					to: ["jane@example.com"],
 					purpose: "Partial company Budget",
-					amount: { cadence: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
+					amount: { interval: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
 					delegations: [],
 					purchases: [],
 				},
@@ -375,7 +375,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["jane@example.com"],
 			purpose: "Partial company Budget",
-			amount: { cadence: "single", value: 3_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 3_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [],
 			purchases: [],
 		}
@@ -387,7 +387,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: { cadence: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
@@ -407,7 +407,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["jane@example.com"],
 			purpose: "Partial company Budget",
-			amount: { cadence: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [],
 			purchases: [],
 		}
@@ -419,7 +419,7 @@ describe("Delegation", () => {
 			modified: "2023-01-01T13:37:42Z",
 			to: ["john@example.com"],
 			purpose: "Total company Budget",
-			amount: { cadence: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
+			amount: { interval: "single", value: 20_000, currency: "EUR", created: "2023-01-01" },
 			delegations: [
 				{
 					id: "abcd0002",
@@ -429,7 +429,7 @@ describe("Delegation", () => {
 					modified: "2023-01-01T13:37:42Z",
 					to: ["jane@example.com"],
 					purpose: "Partial company Budget",
-					amount: { cadence: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
+					amount: { interval: "single", value: 2_000, currency: "EUR", created: "2023-01-01" },
 					delegations: [],
 					purchases: [],
 				},
@@ -469,7 +469,7 @@ describe("Delegation", () => {
 			issuefab.Delegation.is(
 				issuefab.Delegation.create({
 					to: ["james@example.com"],
-					amount: { cadence: "year", value: 100_000, currency: "EUR", created: "2023-01-01" },
+					amount: { interval: "year", value: 100_000, currency: "EUR", created: "2023-01-01" },
 					costCenter: "gear",
 					from: "jessie@example.com",
 					purpose: "Money!",

@@ -3,11 +3,11 @@ import { issuefab } from "../index"
 describe("Payment", () => {
 	const payment: issuefab.Payment = {
 		type: "card",
-		limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 	}
 	const expense: issuefab.Payment.Expense = {
 		type: "expense",
-		limit: { cadence: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 		reimbursement: {
 			abcd0001: { issuer: "tobe@kakal.cse", created: "2021-12-20T13:37:42Z", modified: "2021-12-20T13:37:42Z" },
 		},

@@ -2,25 +2,25 @@ import { issuefab } from "../index"
 
 describe("Amount", () => {
 	const year: issuefab.Cadence = {
-		cadence: "year",
+		interval: "year",
 		value: 10,
 		currency: "EUR",
 		created: "2023-03-04",
 	}
 	const month: issuefab.Cadence = {
-		cadence: "month",
+		interval: "month",
 		value: 10,
 		currency: "EUR",
 		created: "2023-03-04",
 	}
 	const week: issuefab.Cadence = {
-		cadence: "week",
+		interval: "week",
 		value: 10,
 		currency: "EUR",
 		created: "2023-03-04",
 	}
 	const single: issuefab.Cadence = {
-		cadence: "single",
+		interval: "single",
 		value: 10,
 		currency: "EUR",
 		created: "2023-03-04",
@@ -30,7 +30,7 @@ describe("Amount", () => {
 		expect(issuefab.Cadence.is(month)).toEqual(true)
 		expect(issuefab.Cadence.is(week)).toEqual(true)
 		expect(issuefab.Cadence.is(single)).toEqual(true)
-		expect(issuefab.Cadence.is((({ cadence, ...year }) => year)(year))).toEqual(false)
+		expect(issuefab.Cadence.is((({ interval, ...year }) => year)(year))).toEqual(false)
 		expect(issuefab.Cadence.is((({ value, ...year }) => year)(year))).toEqual(false)
 		expect(issuefab.Cadence.is((({ currency, ...year }) => year)(year))).toEqual(false)
 		expect(issuefab.Cadence.is((({ created, ...year }) => year)(year))).toEqual(false)

@@ -5,7 +5,7 @@ describe("Payment.Creatable", () => {
 	it("is", () => {
 		const card: issuefab.Payment.Creatable.Card = {
 			type: "card",
-			limit: { cadence: "month", value: 123, currency: "SEK", created: "2023-01-01" },
+			limit: { interval: "month", value: 123, currency: "SEK", created: "2023-01-01" },
 		}
 		const prePaid: issuefab.Payment.Creatable.PrePaid = {
 			...card,
