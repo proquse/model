@@ -56,15 +56,12 @@ export namespace CostCenter {
 	}
 	export function validate(
 		costCenter: CostCenter,
-		date: isoly.Date,
+		date?: isoly.Date,
 		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
+		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
 		const cadence = Cadence.allocated(costCenter.amount, date)
-		const balance = isoly.Currency.subtract(
-			options?.currency ?? costCenter.amount.currency,
-			cadence,
-			CostCenter.allocated(costCenter, date)
-		)
+		const balance = Delegation.allocated.balance(costCenter, date)
 		return (
 			cadence > 0 &&
 			balance >= 0 &&

@@ -32,4 +32,23 @@ export namespace Cadence {
 		}
 		return result
 	}
+
+	export function getDate(cadence: Cadence) {
+		let result: isoly.Date
+		switch (cadence.interval) {
+			case "year":
+				result = isoly.Date.lastOfYear(isoly.Date.now())
+				break
+			case "month":
+				result = isoly.Date.lastOfMonth(isoly.Date.now())
+				break
+			case "week":
+				result = isoly.Date.lastOfWeek(isoly.Date.now())
+				break
+			default:
+				result = isoly.Date.now()
+				break
+		}
+		return result
+	}
 }

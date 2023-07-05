@@ -125,9 +125,10 @@ export namespace Purchase {
 	}
 	export function validate(
 		purchase: Purchase,
-		date: isoly.Date,
+		date?: isoly.Date,
 		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
+		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
 		const cadence = Cadence.allocated(purchase.payment.limit, date)
 		return (
 			cadence > 0 &&

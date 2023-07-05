@@ -132,7 +132,7 @@ export namespace Delegation {
 	}
 	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
 	function calculateAllocated(root: Delegation | CostCenter, date?: isoly.Date): number {
-		const cadenceDate = date ? date : getDate(root.amount)
+		const cadenceDate = date ?? Cadence.getDate(root.amount)
 		return (
 			("purchases" in root
 				? root.purchases.reduce(
@@ -153,42 +153,18 @@ export namespace Delegation {
 		)
 	}
 	function calculateAllocatedBalance(root: Delegation | CostCenter, date?: isoly.Date): number {
-		const cadenceDate = date ? date : getDate(root.amount)
-		return isoly.Currency.subtract(
-			root.amount.currency,
-			Cadence.allocated(root.amount, cadenceDate),
-			allocated(root, cadenceDate)
-		)
+		date = date ?? Cadence.getDate(root.amount)
+		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
 	}
-	function getDate(cadence: Cadence) {
-		let result: isoly.Date
-		switch (cadence.interval) {
-			case "year":
-				result = isoly.Date.lastOfYear(isoly.Date.now())
-				break
-			case "month":
-				result = isoly.Date.lastOfMonth(isoly.Date.now())
-				break
-			case "week":
-				result = isoly.Date.lastOfWeek(isoly.Date.now())
-				break
-			default:
-				result = isoly.Date.now()
-				break
-		}
-		return result
-	}
+
 	export function validate(
 		delegation: Delegation,
-		date: isoly.Date,
+		date?: isoly.Date,
 		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
+		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
 		const cadence = Cadence.allocated(delegation.amount, date)
-		const balance = isoly.Currency.subtract(
-			options?.currency ?? delegation.amount.currency,
-			cadence,
-			Delegation.allocated(delegation, date)
-		)
+		const balance = Delegation.allocated.balance(delegation, date)
 		return (
 			cadence > 0 &&
 			balance >= 0 &&
