@@ -74,7 +74,6 @@
 	"dependencies": {
 		"@userwidgets/model": "^0.4.4",
 		"authly": "^3.0.6",
-		"build": "^0.1.4",
 		"cryptly": "^3.0.4",
 		"isly": "^0.1.7",
 		"isoly": "^2.0.21",
