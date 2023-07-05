@@ -14,6 +14,7 @@ export namespace Payment {
 	export const Card = PaymentCard
 	export namespace Card {
 		export type Creatable = PaymentCard.Creatable
+		export type Details = PaymentCard.Details
 	}
 	export type PrePaid = PaymentPrePaid
 	export const PrePaid = PaymentPrePaid
