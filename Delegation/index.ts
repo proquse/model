@@ -172,7 +172,7 @@ export namespace Delegation {
 			case "week":
 				result = isoly.Date.lastOfWeek(isoly.Date.now())
 				break
-			case "single":
+			default:
 				result = isoly.Date.now()
 				break
 		}
