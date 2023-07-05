@@ -1,17 +1,13 @@
 import { issuefab } from "../index"
 
 describe("Amount", () => {
+	const amount: issuefab.Amount = {
+		value: 1_000.5,
+		currency: "SEK",
+	}
 	it("is", () => {
-		expect(issuefab.Amount.is([1, "EUR"])).toEqual(true)
-	})
-	it("validate", () => {
-		expect(issuefab.Amount.validate([0, "EUR"])).toEqual(false)
-		expect(issuefab.Amount.validate([1, "EUR"])).toEqual(true)
-		expect(issuefab.Amount.validate([1, "EUR"], [10, "EUR"])).toEqual(true)
-		expect(issuefab.Amount.validate([1, "EUR"], [10, "SEK"])).toEqual(false)
-		expect(issuefab.Amount.validate([11, "EUR"], [10, "EUR"])).toEqual(false)
-		expect(issuefab.Amount.validate([11, "EUR"], [10, "SEK"])).toEqual(false)
-		expect(issuefab.Amount.validate([-1, "EUR"])).toEqual(false)
-		expect(issuefab.Amount.validate([1, "EUR"], undefined)).toEqual(true)
+		expect(issuefab.Amount.is(amount)).toEqual(true)
+		expect(issuefab.Amount.is((({ currency, ...amount }) => amount)(amount))).toEqual(false)
+		expect(issuefab.Amount.is((({ value, ...amount }) => amount)(amount))).toEqual(false)
 	})
 })

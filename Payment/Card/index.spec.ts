@@ -3,7 +3,7 @@ import { issuefab } from "../../index"
 describe("Payment.Card", () => {
 	const card: issuefab.Payment.Card = {
 		type: "card",
-		limit: [10, "EUR"],
+		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 		details: {
 			csc: "123",
 			pan: "0123456789101112",

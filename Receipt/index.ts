@@ -5,30 +5,27 @@ import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
 import type { Purchase } from "../Purchase"
 import { Creatable as ReceiptCreatable } from "./Creatable"
+import { Identifier as ReceiptIdentifier } from "./Identifier"
 import { Total as ReceiptTotal } from "./Total"
 export interface Receipt extends Omit<Receipt.Creatable, "file"> {
-	id: cryptly.Identifier
+	id: Receipt.Identifier
 	original: string
 	date: isoly.DateTime
 }
 
 export namespace Receipt {
+	export type Identifier = ReceiptIdentifier
+	export const Identifier = ReceiptIdentifier
 	export const type = isly.object<Receipt>({
-		id: isly.fromIs("Id", cryptly.Identifier.is),
-		original: isly.string(),
+		id: Identifier.type,
+		original: isly.string(/^http.+$/),
 		total: isly.array(ReceiptTotal.type),
 		date: isly.fromIs("DateTime", isoly.DateTime.is),
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function create(
-		receipt: Creatable,
-		purchase: string,
-		origin: string,
-		override?: Partial<Receipt>,
-		idLength: cryptly.Identifier.Length = 8
-	): Receipt {
-		const id = cryptly.Identifier.generate(idLength)
+	export function create(receipt: Creatable, purchase: string, origin: string, override?: Partial<Receipt>): Receipt {
+		const id = cryptly.Identifier.generate(Identifier.length)
 		return {
 			...(({ file, ...receipt }) => receipt)(receipt),
 			...override,
@@ -82,12 +79,19 @@ export namespace Receipt {
 		}
 		return Array.from(list(roots))
 	}
-	export function validate(receipt: Receipt, currency?: isoly.Currency): boolean {
-		return (
-			!!receipt.id &&
-			!!receipt.original &&
-			receipt.date < isoly.DateTime.now() &&
-			(!receipt.total.length || !currency || receipt.total.every(total => Total.validate(total, currency)))
+
+	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
+		return receipt.total.every(total => Total.validate(total, currency))
+	}
+	export function spent(receipt: Receipt, currency: isoly.Currency, options?: { vat?: boolean }): number {
+		return receipt.total.reduce(
+			(result, { net, vat }) =>
+				isoly.Currency.add(
+					currency,
+					result,
+					isoly.Currency.add(currency, net.value, options?.vat != false ? vat.value : 0)
+				),
+			0
 		)
 	}
 	export type Creatable = ReceiptCreatable

@@ -1,18 +1,18 @@
 import { isoly } from "isoly"
-import { Organization } from "@userwidgets/model"
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Purchase } from "../../Purchase"
 
 export interface Preview {
 	userExpenses: Record<Purchase["buyer"], Purchase[] | undefined>
-	organization: Organization["id"]
+	organization: userwidgets.Organization["name"]
 	dateRange: isoly.DateRange
 }
 
 export namespace Preview {
 	export const type = isly.object<Preview>({
-		userExpenses: isly.record(isly.string(), isly.array(Purchase.type)),
-		organization: isly.string(),
+		userExpenses: isly.record(userwidgets.Email.type, isly.array(Purchase.type)),
+		organization: isly.string(/.+/),
 		dateRange: isly.fromIs("DateRange", isoly.DateRange.is),
 	})
 

@@ -1,15 +1,15 @@
 import { issuefab } from "../../index"
 
 describe("Payment.Prepaid", () => {
-	const prePaid: issuefab.Payment.PrePaid = {
+	const payment: issuefab.Payment.PrePaid = {
 		type: "pre-paid",
-		limit: [10, "EUR"],
+		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 	}
 	it("is", () => {
-		expect(issuefab.Payment.PrePaid.Creatable.is(prePaid)).toEqual(true)
-		expect(issuefab.Payment.PrePaid.is(prePaid)).toEqual(true)
-		expect(issuefab.Payment.PrePaid.is((({ type, ...prePaid }) => prePaid)(prePaid))).toEqual(false)
-		expect(issuefab.Payment.PrePaid.type.get({ ...prePaid, wrong: "extra property" })).toEqual(prePaid)
-		expect(issuefab.Payment.PrePaid.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
+		expect(issuefab.Payment.PrePaid.Creatable.is(payment)).toEqual(true)
+		expect(issuefab.Payment.PrePaid.is(payment)).toEqual(true)
+		expect(issuefab.Payment.PrePaid.is((({ type, ...prePaid }) => prePaid)(payment))).toEqual(false)
+		expect(issuefab.Payment.PrePaid.type.get({ ...payment, wrong: "extra property" })).toEqual(payment)
+		expect(issuefab.Payment.PrePaid.is({ ...payment, type: "invoice" })).toEqual(false)
 	})
 })

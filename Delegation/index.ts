@@ -1,25 +1,29 @@
 import { cryptly } from "cryptly"
 import { isoly } from "isoly"
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
-import { Amount } from "../Amount"
-import type { CostCenter } from "../CostCenter"
+import { Cadence } from "../Cadence"
+import { CostCenter } from "../CostCenter"
 import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { findDelegation, findNode } from "./find"
+import { Identifier as DelegationIdentifier } from "./Identifier"
 
 export interface Delegation extends Delegation.Creatable {
-	id: cryptly.Identifier
+	id: Delegation.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
 	purchases: Purchase[]
 	delegations: Delegation[]
 }
 export namespace Delegation {
+	export type Identifier = DelegationIdentifier
+	export const Identifier = DelegationIdentifier
 	export type Creatable = DelegationCreatable
 	export const Creatable = DelegationCreatable
 	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
-		id: isly.fromIs<cryptly.Identifier>("Identifier", cryptly.Identifier.is),
+		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		purchases: isly.array(isly.fromIs("Purchase", Purchase.is)),
@@ -27,16 +31,12 @@ export namespace Delegation {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function create(
-		delegation: Delegation.Creatable,
-		override?: Partial<Delegation>,
-		idLength: cryptly.Identifier.Length = 8
-	): Delegation {
+	export function create(delegation: Delegation.Creatable, override?: Partial<Delegation>): Delegation {
 		const now = isoly.DateTime.now()
 		return {
 			...delegation,
 			...override,
-			id: override?.id ?? cryptly.Identifier.generate(idLength),
+			id: override?.id ?? cryptly.Identifier.generate(Identifier.length),
 			created: override?.created ?? now,
 			modified: override?.modified ?? now,
 			purchases: override?.purchases ?? [],
@@ -61,7 +61,7 @@ export namespace Delegation {
 			  ) && result
 	}
 	export const find = Object.assign(findDelegation, { node: findNode })
-	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: string): Delegation[] {
+	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: userwidgets.Email): Delegation[] {
 		const result: Delegation[] = []
 		for (const root of roots) {
 			if ("costCenters" in root)
@@ -115,58 +115,67 @@ export namespace Delegation {
 			  ) && result
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
-	function calculateSpent(root: Delegation | CostCenter, options?: { rootPurchases?: boolean; vat?: boolean }): number {
+	function calculateSpent(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
 		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-			(result, current) => result + spent(current, { ...options, rootPurchases: true }),
-			!options?.rootPurchases || !("purchases" in root)
+			(result, current) => result + spent(current, { ...options }),
+			!("purchases" in root)
 				? 0
 				: root.purchases.reduce(
 						(result, purchase) =>
-							isoly.Currency.add(
-								root.amount[1],
-								result,
-								Purchase.spent(purchase, root.amount[1], { vat: options.vat })
-							),
+							isoly.Currency.add(root.amount.currency, result, Purchase.spent(purchase, { vat: options?.vat })),
 						0
 				  )
 		)
 	}
-	function calculateSpentBalance(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
-		return isoly.Currency.subtract(root.amount[1], root.amount[0], spent(root, options))
+	function calculateSpentBalance(root: Delegation | CostCenter, date: isoly.Date, options?: { vat?: boolean }): number {
+		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), spent(root, options))
 	}
 	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
-	function calculateAllocated(root: Delegation | CostCenter): number {
+	function calculateAllocated(root: Delegation | CostCenter, date?: isoly.Date): number {
+		const cadenceDate = date ?? Cadence.getDate(root.amount)
 		return (
 			("purchases" in root
 				? root.purchases.reduce(
-						(result, purchase) => isoly.Currency.add(root.amount[1], result, purchase.payment.limit[0]),
+						(result, purchase) =>
+							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(purchase.payment.limit, cadenceDate)),
 						0
 				  )
 				: root.costCenters.reduce(
-						(result, costCenter) => isoly.Currency.add(root.amount[1], result, costCenter.amount[0]),
+						(result, costCenter) =>
+							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(costCenter.amount, cadenceDate)),
 						0
 				  )) +
 			root.delegations.reduce(
-				(result, delegation) => isoly.Currency.add(root.amount[1], result, delegation.amount[0]),
+				(result, delegation) =>
+					isoly.Currency.add(root.amount.currency, result, Cadence.allocated(delegation.amount, cadenceDate)),
 				0
 			)
 		)
 	}
-	function calculateAllocatedBalance(root: Delegation | CostCenter): number {
-		return isoly.Currency.subtract(root.amount[1], root.amount[0], allocated(root))
+	function calculateAllocatedBalance(root: Delegation | CostCenter, date?: isoly.Date): number {
+		date = date ?? Cadence.getDate(root.amount)
+		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
 	}
-	export function validate(delegation: Delegation, limit?: Amount): boolean {
-		const equity: Amount = [allocated.balance(delegation), delegation.amount[1]]
+
+	export function validate(
+		delegation: Delegation,
+		date?: isoly.Date,
+		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+	): boolean {
+		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
+		const cadence = Cadence.allocated(delegation.amount, date)
+		const balance = Delegation.allocated.balance(delegation, date)
 		return (
-			!!delegation.id &&
-			delegation.created <= delegation.modified &&
-			delegation.modified <= isoly.DateTime.now() &&
-			!!delegation.from &&
-			!!delegation.costCenter &&
-			Delegation.Creatable.validate(delegation, limit) &&
-			0 <= equity[0] &&
-			(!limit || equity[0] <= limit[0]) &&
-			delegation.delegations.every(delegation => Delegation.validate(delegation, [delegation.amount[0], equity[1]]))
+			cadence > 0 &&
+			balance >= 0 &&
+			(!options?.currency || delegation.amount.currency == options.currency) &&
+			(options?.limit == undefined || cadence <= options.limit) &&
+			delegation.purchases.every(p =>
+				Purchase.validate(p, date, { currency: delegation.amount.currency, spent: options?.spent })
+			) &&
+			delegation.delegations.every(d =>
+				Delegation.validate(d, date, { currency: delegation.amount.currency, spent: options?.spent })
+			)
 		)
 	}
 }

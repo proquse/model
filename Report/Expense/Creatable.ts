@@ -1,14 +1,17 @@
+import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
+import type { CostCenter } from "../../CostCenter"
+import { Identifier } from "../../CostCenter/Identifier"
 
 export interface Creatable {
-	costCenterIds: string[]
-	emails?: string[]
+	costCenters: CostCenter.Identifier[]
+	emails?: userwidgets.Email[]
 }
 
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
-		costCenterIds: isly.array(isly.string()),
-		emails: isly.array(isly.string()).optional(),
+		costCenters: isly.array(Identifier.type),
+		emails: isly.array(userwidgets.Email.type).optional(),
 	})
 
 	export const is = type.is

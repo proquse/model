@@ -5,7 +5,7 @@ describe("CostCenter.Creatable", () => {
 		from: "jessie@rocket.com",
 		name: "Development",
 		description: "Description",
-		amount: [10, "USD"],
+		amount: { interval: "year", value: 500, currency: "USD", created: "2023-01-01" },
 	}
 	it("is", () => {
 		expect(issuefab.CostCenter.Creatable.is(creatable)).toEqual(true)
@@ -13,5 +13,8 @@ describe("CostCenter.Creatable", () => {
 		expect(issuefab.CostCenter.Creatable.is((({ from, ...creatable }) => creatable)(creatable))).toEqual(false)
 		expect(issuefab.CostCenter.Creatable.is((({ amount, ...creatable }) => creatable)(creatable))).toEqual(false)
 		expect(issuefab.CostCenter.Creatable.is((({ name, ...creatable }) => creatable)(creatable))).toEqual(false)
+	})
+	it("create", () => {
+		expect(issuefab.CostCenter.is(issuefab.CostCenter.create(creatable))).toEqual(true)
 	})
 })
