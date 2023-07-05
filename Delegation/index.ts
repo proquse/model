@@ -131,28 +131,52 @@ export namespace Delegation {
 		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), spent(root, options))
 	}
 	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
-	function calculateAllocated(root: Delegation | CostCenter, date: isoly.Date): number {
+	function calculateAllocated(root: Delegation | CostCenter, date?: isoly.Date): number {
+		const cadenceDate = date ? date : getDate(root.amount)
 		return (
 			("purchases" in root
 				? root.purchases.reduce(
 						(result, purchase) =>
-							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(purchase.payment.limit, date)),
+							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(purchase.payment.limit, cadenceDate)),
 						0
 				  )
 				: root.costCenters.reduce(
 						(result, costCenter) =>
-							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(costCenter.amount, date)),
+							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(costCenter.amount, cadenceDate)),
 						0
 				  )) +
 			root.delegations.reduce(
 				(result, delegation) =>
-					isoly.Currency.add(root.amount.currency, result, Cadence.allocated(delegation.amount, date)),
+					isoly.Currency.add(root.amount.currency, result, Cadence.allocated(delegation.amount, cadenceDate)),
 				0
 			)
 		)
 	}
-	function calculateAllocatedBalance(root: Delegation | CostCenter, date: isoly.Date): number {
-		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
+	function calculateAllocatedBalance(root: Delegation | CostCenter, date?: isoly.Date): number {
+		const cadenceDate = date ? date : getDate(root.amount)
+		return isoly.Currency.subtract(
+			root.amount.currency,
+			Cadence.allocated(root.amount, cadenceDate),
+			allocated(root, cadenceDate)
+		)
+	}
+	function getDate(cadence: Cadence) {
+		let result: isoly.Date
+		switch (cadence.interval) {
+			case "year":
+				result = isoly.Date.lastOfYear(isoly.Date.now())
+				break
+			case "month":
+				result = isoly.Date.lastOfMonth(isoly.Date.now())
+				break
+			case "week":
+				result = isoly.Date.lastOfWeek(isoly.Date.now())
+				break
+			case "single":
+				result = isoly.Date.now()
+				break
+		}
+		return result
 	}
 	export function validate(
 		delegation: Delegation,

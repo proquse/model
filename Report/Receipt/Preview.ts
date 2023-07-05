@@ -11,7 +11,7 @@ export interface Preview {
 		// change to: purchases: Purchase[] and filter out the irrelevant receipts from its array instead
 		receipts: { receipt: Receipt; purchase: Purchase }[]
 	}[]
-	organization: userwidgets.Organization["id"]
+	organization: userwidgets.Organization["name"]
 	dateRange: isoly.DateRange
 }
 

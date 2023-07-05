@@ -5,7 +5,7 @@ import { Purchase } from "../../Purchase"
 
 export interface Preview {
 	userExpenses: Record<Purchase["buyer"], Purchase[] | undefined>
-	organization: userwidgets.Organization["id"]
+	organization: userwidgets.Organization["name"]
 	dateRange: isoly.DateRange
 }
 

@@ -79,7 +79,7 @@ export namespace Receipt {
 		}
 		return Array.from(list(roots))
 	}
-	// maybe expand on this to shorten purchase validate
+
 	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
 		return receipt.total.every(total => Total.validate(total, currency))
 	}

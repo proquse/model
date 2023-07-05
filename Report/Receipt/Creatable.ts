@@ -3,7 +3,7 @@ import type { CostCenter } from "../../CostCenter"
 import { Identifier } from "../../CostCenter/Identifier"
 
 export interface Creatable {
-	costCenters: CostCenter["id"][]
+	costCenters: CostCenter.Identifier[]
 }
 
 export namespace Creatable {

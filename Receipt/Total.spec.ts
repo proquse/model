@@ -10,4 +10,13 @@ describe("Receipt.Total", () => {
 		expect(issuefab.Receipt.Total.is((({ net, ...total }) => total)(total))).toEqual(false)
 		expect(issuefab.Receipt.Total.is((({ vat, ...total }) => total)(total))).toEqual(false)
 	})
+
+	it("spent", () => {
+		const total: issuefab.Receipt.Total = {
+			net: { value: 10, currency: "EUR" },
+			vat: { value: 25, currency: "EUR" },
+		}
+
+		expect(issuefab.Receipt.Total.spent(total, total.net.currency)).toEqual(35)
+	})
 })

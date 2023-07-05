@@ -1,6 +1,4 @@
 import { isly } from "isly"
-// import { Delegation } from "../Delegation"
-// import { Purchase } from "../Purchase"
 import { Creatable as TransactionCreatable } from "./Creatable"
 import { Link as TransactionLink } from "./Link"
 
