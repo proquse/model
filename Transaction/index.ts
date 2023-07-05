@@ -29,9 +29,12 @@ export namespace Transaction {
 			receiptId: transaction.receiptId,
 		}
 	}
+	//Add comment to create commit
 	// function findInner<T, S>(elements: T[], finder: (element: T) => S | undefined): S | undefined {
 	// 	let result: S | undefined
 	// 	elements.find(single => (result = finder(single)))
+
+	//
 	// 	return result
 	// }
 	// export function find(
