@@ -4,18 +4,20 @@ import { isly } from "isly"
 export type Permissions = userwidgets.User.Permissions<Permissions.Issuefab>
 export namespace Permissions {
 	export type Issuefab = {
-		delegation?: { create?: true; read?: true; edit?: true; view?: true }
-		purchase?: { create?: true; read?: true; edit?: true; view?: true }
-		costCenter?: {
-			root?: { create?: true; read?: true; edit?: true; view?: true }
-			child?: { create?: true; read?: true; edit?: true; view?: true }
-		}
+		delegation?: { create?: true; read?: true; edit?: true; view?: true } | true
+		purchase?: { create?: true; read?: true; edit?: true; view?: true } | true
+		costCenter?:
+			| {
+					root?: { create?: true; read?: true; edit?: true; view?: true } | true
+					child?: { create?: true; read?: true; edit?: true; view?: true } | true
+			  }
+			| true
 		reports?: true
-		payment?: { expense?: true; prepaid?: true; card?: true }
+		payment?: { expense?: true; prepaid?: true; card?: true } | true
 		banking?: true
 	}
 	export namespace Issuefab {
-		export const type: isly.Type<Permissions> = isly.object<Permissions>({
+		export const type = isly.object<Permissions>({
 			delegation: isly
 				.object({
 					create: isly.boolean(true).optional(),

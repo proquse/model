@@ -7,6 +7,9 @@ export type Roles = keyof typeof Roles.record
 export namespace Roles {
 	export type Permissions = RolesPermissions
 	export const Permissions = RolesPermissions
+	export namespace Permissions {
+		export type Issuefab = RolesPermissions.Issuefab
+	}
 	export const type = isly.union<Roles, "admin", "financialController", "user">(
 		isly.string("admin"),
 		isly.string("financialController"),
