@@ -69,7 +69,6 @@ describe("Financial Controller", () => {
 		expect(issuefab.Roles.satisfies("user", key.permissions, "")).toEqual(true)
 		key.permissions = {
 			"*": {
-				//org: true, // problematic
 				org: { view: true, edit: true, create: true },
 				user: { invite: true, view: true, admin: true },
 				delegation: { create: true, read: true, edit: true, view: true },

@@ -19,7 +19,7 @@ export namespace Roles {
 	export const flaw = type.flaw
 	export const record = {
 		admin: [...Permissions.flags],
-		financialController: [...Permissions.Issuefab.flags, ...userwidgets.User.Permissions.Organization.flags], //this might also assign app level permission?
+		financialController: [...Permissions.Issuefab.flags, ...userwidgets.User.Permissions.Organization.flags],
 		user: ["user.view", "user.invite", "payment"],
 	}
 	export const roles = Object.keys(record)
