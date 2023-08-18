@@ -4,14 +4,13 @@
 		"module": "es2020",
 		"lib": [
 			"es2021",
-			"dom",
-			"DOM.Iterable"
+			"WebWorker"
 		],
 		"allowJs": true,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"noImplicitAny": true,
-		"removeComments": true,
+		"removeComments": false,
 		"preserveConstEnums": true,
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitThis": true,
