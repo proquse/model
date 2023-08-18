@@ -70,8 +70,10 @@ describe("Key", () => {
 	}
 	it("is", () => {
 		expect(issuefab.Key.is(key)).toEqual(true)
+		expect(issuefab.Key.is((({ issuer, ...key }) => key)(key))).toEqual(false)
 		expect(issuefab.Key.Creatable.type.get(key)).not.toEqual(undefined)
 		expect(issuefab.Key.type.get(key)).toEqual(key)
+		expect(issuefab.Key.type.get((({ issuer, ...key }) => key)(key))).toEqual(undefined)
 	})
 	it("signing and verifying", async () => {
 		const issuer = userwidgets.User.Key.Issuer.create("userwidgets", "issuefab", publicKey, privateKey)
