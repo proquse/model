@@ -1,3 +1,4 @@
+import { isoly } from "isoly"
 import { issuefab } from "../index"
 
 describe("Amount", () => {
@@ -84,5 +85,39 @@ describe("Amount", () => {
 		expect(issuefab.Cadence.allocated(month, "2024-01-01")).toEqual(110)
 		expect(issuefab.Cadence.allocated(week, "2024-01-01")).toEqual(450)
 		expect(issuefab.Cadence.allocated(single, "2024-01-01")).toEqual(10)
+	})
+	it("sustainable", () => {
+		const parent: issuefab.Cadence = {
+			created: "2023-02-01",
+			currency: "EUR",
+			interval: "single",
+			value: 130,
+		}
+		const children: issuefab.Cadence[] = [
+			{
+				created: "2023-02-05",
+				currency: "EUR",
+				interval: "week",
+				value: 10,
+			},
+			{
+				created: "2023-02-13",
+				currency: "EUR",
+				interval: "week",
+				value: 5,
+			},
+		]
+		// const end = isoly.Date.next(parent.created, 18 * 7)
+		// const payday = isoly.Date.firstOfWeek(end)
+		// const prePayday = isoly.Date.next(payday, -1)
+		// const result = issuefab.Cadence.sustainable(parent, children, prePayday)
+		const end = "2023-03-01"
+		const maxDays = issuefab.Cadence.sustainable(parent, children, end)
+		const maxDate = isoly.Date.next(parent.created, maxDays)
+		const childCost = children.map(child => issuefab.Cadence.allocated(child, isoly.Date.next(maxDate, -1)))
+		const used = childCost.reduce((result, next) => result + next, 0)
+
+		console.log(used)
+		console.log(maxDays)
 	})
 })
