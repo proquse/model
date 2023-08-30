@@ -20,6 +20,12 @@ describe("Amount", () => {
 		currency: "EUR",
 		created: "2023-03-04",
 	}
+	const day: issuefab.Cadence = {
+		interval: "day",
+		value: 10,
+		currency: "EUR",
+		created: "2023-03-04",
+	}
 	const single: issuefab.Cadence = {
 		interval: "single",
 		value: 10,
@@ -85,38 +91,54 @@ describe("Amount", () => {
 		expect(issuefab.Cadence.allocated(month, "2024-01-01")).toEqual(110)
 		expect(issuefab.Cadence.allocated(week, "2024-01-01")).toEqual(450)
 		expect(issuefab.Cadence.allocated(single, "2024-01-01")).toEqual(10)
+		// days
+		expect(issuefab.Cadence.allocated(day, "2023-03-04")).toEqual(10)
+		expect(issuefab.Cadence.allocated(day, "2023-03-05")).toEqual(20)
+		expect(issuefab.Cadence.allocated(day, "2023-03-06")).toEqual(30)
+		expect(issuefab.Cadence.allocated(day, "2023-03-06", { cap: 20 })).toEqual(20)
 	})
 	it("sustainable", () => {
 		const parent: issuefab.Cadence = {
-			created: "2023-02-01",
+			created: "2023-01-01",
 			currency: "EUR",
 			interval: "single",
-			value: 130,
+			value: 100_000,
 		}
 		const children: issuefab.Cadence[] = [
 			{
 				created: "2023-02-05",
 				currency: "EUR",
 				interval: "week",
-				value: 10,
+				value: 3,
 			},
 			{
 				created: "2023-02-13",
 				currency: "EUR",
-				interval: "week",
-				value: 5,
+				interval: "day",
+				value: 3,
 			},
 		]
 		// const end = isoly.Date.next(parent.created, 18 * 7)
 		// const payday = isoly.Date.firstOfWeek(end)
 		// const prePayday = isoly.Date.next(payday, -1)
 		// const result = issuefab.Cadence.sustainable(parent, children, prePayday)
-		const end = "2023-03-01"
+		const end = "2024-01-01"
+		const approxStart = performance.now()
+		const approximateMaxDays = issuefab.Cadence.approximateSustainable(parent, children, end)
+		const approxEnd = performance.now()
+		const approxDuration = approxEnd - approxStart
+		console.log("approximation:", approximateMaxDays, "after:", approxDuration)
+		const maxStart = performance.now()
 		const maxDays = issuefab.Cadence.sustainable(parent, children, end)
+		const maxEnd = performance.now()
+		const maxDaysDuration = maxEnd - maxStart
 		const maxDate = isoly.Date.next(parent.created, maxDays)
+		console.log("real:", maxDaysDuration, "after:", maxDaysDuration)
+
 		const childCost = children.map(child => issuefab.Cadence.allocated(child, isoly.Date.next(maxDate, -1)))
 		const used = childCost.reduce((result, next) => result + next, 0)
 
+		console.log(approximateMaxDays)
 		console.log(used)
 		console.log(maxDays)
 	})

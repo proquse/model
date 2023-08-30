@@ -15,25 +15,33 @@ export namespace Cadence {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function allocated(cadence: Cadence, date: isoly.Date): number {
+	function dayDiff(first: isoly.Date | isoly.DateTime, other: isoly.Date | isoly.DateTime): number {
+		return Math.trunc((new Date(first).getTime() - new Date(other).getTime()) / 1_000 / 3_600 / 24)
+	}
+	export function allocated(cadence: Cadence, date: isoly.Date, options?: { cap?: number }): number {
 		let result = 0
 		if (cadence.created <= date) {
-			if (cadence.interval == "year")
-				for (let d = isoly.Date.firstOfYear(cadence.created); d <= date; d = isoly.Date.nextYear(d))
-					result += cadence.value
-			else if (cadence.interval == "month")
-				for (let d = isoly.Date.firstOfMonth(cadence.created); d <= date; d = isoly.Date.nextMonth(d))
-					result += cadence.value
-			else if (cadence.interval == "week") {
-				for (let d = isoly.Date.firstOfWeek(cadence.created); d <= date; d = isoly.Date.next(d, 7))
-					result += cadence.value
-			} else if (cadence.interval == "day") {
-				for (let d = cadence.created; d <= date; d = isoly.Date.next(d, 1))
-					result += cadence.value
-			} else
+			if (cadence.interval == "year") {
+				const initial = isoly.Date.firstOfYear(cadence.created)
+				result = Math.max(0, (isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * cadence.value + cadence.value)
+			} else if (cadence.interval == "month") {
+				const initial = isoly.Date.firstOfMonth(cadence.created)
+				result = Math.max(
+					0,
+					((isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * 12 +
+						(isoly.Date.getMonth(date) - isoly.Date.getMonth(initial))) *
+						cadence.value +
+						cadence.value
+				)
+			} else if (cadence.interval == "week") {
+				const initial = isoly.Date.firstOfWeek(cadence.created)
+				result = Math.max(0, Math.trunc(dayDiff(date, initial) / 7) * cadence.value + cadence.value)
+			} else if (cadence.interval == "day")
+				result = Math.max(0, dayDiff(date, cadence.created) * cadence.value + cadence.value)
+			else
 				result = cadence.value
 		}
-		return result
+		return options?.cap == undefined ? result : Math.min(options.cap, result)
 	}
 	function partition<T>(array: T[], filter: (item: T) => boolean): [T[], T[]] {
 		const pass: T[] = []
@@ -41,15 +49,50 @@ export namespace Cadence {
 		array.forEach(item => (filter(item) ? pass.push(item) : fail.push(item)))
 		return [pass, fail]
 	}
-	export function sustainable(self: Cadence, children: Cadence[], date: isoly.Date, options?: { cap?: number }) {
+	export function sustainable(
+		self: Cadence,
+		children: Cadence[],
+		date: isoly.Date,
+		options?: { cap?: number; approximation?: number }
+	): number {
+		const [cadences, singles] = partition(children, child => child.interval != "single")
+		const cap =
+			Math.max(allocated(self, date), options?.cap ?? 0) -
+			singles.reduce((result, cadence) => result + cadence.value, 0)
+
+		let days = 0
+		for (
+			let d = self.created;
+			cadences.reduce((r, c) => r + allocated(c, d, { cap }), 0) <= cap;
+			d = d = isoly.Date.next(d, 1)
+		)
+			days += 1
+		// const approximation = approximateSustainable(self, children, date, { cap })
+		// const approximatedDate = isoly.Date.next(self.created, approximation)
+		// const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximatedDate, { cap }), 0)
+		// const direction = childCost <= cap ? 1 : -1
+
+		// let days = 0
+		// for (
+		// 	let d = approximatedDate;
+		// 	cadences.reduce((r, c) => r + allocated(c, d, { cap }) * direction, 0) <= cap;
+		// 	d = isoly.Date.next(d, 1)
+		// )
+		// 	days += direction
+		return days
+	}
+	export function approximateSustainable(
+		self: Cadence,
+		children: Cadence[],
+		date: isoly.Date,
+		options?: { cap?: number }
+	) {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
 		const y =
-			Math.max(allocated(self, date), options?.cap ?? 0) - // 140
-			singles.reduce((result, cadence) => result + cadence.value, 0) // 140
+			Math.max(allocated(self, date), options?.cap ?? 0) -
+			singles.reduce((result, cadence) => result + cadence.value, 0)
 		const costPerDayPerCadence = cadences.map(cadence => {
 			const days = Math.abs((new Date(date).getTime() - new Date(cadence.created).getTime()) / 1000 / 3600 / 24) + 1
-			// const hours = isoly.DateTime.epoch(date, "hours") - isoly.DateTime.epoch(cadence.created, "hours")
-			// const days = Math.trunc(Math.abs(isoly.TimeSpan.toHours(span)) / 24) + 1
 			const allocated = Cadence.allocated(cadence, date)
 			return isoly.Currency.divide(cadence.currency, allocated, days)
 		})
@@ -59,7 +102,6 @@ export namespace Cadence {
 				const t = Math.abs(
 					(new Date(self.created).getTime() - new Date(cadence.created).getTime()) / 1_000 / 3_600 / 24
 				)
-				// const t = Math.trunc(Math.abs(isoly.TimeSpan.toHours(isoly.Date.span(self.created, cadence.created)) / 24))
 				const c = costPerDayPerCadence[index]
 				return result + c * t
 			}, 0)

@@ -77,7 +77,7 @@
 		"cryptly": "^3.0.4",
 		"flagly": "^0.1.13",
 		"isly": "^0.1.10",
-		"isoly": "^2.0.21",
+		"isoly": "^2.0.25",
 		"web-file-polyfill": "^1.0.4"
 	},
 	"overrides": {
