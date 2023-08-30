@@ -60,25 +60,25 @@ export namespace Cadence {
 			Math.max(allocated(self, date), options?.cap ?? 0) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 
-		let days = 0
-		for (
-			let d = self.created;
-			cadences.reduce((r, c) => r + allocated(c, d, { cap }), 0) <= cap;
-			d = d = isoly.Date.next(d, 1)
-		)
-			days += 1
-		// const approximation = approximateSustainable(self, children, date, { cap })
-		// const approximatedDate = isoly.Date.next(self.created, approximation)
-		// const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximatedDate, { cap }), 0)
-		// const direction = childCost <= cap ? 1 : -1
-
 		// let days = 0
 		// for (
-		// 	let d = approximatedDate;
-		// 	cadences.reduce((r, c) => r + allocated(c, d, { cap }) * direction, 0) <= cap;
-		// 	d = isoly.Date.next(d, 1)
+		// 	let d = self.created;
+		// 	cadences.reduce((r, c) => r + allocated(c, d, { cap }), 0) <= cap;
+		// 	d = d = isoly.Date.next(d, 1)
 		// )
-		// 	days += direction
+		// 	days += 1
+		const approximation = approximateSustainable(self, children, date, { cap })
+		const approximatedDate = isoly.Date.next(self.created, approximation)
+		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximatedDate, { cap }), 0)
+		const direction = childCost <= cap ? 1 : -1
+
+		let days = approximation
+		for (
+			let d = approximatedDate;
+			cadences.reduce((r, c) => r + allocated(c, d, { cap }) * direction, 0) <= cap;
+			d = isoly.Date.next(d, 1)
+		)
+			days += direction
 		return days
 	}
 	export function approximateSustainable(
