@@ -97,7 +97,7 @@ export namespace Cadence {
 					break
 			}
 		else
-			for (days = approximation; days > 0; days--) {
+			for (days = approximation; days > -1; days--) {
 				const next = isoly.Date.next(self.created, days)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
 				if (sum <= cap)

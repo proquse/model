@@ -99,13 +99,20 @@ describe("Amount", () => {
 		expect(issuefab.Cadence.allocated(day, "2023-03-06", { cap: 20 })).toEqual(20)
 	})
 	it("sustainable", () => {
-		let parent: issuefab.Cadence = {
+		let parent: issuefab.Cadence
+		let children: issuefab.Cadence[]
+		let end: isoly.Date
+		let date: isoly.Date
+		let used: number
+
+		// all used
+		parent = {
 			created: "2023-01-01",
 			currency: "EUR",
 			interval: "single",
 			value: 200,
 		}
-		let children: issuefab.Cadence[] = [
+		children = [
 			{
 				created: "2023-01-01",
 				currency: "EUR",
@@ -115,7 +122,8 @@ describe("Amount", () => {
 		]
 		expect(issuefab.Cadence.sustainable(parent, children, "2024-01-01")).toEqual(199)
 
-		let end = "2023-02-01"
+		// calculating the end date
+		end = "2023-02-01"
 		parent = {
 			created: "2023-01-01",
 			currency: "EUR",
@@ -132,6 +140,7 @@ describe("Amount", () => {
 		]
 		expect(isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))).toEqual(end)
 
+		// slightly before the end
 		parent = {
 			created: "2023-01-01",
 			currency: "EUR",
@@ -159,12 +168,78 @@ describe("Amount", () => {
 			},
 		]
 		end = "2025-01-01"
-		const date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
-		const used = children.reduce((result, child) => result + Cadence.allocated(child, date), 0)
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		used = children.reduce((result, child) => result + Cadence.allocated(child, date), 0)
 		expect(date <= end).toEqual(true)
 		expect(parent.created <= date).toEqual(true)
 		expect(used <= issuefab.Cadence.allocated(parent, end)).toEqual(true)
-		console.log()
+
+		// good approximation
+		parent = {
+			created: "2023-01-01",
+			currency: "EUR",
+			interval: "single",
+			value: 140,
+		}
+		children = [
+			{
+				created: "2023-01-05",
+				currency: "EUR",
+				interval: "day",
+				value: 10,
+			},
+			{
+				created: "2023-01-13",
+				currency: "EUR",
+				interval: "day",
+				value: 5,
+			},
+		]
+		end = "2024-01-01"
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		used = children.reduce((result, child) => result + Cadence.allocated(child, date), 0)
+		expect(date <= end).toEqual(true)
+		expect(parent.created <= date).toEqual(true)
+		expect(used == 140).toEqual(true)
+
+		// sustainable only day 0
+		parent = {
+			created: "2023-01-01",
+			currency: "EUR",
+			interval: "single",
+			value: 140,
+		}
+		children = [
+			{
+				created: "2023-01-01",
+				currency: "EUR",
+				interval: "day",
+				value: 140,
+			},
+		]
+		end = "2024-01-01"
+		// let date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		// expect(date).toEqual(parent.created)
+
+		// unsustainable from day 0
+		parent = {
+			created: "2023-01-01",
+			currency: "EUR",
+			interval: "single",
+			value: 140,
+		}
+		children = [
+			{
+				created: "2023-01-01",
+				currency: "EUR",
+				interval: "week",
+				value: 200,
+			},
+		]
+		end = "2024-01-01"
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		expect(date).toEqual("2022-12-31")
+
 		// console.log("calculation speed", end - start)
 		// expect(
 		// 	issuefab.Cadence.sustainable(
