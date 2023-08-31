@@ -99,25 +99,49 @@ describe("Amount", () => {
 	})
 	it("sustainable", () => {
 		// const start = performance.now()
-		// expect(
-		// 	issuefab.Cadence.sustainable(
-		// 		{
-		// 			created: "2023-01-01",
-		// 			currency: "EUR",
-		// 			interval: "single",
-		// 			value: 205,
-		// 		},
-		// 		[
-		// 			{
-		// 				created: "2023-02-05",
-		// 				currency: "EUR",
-		// 				interval: "week",
-		// 				value: 10,
-		// 			},
-		// 		],
-		// 		"2024-01-01"
-		// 	)
-		// ).toBeTruthy()
+		expect(
+			issuefab.Cadence.sustainable(
+				{
+					created: "2023-01-01",
+					currency: "EUR",
+					interval: "single",
+					value: 200,
+				},
+				[
+					{
+						created: "2023-01-01",
+						currency: "EUR",
+						interval: "day",
+						value: 1,
+					},
+				],
+				"2024-01-01"
+			)
+		).toEqual(199)
+		const created = "2023-01-01"
+		const max = "2023-02-01"
+		expect(
+			isoly.Date.next(
+				created,
+				issuefab.Cadence.sustainable(
+					{
+						created: created,
+						currency: "EUR",
+						interval: "single",
+						value: 200,
+					},
+					[
+						{
+							created: "2023-01-01",
+							currency: "EUR",
+							interval: "day",
+							value: 1,
+						},
+					],
+					max
+				)
+			)
+		).toEqual(max)
 		// const end = performance.now()
 		// console.log("calculation speed", end - start)
 		// expect(

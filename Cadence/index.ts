@@ -105,7 +105,6 @@ export namespace Cadence {
 			}
 		return days
 	}
-
 	export function getDate(cadence: Cadence) {
 		let result: isoly.Date
 		switch (cadence.interval) {
