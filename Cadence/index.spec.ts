@@ -218,8 +218,8 @@ describe("Amount", () => {
 			},
 		]
 		end = "2024-01-01"
-		// let date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
-		// expect(date).toEqual(parent.created)
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		expect(date).toEqual(parent.created)
 
 		// unsustainable from day 0
 		parent = {
@@ -240,62 +240,48 @@ describe("Amount", () => {
 		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
 		expect(date).toEqual("2022-12-31")
 
-		// console.log("calculation speed", end - start)
-		// expect(
-		// 	issuefab.Cadence.sustainable(
-		// 		{
-		// 			created: "2023-01-01",
-		// 			currency: "EUR",
-		// 			interval: "single",
-		// 			value: 100_000,
-		// 		},
-		// 		[
-		// 			{
-		// 				created: "2023-02-05",
-		// 				currency: "EUR",
-		// 				interval: "week",
-		// 				value: 10,
-		// 			},
-		// 			{
-		// 				created: "2023-02-13",
-		// 				currency: "EUR",
-		// 				interval: "day",
-		// 				value: 5,
-		// 			},
-		// 		],
-		// 		"2024-01-01"
-		// 	)
-		// ).toEqual(undefined)
+		// parent growing faster than children
+		parent = {
+			created: "2023-01-01",
+			currency: "EUR",
+			interval: "week",
+			value: 140,
+		}
+		children = [
+			{
+				created: "2023-01-01",
+				currency: "EUR",
+				interval: "week",
+				value: 100,
+			},
+		]
+		end = "2024-01-01"
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		expect(date).toEqual(end)
 
-		// const parent: issuefab.Cadence = {
-		// 	created: "2023-02-01",
-		// 	currency: "EUR",
-		// 	interval: "single",
-		// 	value: 140,
-		// }
-		// const children: issuefab.Cadence[] = [
-		// 	{
-		// 		created: "2023-02-05",
-		// 		currency: "EUR",
-		// 		interval: "week",
-		// 		value: 10,
-		// 	},
-		// 	// {
-		// 	// 	created: "2023-02-13",
-		// 	// 	currency: "EUR",
-		// 	// 	interval: "day",
-		// 	// 	value: 5,
-		// 	// },
-		// ]
-		// // const end = "2024-01-01"
-		// // const approximateMaxDays = issuefab.Cadence.approximate(parent, children, end)
-		// const maxDays = issuefab.Cadence.sustainable(parent, children, end)
-		// const maxDate = isoly.Date.next(parent.created, maxDays)
-
-		// const childCost = children.map(child => issuefab.Cadence.allocated(child, isoly.Date.next(maxDate, 0)))
-		// const used = childCost.reduce((result, next) => result + next, 0)
-
-		// console.log(approximateMaxDays)
-		// console.log(used)
+		// parent growing slower than children
+		parent = {
+			created: "2023-01-01",
+			currency: "EUR",
+			interval: "month",
+			value: 400,
+		}
+		children = [
+			{
+				created: "2023-02-01",
+				currency: "EUR",
+				interval: "month",
+				value: 400,
+			},
+			{
+				created: "2023-03-01",
+				currency: "EUR",
+				interval: "month",
+				value: 100,
+			},
+		]
+		end = "2024-01-01"
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		expect(date).toEqual("2023-06-30")
 	})
 })

@@ -83,15 +83,18 @@ export namespace Cadence {
 
 		const max = dayDiff(date, self.created)
 		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { cap })))
+		const approximationDate = isoly.Date.next(self.created, approximation)
+		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
+		const approximateCap =
+			Math.min(allocated(self, approximationDate), cap) - singles.reduce((result, cadence) => result + cadence.value, 0)
 
-		const childCost = children.reduce(
-			(result, cadence) => result + allocated(cadence, isoly.Date.next(self.created, approximation)),
-			0
-		)
 		let days: number
-		if (childCost <= cap)
+		if (childCost <= approximateCap)
 			for (days = approximation; days < max; days++) {
 				const next = isoly.Date.next(self.created, days)
+				const cap =
+					Math.min(allocated(self, next), approximateCap) -
+					singles.reduce((result, cadence) => result + cadence.value, 0)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
 				if (sum >= cap)
 					break
@@ -99,6 +102,9 @@ export namespace Cadence {
 		else
 			for (days = approximation; days > -1; days--) {
 				const next = isoly.Date.next(self.created, days)
+				const cap =
+					Math.min(allocated(self, next), approximateCap) -
+					singles.reduce((result, cadence) => result + cadence.value, 0)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
 				if (sum <= cap)
 					break
