@@ -79,7 +79,7 @@ export namespace Cadence {
 		{ cap = undefined }: { cap?: number } = {}
 	): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
-		speedupscap = Math.max(allocated(self, date), cap ?? 0) - singles.reduce((result, cadence) => result + cadence.value, 0)
+		cap = Math.max(allocated(self, date), cap ?? 0) - singles.reduce((result, cadence) => result + cadence.value, 0)
 
 		const max = dayDiff(date, self.created)
 		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { cap })))
