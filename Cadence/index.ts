@@ -49,44 +49,7 @@ export namespace Cadence {
 		array.forEach(item => (filter(item) ? pass.push(item) : fail.push(item)))
 		return [pass, fail]
 	}
-	export function sustainable(
-		self: Cadence,
-		children: Cadence[],
-		date: isoly.Date,
-		options?: { cap?: number; approximation?: number }
-	): number {
-		const [cadences, singles] = partition(children, child => child.interval != "single")
-		const cap =
-			Math.max(allocated(self, date), options?.cap ?? 0) -
-			singles.reduce((result, cadence) => result + cadence.value, 0)
-
-		// let days = 0
-		// for (
-		// 	let d = self.created;
-		// 	cadences.reduce((r, c) => r + allocated(c, d, { cap }), 0) <= cap;
-		// 	d = d = isoly.Date.next(d, 1)
-		// )
-		// 	days += 1
-		const approximation = approximateSustainable(self, children, date, { cap })
-		const approximatedDate = isoly.Date.next(self.created, approximation)
-		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximatedDate, { cap }), 0)
-		const direction = childCost <= cap ? 1 : -1
-
-		let days = approximation
-		for (
-			let d = approximatedDate;
-			cadences.reduce((r, c) => r + allocated(c, d, { cap }) * direction, 0) <= cap;
-			d = isoly.Date.next(d, 1)
-		)
-			days += direction
-		return days
-	}
-	export function approximateSustainable(
-		self: Cadence,
-		children: Cadence[],
-		date: isoly.Date,
-		options?: { cap?: number }
-	) {
+	function approximate(self: Cadence, children: Cadence[], date: isoly.Date, options?: { cap?: number }) {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
 		const y =
 			Math.max(allocated(self, date), options?.cap ?? 0) -
@@ -109,6 +72,40 @@ export namespace Cadence {
 		const result = numerator / denominator
 		return Math.trunc(result)
 	}
+	export function sustainable(
+		self: Cadence,
+		children: Cadence[],
+		date: isoly.Date,
+		{ cap = undefined }: { cap?: number } = {}
+	): number {
+		const [cadences, singles] = partition(children, child => child.interval != "single")
+		speedupscap = Math.max(allocated(self, date), cap ?? 0) - singles.reduce((result, cadence) => result + cadence.value, 0)
+
+		const max = dayDiff(date, self.created)
+		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { cap })))
+
+		const childCost = children.reduce(
+			(result, cadence) => result + allocated(cadence, isoly.Date.next(self.created, approximation)),
+			0
+		)
+		let days: number
+		if (childCost <= cap)
+			for (days = approximation; days < max; days++) {
+				const next = isoly.Date.next(self.created, days)
+				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
+				if (sum >= cap)
+					break
+			}
+		else
+			for (days = approximation; days > 0; days--) {
+				const next = isoly.Date.next(self.created, days)
+				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
+				if (sum <= cap)
+					break
+			}
+		return days
+	}
+
 	export function getDate(cadence: Cadence) {
 		let result: isoly.Date
 		switch (cadence.interval) {
