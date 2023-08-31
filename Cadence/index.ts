@@ -72,6 +72,15 @@ export namespace Cadence {
 		const result = numerator / denominator
 		return Math.trunc(result)
 	}
+	/**
+	 * Potential optimizations:
+	 * 1: dynamically change the next function
+	 * and use it for iteration
+	 * 2: improve the approximation by changing "y"
+	 * in the formula to be any line instead of constant
+	 * 3: steps in bigger increments and go backwards if overshooting
+	 * 4: frontend can put the work in a background worker
+	 */
 	export function sustainable(
 		self: Cadence,
 		children: Cadence[],
@@ -88,6 +97,8 @@ export namespace Cadence {
 		const approximateCap =
 			Math.min(allocated(self, approximationDate), cap) - singles.reduce((result, cadence) => result + cadence.value, 0)
 
+		//
+		//
 		let days: number
 		if (childCost <= approximateCap)
 			for (days = approximation; days < max; days++) {

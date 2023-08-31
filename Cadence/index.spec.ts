@@ -283,5 +283,32 @@ describe("Amount", () => {
 		end = "2024-01-01"
 		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
 		expect(date).toEqual("2023-06-30")
+
+		// yearly growth over long time
+		// slowest test so far ~8-10ms
+		// this calculation is unrealistic to exist in the application
+		parent = {
+			created: "2023-01-01",
+			currency: "EUR",
+			interval: "year",
+			value: 400,
+		}
+		children = [
+			{
+				created: "2025-02-01",
+				currency: "EUR",
+				interval: "month",
+				value: 200,
+			},
+			{
+				created: "2023-03-01",
+				currency: "EUR",
+				interval: "year",
+				value: 100,
+			},
+		]
+		end = "2034-01-01"
+		date = isoly.Date.next(parent.created, issuefab.Cadence.sustainable(parent, children, end))
+		expect(date).toEqual("2023-06-30")
 	})
 })
