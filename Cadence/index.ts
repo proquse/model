@@ -15,9 +15,6 @@ export namespace Cadence {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	function dayDiff(first: isoly.Date | isoly.DateTime, other: isoly.Date | isoly.DateTime): number {
-		return Math.trunc((new Date(first).getTime() - new Date(other).getTime()) / 1_000 / 3_600 / 24)
-	}
 	export function allocated(cadence: Cadence, date: isoly.Date, options?: { cap?: number }): number {
 		let result = 0
 		if (cadence.created <= date) {
@@ -35,9 +32,9 @@ export namespace Cadence {
 				)
 			} else if (cadence.interval == "week") {
 				const initial = isoly.Date.firstOfWeek(cadence.created)
-				result = Math.max(0, Math.trunc(dayDiff(date, initial) / 7) * cadence.value + cadence.value)
+				result = Math.max(0, Math.trunc(duration(date, initial) / 7) * cadence.value + cadence.value)
 			} else if (cadence.interval == "day")
-				result = Math.max(0, dayDiff(date, cadence.created) * cadence.value + cadence.value)
+				result = Math.max(0, duration(date, cadence.created) * cadence.value + cadence.value)
 			else
 				result = cadence.value
 		}
@@ -49,26 +46,27 @@ export namespace Cadence {
 		array.forEach(item => (filter(item) ? pass.push(item) : fail.push(item)))
 		return [pass, fail]
 	}
-	function approximate(self: Cadence, children: Cadence[], date: isoly.Date, options?: { cap?: number }) {
+	/**
+	 * formula described here https://github.com/issuefab/app/issues/232
+	 */
+	function approximate(self: Cadence, children: Cadence[], date: isoly.Date, options?: { cap?: number }): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
-		const y =
+		const funds =
 			Math.max(allocated(self, date), options?.cap ?? 0) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
-		const costPerDayPerCadence = cadences.map(cadence => {
+		const rates = cadences.map(cadence => {
 			const days = Math.abs((new Date(date).getTime() - new Date(cadence.created).getTime()) / 1000 / 3600 / 24) + 1
 			const allocated = Cadence.allocated(cadence, date)
 			return isoly.Currency.divide(cadence.currency, allocated, days)
 		})
 		const numerator =
-			y +
+			funds +
 			cadences.reduce((result, cadence, index) => {
-				const t = Math.abs(
-					(new Date(self.created).getTime() - new Date(cadence.created).getTime()) / 1_000 / 3_600 / 24
-				)
-				const c = costPerDayPerCadence[index]
-				return result + c * t
+				const time = Math.abs(duration(cadence.created, self.created))
+				const rate = rates[index]
+				return result + rate * time
 			}, 0)
-		const denominator = costPerDayPerCadence.reduce((result, cost) => result + cost, 0)
+		const denominator = rates.reduce((result, cost) => result + cost, 0)
 		const result = numerator / denominator
 		return Math.trunc(result)
 	}
@@ -85,20 +83,20 @@ export namespace Cadence {
 		self: Cadence,
 		children: Cadence[],
 		date: isoly.Date,
-		{ cap = undefined }: { cap?: number } = {}
+		options?: { cap?: number }
 	): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
-		cap = Math.max(allocated(self, date), cap ?? 0) - singles.reduce((result, cadence) => result + cadence.value, 0)
+		const cap =
+			Math.max(allocated(self, date), options?.cap ?? 0) -
+			singles.reduce((result, cadence) => result + cadence.value, 0)
 
-		const max = dayDiff(date, self.created)
+		const max = duration(date, self.created)
 		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { cap })))
 		const approximationDate = isoly.Date.next(self.created, approximation)
 		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
 		const approximateCap =
 			Math.min(allocated(self, approximationDate), cap) - singles.reduce((result, cadence) => result + cadence.value, 0)
 
-		//
-		//
 		let days: number
 		if (childCost <= approximateCap)
 			for (days = approximation; days < max; days++) {
@@ -121,6 +119,9 @@ export namespace Cadence {
 					break
 			}
 		return days
+	}
+	function duration(first: isoly.Date | isoly.DateTime, other: isoly.Date | isoly.DateTime): number {
+		return Math.trunc((new Date(first).getTime() - new Date(other).getTime()) / 1_000 / 3_600 / 24)
 	}
 	export function getDate(cadence: Cadence) {
 		let result: isoly.Date
