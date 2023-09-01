@@ -10,7 +10,13 @@ export namespace Cadence {
 	export const intervals = ["single", "day", "week", "month", "year"] as const
 	export type Interval = typeof intervals[number]
 	export const type = Amount.type.extend<Cadence>({
-		interval: isly.union(isly.string("year"), isly.string("month"), isly.string("week"), isly.string("single")),
+		interval: isly.union<Interval, "single", "day", "week", "month", "year">(
+			isly.string("single"),
+			isly.string("day"),
+			isly.string("week"),
+			isly.string("month"),
+			isly.string("year")
+		),
 		created: isly.fromIs("Date", isoly.Date.is),
 	})
 	export const is = type.is
