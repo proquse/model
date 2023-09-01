@@ -55,7 +55,7 @@ export namespace Cadence {
 			Math.max(allocated(self, date), options?.cap ?? 0) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 		const rates = cadences.map(cadence => {
-			const days = Math.abs((new Date(date).getTime() - new Date(cadence.created).getTime()) / 1000 / 3600 / 24) + 1
+			const days = Math.abs(duration(date, cadence.created)) + 1
 			const allocated = Cadence.allocated(cadence, date)
 			return isoly.Currency.divide(cadence.currency, allocated, days)
 		})
