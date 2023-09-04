@@ -167,7 +167,7 @@ export namespace Delegation {
 				delegation.amount,
 				delegation.delegations.map(d => d.amount).concat(delegation.purchases.map(p => p.payment.limit)),
 				options?.date ?? isoly.Date.now(),
-				{ cap: options?.limit }
+				{ limit: options?.limit }
 			)
 		)
 		const cadence = Cadence.allocated(delegation.amount, date)

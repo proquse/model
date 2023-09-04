@@ -21,7 +21,7 @@ export namespace Cadence {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function allocated(cadence: Cadence, date: isoly.Date, options?: { cap?: number }): number {
+	export function allocated(cadence: Cadence, date: isoly.Date, options?: { limit?: number }): number {
 		let result = 0
 		if (isoly.DateTime.getDate(cadence.created) <= date) {
 			if (cadence.interval == "year") {
@@ -44,7 +44,7 @@ export namespace Cadence {
 			else
 				result = cadence.value
 		}
-		return options?.cap == undefined ? result : Math.min(options.cap, result)
+		return options?.limit == undefined ? result : Math.min(options.limit, result)
 	}
 	function partition<T>(array: T[], filter: (item: T) => boolean): [T[], T[]] {
 		const pass: T[] = []
@@ -55,10 +55,10 @@ export namespace Cadence {
 	/**
 	 * formula described here https://github.com/issuefab/app/issues/232
 	 */
-	function approximate(self: Cadence, children: Cadence[], date: isoly.Date, options?: { cap?: number }): number {
+	function approximate(self: Cadence, children: Cadence[], date: isoly.Date, options?: { limit?: number }): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
 		const funds =
-			Math.max(allocated(self, date), options?.cap ?? 0) -
+			Math.max(allocated(self, date), options?.limit ?? 0) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 		const rates = cadences.map(cadence => {
 			const days = Math.abs(duration(date, cadence.created)) + 1
@@ -89,43 +89,44 @@ export namespace Cadence {
 		self: Cadence,
 		children: Cadence[],
 		date: isoly.Date,
-		options?: { cap?: number }
+		options?: { limit?: number }
 	): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
 		// which one to use?
-		// const t0 = Math.min(...[allocated(self, date)].concat(options?.cap ?? []))
-		// const t1 = options?.cap == undefined ? allocated(self, date) : Math.min(allocated(self, date), options.cap)
-		// const t2 = Math.min(allocated(self, date), options?.cap ?? Number.MAX_SAFE_INTEGER)
-		const cap =
-			Math.min(...[allocated(self, date)].concat(options?.cap ?? [])) -
+		// const t0 = Math.min(...[allocated(self, date)].concat(options?.limit ?? []))
+		// const t1 = options?.limit == undefined ? allocated(self, date) : Math.min(allocated(self, date), options.limit)
+		// const t2 = Math.min(allocated(self, date), options?.limit ?? Number.MAX_SAFE_INTEGER)
+		const limit =
+			Math.min(...[allocated(self, date)].concat(options?.limit ?? [])) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 
 		const max = duration(date, self.created)
-		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { cap })))
+		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { limit })))
 		const approximationDate = isoly.Date.next(self.created, approximation)
 		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
 		const approximateCap =
-			Math.min(allocated(self, approximationDate), cap) - singles.reduce((result, cadence) => result + cadence.value, 0)
+			Math.min(allocated(self, approximationDate), limit) -
+			singles.reduce((result, cadence) => result + cadence.value, 0)
 
 		let days: number
 		if (childCost <= approximateCap)
 			for (days = approximation; days < max; days++) {
 				const next = isoly.Date.next(self.created, days)
-				const cap =
+				const limit =
 					Math.min(allocated(self, next), approximateCap) -
 					singles.reduce((result, cadence) => result + cadence.value, 0)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
-				if (sum >= cap)
+				if (sum >= limit)
 					break
 			}
 		else
 			for (days = approximation; days > -1; days--) {
 				const next = isoly.Date.next(self.created, days)
-				const cap =
+				const limit =
 					Math.min(allocated(self, next), approximateCap) -
 					singles.reduce((result, cadence) => result + cadence.value, 0)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
-				if (sum <= cap)
+				if (sum <= limit)
 					break
 			}
 		return days

@@ -65,7 +65,7 @@ export namespace CostCenter {
 				costCenter.amount,
 				costCenter.costCenters.map(c => c.amount).concat(costCenter.delegations.map(d => d.amount)),
 				options?.date ?? isoly.Date.now(),
-				{ cap: options?.limit }
+				{ limit: options?.limit }
 			)
 		)
 		const cadence = Cadence.allocated(costCenter.amount, date)
