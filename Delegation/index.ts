@@ -159,22 +159,36 @@ export namespace Delegation {
 
 	export function validate(
 		delegation: Delegation,
-		date?: isoly.Date,
-		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
-		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
+		const date = isoly.Date.next(
+			isoly.DateTime.getDate(delegation.created),
+			Cadence.sustainable(
+				delegation.amount,
+				delegation.delegations.map(d => d.amount).concat(delegation.purchases.map(p => p.payment.limit)),
+				options?.date ?? isoly.Date.now(),
+				{ cap: options?.limit }
+			)
+		)
 		const cadence = Cadence.allocated(delegation.amount, date)
 		const balance = Delegation.allocated.balance(delegation, date)
+		const created = isoly.DateTime.getDate(delegation.created)
 		return (
 			cadence > 0 &&
+			(!options?.limit || cadence <= options.limit) &&
 			balance >= 0 &&
+			created <= date &&
+			created <= delegation.amount.created &&
 			(!options?.currency || delegation.amount.currency == options.currency) &&
-			(options?.limit == undefined || cadence <= options.limit) &&
-			delegation.purchases.every(p =>
-				Purchase.validate(p, date, { currency: delegation.amount.currency, spent: options?.spent })
+			delegation.delegations.every(
+				d =>
+					delegation.created <= d.created &&
+					Delegation.validate(d, { date, currency: delegation.amount.currency, spent: options?.spent })
 			) &&
-			delegation.delegations.every(d =>
-				Delegation.validate(d, date, { currency: delegation.amount.currency, spent: options?.spent })
+			delegation.purchases.every(
+				p =>
+					delegation.created <= p.created &&
+					Purchase.validate(p, { date, currency: delegation.amount.currency, spent: options?.spent })
 			)
 		)
 	}

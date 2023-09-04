@@ -125,26 +125,29 @@ export namespace Purchase {
 	}
 	export function validate(
 		purchase: Purchase,
-		date?: isoly.Date,
-		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
-		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
-		const cadence = Cadence.allocated(purchase.payment.limit, date)
+		const date = options?.date ?? isoly.Date.now()
+		const cadence = Cadence.allocated(purchase.payment.limit, date, { cap: options?.limit })
+		const created = isoly.DateTime.getDate(purchase.created)
 		return (
 			cadence > 0 &&
+			(!options?.limit || cadence <= options.limit) &&
+			created <= date &&
+			created <= purchase.payment.limit.created &&
 			(!options?.currency || purchase.payment.limit.currency == options.currency) &&
-			(options?.limit == undefined || cadence <= options.limit) &&
+			purchase.receipts.every(r => Receipt.validate(r, purchase.payment.limit.currency)) &&
 			(!options?.spent ||
-				(purchase.receipts.every(receipt => Receipt.validate(receipt, purchase.payment.limit.currency)) &&
+				Cadence.allocated(purchase.payment.limit, date, { cap: options.limit }) >=
 					purchase.receipts.reduce(
-						(result, receipt) =>
+						(result, r) =>
 							isoly.Currency.add(
 								purchase.payment.limit.currency,
 								result,
-								Receipt.spent(receipt, purchase.payment.limit.currency)
+								Receipt.spent(r, purchase.payment.limit.currency)
 							),
 						0
-					) <= cadence))
+					))
 		)
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })

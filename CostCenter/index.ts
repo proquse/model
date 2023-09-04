@@ -57,22 +57,36 @@ export namespace CostCenter {
 	// validation must chest that all children occurs after created date
 	export function validate(
 		costCenter: CostCenter,
-		date?: isoly.Date,
-		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
-		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
+		const date = isoly.Date.next(
+			isoly.DateTime.getDate(costCenter.created),
+			Cadence.sustainable(
+				costCenter.amount,
+				costCenter.costCenters.map(c => c.amount).concat(costCenter.delegations.map(d => d.amount)),
+				options?.date ?? isoly.Date.now(),
+				{ cap: options?.limit }
+			)
+		)
 		const cadence = Cadence.allocated(costCenter.amount, date)
 		const balance = Delegation.allocated.balance(costCenter, date)
+		const created = isoly.DateTime.getDate(costCenter.created)
 		return (
 			cadence > 0 &&
+			(!options?.limit || cadence <= options.limit) &&
 			balance >= 0 &&
+			created <= date &&
+			created <= costCenter.amount.created &&
 			(!options?.currency || costCenter.amount.currency == options.currency) &&
-			(options?.limit == undefined || cadence <= options.limit) &&
-			costCenter.delegations.every(d =>
-				Delegation.validate(d, date, { currency: costCenter.amount.currency, spent: options?.spent })
+			costCenter.costCenters.every(
+				c =>
+					costCenter.created <= c.created &&
+					CostCenter.validate(c, { date, currency: costCenter.amount.currency, spent: options?.spent })
 			) &&
-			costCenter.costCenters.every(c =>
-				CostCenter.validate(c, date, { currency: costCenter.amount.currency, spent: options?.spent })
+			costCenter.delegations.every(
+				d =>
+					costCenter.created <= d.created &&
+					Delegation.validate(d, { date, currency: costCenter.amount.currency, spent: options?.spent })
 			)
 		)
 	}

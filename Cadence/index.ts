@@ -23,7 +23,7 @@ export namespace Cadence {
 	export const flaw = type.flaw
 	export function allocated(cadence: Cadence, date: isoly.Date, options?: { cap?: number }): number {
 		let result = 0
-		if (cadence.created <= date) {
+		if (isoly.DateTime.getDate(cadence.created) <= date) {
 			if (cadence.interval == "year") {
 				const initial = isoly.Date.firstOfYear(cadence.created)
 				result = Math.max(0, (isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * cadence.value + cadence.value)
@@ -92,8 +92,12 @@ export namespace Cadence {
 		options?: { cap?: number }
 	): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
+		// which one to use?
+		// const t0 = Math.min(...[allocated(self, date)].concat(options?.cap ?? []))
+		// const t1 = options?.cap == undefined ? allocated(self, date) : Math.min(allocated(self, date), options.cap)
+		// const t2 = Math.min(allocated(self, date), options?.cap ?? Number.MAX_SAFE_INTEGER)
 		const cap =
-			Math.max(allocated(self, date), options?.cap ?? 0) -
+			Math.min(...[allocated(self, date)].concat(options?.cap ?? [])) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 
 		const max = duration(date, self.created)
