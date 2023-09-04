@@ -73,8 +73,9 @@ export namespace Cadence {
 				return result + rate * time
 			}, 0)
 		const denominator = rates.reduce((result, cost) => result + cost, 0)
-		const result = numerator / denominator
-		return Math.trunc(result)
+		const result = Math.trunc(numerator / denominator)
+		// test this
+		return !Number.isNaN(result) ? result : Infinity
 	}
 	/**
 	 * Potential optimizations:
