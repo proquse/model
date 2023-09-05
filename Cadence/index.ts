@@ -76,7 +76,6 @@ export namespace Cadence {
 			}, 0)
 		const denominator = rates.reduce((result, cost) => result + cost, 0)
 		const result = Math.trunc(numerator / denominator)
-		// test this
 		return !Number.isNaN(result) ? result : Infinity
 	}
 	/**
