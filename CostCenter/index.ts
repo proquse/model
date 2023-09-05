@@ -60,34 +60,31 @@ export namespace CostCenter {
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
 		const date = options?.date ?? isoly.Date.now()
-		const sustainableDate = isoly.Date.next(
-			isoly.DateTime.getDate(costCenter.created),
+		const allocated = Cadence.allocated(costCenter.amount, date, { limit: options?.limit })
+		const sustainable = isoly.Date.next(
+			costCenter.amount.created,
 			Cadence.sustainable(
 				costCenter.amount,
 				costCenter.costCenters.map(c => c.amount).concat(costCenter.delegations.map(d => d.amount)),
 				date,
-				{ limit: options?.limit }
+				{ limit: allocated }
 			)
 		)
-		const cadence = Cadence.allocated(costCenter.amount, date)
-		const balance = Delegation.allocated.balance(costCenter, date)
-		const created = isoly.DateTime.getDate(costCenter.created)
 		return (
-			cadence > 0 &&
-			(!options?.limit || cadence <= options.limit) &&
-			balance >= 0 &&
-			created <= sustainableDate &&
-			created <= costCenter.amount.created &&
+			allocated > 0 &&
+			(!options?.limit || allocated <= options.limit) &&
+			isoly.DateTime.getDate(costCenter.created) <= costCenter.amount.created &&
+			costCenter.amount.created <= sustainable &&
 			(!options?.currency || costCenter.amount.currency == options.currency) &&
 			costCenter.costCenters.every(
 				c =>
 					costCenter.created <= c.created &&
-					CostCenter.validate(c, { date: sustainableDate, currency: costCenter.amount.currency, spent: options?.spent })
+					CostCenter.validate(c, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
 			) &&
 			costCenter.delegations.every(
 				d =>
 					costCenter.created <= d.created &&
-					Delegation.validate(d, { date: sustainableDate, currency: costCenter.amount.currency, spent: options?.spent })
+					Delegation.validate(d, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
 			)
 		)
 	}

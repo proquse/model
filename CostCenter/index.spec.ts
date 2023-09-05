@@ -250,171 +250,171 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01", spent: true })).toEqual(true)
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 400, currency: "USD" })).toEqual(false)
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 600, currency: "EUR" })).toEqual(false)
-		// issuefab.CostCenter.change([costCenter], {
-		// 	...costCenter.costCenters[0],
-		// 	amount: { interval: "year", value: 700, currency: "USD", created: "2023-01-01" },
-		// })
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
-		// issuefab.CostCenter.change([costCenter], {
-		// 	...costCenter.costCenters[0],
-		// 	amount: { interval: "year", value: 200, currency: "USD", created: "2023-01-01" },
-		// })
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
-		// issuefab.CostCenter.change([costCenter], {
-		// 	...costCenter.costCenters[0],
-		// 	amount: { interval: "year", value: 500, currency: "USD", created: "2023-01-01" },
-		// })
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
-		// issuefab.Delegation.change([costCenter], {
-		// 	...costCenter.costCenters[0].delegations[0],
-		// 	amount: { interval: "year", value: 600, currency: "USD", created: "2023-01-01" },
-		// })
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
-		// issuefab.Delegation.change([costCenter], {
-		// 	...costCenter.costCenters[0].delegations[0],
-		// 	amount: { interval: "year", value: 400, currency: "EUR", created: "2023-01-01" },
-		// })
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
-		// issuefab.Delegation.change([costCenter], {
-		// 	...costCenter.costCenters[0].delegations[0],
-		// 	amount: { interval: "year", value: 200, currency: "USD", created: "2023-01-01" },
-		// })
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01", spent: true })).toEqual(true)
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 400, currency: "USD" })).toEqual(false)
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 600, currency: "EUR" })).toEqual(false)
+		issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			amount: { interval: "year", value: 700, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			amount: { interval: "year", value: 200, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			amount: { interval: "year", value: 500, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
+		issuefab.Delegation.change([costCenter], {
+			...costCenter.costCenters[0].delegations[0],
+			amount: { interval: "year", value: 600, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		issuefab.Delegation.change([costCenter], {
+			...costCenter.costCenters[0].delegations[0],
+			amount: { interval: "year", value: 400, currency: "EUR", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		issuefab.Delegation.change([costCenter], {
+			...costCenter.costCenters[0].delegations[0],
+			amount: { interval: "year", value: 200, currency: "USD", created: "2023-01-01" },
+		})
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
 
-		// // running out of resources early is ok
-		// costCenter = {
-		// 	id: "c1",
-		// 	amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
-		// 	name: "Development",
-		// 	created: "2023-01-01T13:37:42Z",
-		// 	modified: "2024-01-01T13:37:42Z",
-		// 	from: "jessie@example.com",
-		// 	description: "description",
-		// 	delegations: [
-		// 		{
-		// 			id: "d1",
-		// 			amount: { interval: "month", value: 100, currency: "USD", created: "2023-03-01" },
-		// 			costCenter: "Development",
-		// 			created: "2023-01-01T13:37:42Z",
-		// 			modified: "2024-01-01T13:37:42Z",
-		// 			from: "jessie@example.com",
-		// 			purpose: "Software services",
-		// 			to: ["james@example.com"],
-		// 			delegations: [],
-		// 			purchases: [],
-		// 		},
-		// 	],
-		// 	costCenters: [
-		// 		{
-		// 			id: "c2",
-		// 			amount: { interval: "month", value: 400, currency: "USD", created: "2023-02-01" },
-		// 			name: "Development",
-		// 			created: "2023-01-01T13:37:42Z",
-		// 			modified: "2024-01-01T13:37:42Z",
-		// 			from: "jessie@example.com",
-		// 			description: "better description",
-		// 			delegations: [],
-		// 			costCenters: [],
-		// 		},
-		// 	],
-		// }
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-06-01" })).toEqual(true)
-		// expect(
-		// 	isoly.Date.next(
-		// 		isoly.DateTime.getDate(costCenter.created),
-		// 		issuefab.Cadence.sustainable(
-		// 			costCenter.amount,
-		// 			[costCenter.delegations[0].amount, costCenter.costCenters[0].amount],
-		// 			"2023-12-31"
-		// 		)
-		// 	)
-		// ).not.toEqual("2023-12-31")
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		// running out of resources early is ok
+		costCenter = {
+			id: "c1",
+			amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
+			name: "Development",
+			created: "2023-01-01T13:37:42Z",
+			modified: "2024-01-01T13:37:42Z",
+			from: "jessie@example.com",
+			description: "description",
+			delegations: [
+				{
+					id: "d1",
+					amount: { interval: "month", value: 100, currency: "USD", created: "2023-03-01" },
+					costCenter: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					purpose: "Software services",
+					to: ["james@example.com"],
+					delegations: [],
+					purchases: [],
+				},
+			],
+			costCenters: [
+				{
+					id: "c2",
+					amount: { interval: "month", value: 400, currency: "USD", created: "2023-02-01" },
+					name: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					description: "better description",
+					delegations: [],
+					costCenters: [],
+				},
+			],
+		}
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-06-01" })).toEqual(true)
+		expect(
+			isoly.Date.next(
+				isoly.DateTime.getDate(costCenter.created),
+				issuefab.Cadence.sustainable(
+					costCenter.amount,
+					[costCenter.delegations[0].amount, costCenter.costCenters[0].amount],
+					"2023-12-31"
+				)
+			)
+		).not.toEqual("2023-12-31")
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
 
-		// // running out of resources on day 0 is ok
-		// costCenter = {
-		// 	id: "c1",
-		// 	amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
-		// 	name: "Development",
-		// 	created: "2023-01-01T13:37:42Z",
-		// 	modified: "2024-01-01T13:37:42Z",
-		// 	from: "jessie@example.com",
-		// 	description: "description",
-		// 	delegations: [
-		// 		{
-		// 			id: "d1",
-		// 			amount: { interval: "month", value: 100, currency: "USD", created: "2023-01-01" },
-		// 			costCenter: "Development",
-		// 			created: "2023-01-01T13:37:42Z",
-		// 			modified: "2024-01-01T13:37:42Z",
-		// 			from: "jessie@example.com",
-		// 			purpose: "Software services",
-		// 			to: ["james@example.com"],
-		// 			delegations: [],
-		// 			purchases: [],
-		// 		},
-		// 	],
-		// 	costCenters: [
-		// 		{
-		// 			id: "c2",
-		// 			amount: { interval: "month", value: 300, currency: "USD", created: "2023-01-01" },
-		// 			name: "Development",
-		// 			created: "2023-01-01T13:37:42Z",
-		// 			modified: "2024-01-01T13:37:42Z",
-		// 			from: "jessie@example.com",
-		// 			description: "better description",
-		// 			delegations: [],
-		// 			costCenters: [],
-		// 		},
-		// 	],
-		// }
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		// running out of resources on day 0 is ok
+		costCenter = {
+			id: "c1",
+			amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
+			name: "Development",
+			created: "2023-01-01T13:37:42Z",
+			modified: "2024-01-01T13:37:42Z",
+			from: "jessie@example.com",
+			description: "description",
+			delegations: [
+				{
+					id: "d1",
+					amount: { interval: "month", value: 100, currency: "USD", created: "2023-01-01" },
+					costCenter: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					purpose: "Software services",
+					to: ["james@example.com"],
+					delegations: [],
+					purchases: [],
+				},
+			],
+			costCenters: [
+				{
+					id: "c2",
+					amount: { interval: "month", value: 300, currency: "USD", created: "2023-01-01" },
+					name: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					description: "better description",
+					delegations: [],
+					costCenters: [],
+				},
+			],
+		}
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
 
-		// // running out of resources before day 0 is not ok
-		// costCenter = {
-		// 	id: "c1",
-		// 	amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
-		// 	name: "Development",
-		// 	created: "2023-01-01T13:37:42Z",
-		// 	modified: "2024-01-01T13:37:42Z",
-		// 	from: "jessie@example.com",
-		// 	description: "description",
-		// 	delegations: [
-		// 		{
-		// 			id: "d1",
-		// 			amount: { interval: "month", value: 100, currency: "USD", created: "2023-01-01" },
-		// 			costCenter: "Development",
-		// 			created: "2023-01-01T13:37:42Z",
-		// 			modified: "2024-01-01T13:37:42Z",
-		// 			from: "jessie@example.com",
-		// 			purpose: "Software services",
-		// 			to: ["james@example.com"],
-		// 			delegations: [],
-		// 			purchases: [],
-		// 		},
-		// 	],
-		// 	costCenters: [
-		// 		{
-		// 			id: "c2",
-		// 			amount: { interval: "month", value: 300, currency: "USD", created: "2023-01-01" },
-		// 			name: "Development",
-		// 			created: "2023-01-01T13:37:42Z",
-		// 			modified: "2024-01-01T13:37:42Z",
-		// 			from: "jessie@example.com",
-		// 			description: "better description",
-		// 			delegations: [],
-		// 			costCenters: [],
-		// 		},
-		// 	],
-		// }
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
-		// costCenter.delegations[0].amount.value = 101
-		// expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(false)
-		// costCenter.delegations[0].amount.value = 100
+		// running out of resources before day 0 is not ok
+		costCenter = {
+			id: "c1",
+			amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
+			name: "Development",
+			created: "2023-01-01T13:37:42Z",
+			modified: "2024-01-01T13:37:42Z",
+			from: "jessie@example.com",
+			description: "description",
+			delegations: [
+				{
+					id: "d1",
+					amount: { interval: "month", value: 100, currency: "USD", created: "2023-01-01" },
+					costCenter: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					purpose: "Software services",
+					to: ["james@example.com"],
+					delegations: [],
+					purchases: [],
+				},
+			],
+			costCenters: [
+				{
+					id: "c2",
+					amount: { interval: "month", value: 300, currency: "USD", created: "2023-01-01" },
+					name: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					description: "better description",
+					delegations: [],
+					costCenters: [],
+				},
+			],
+		}
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		costCenter.delegations[0].amount.value = 101
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(false)
+		costCenter.delegations[0].amount.value = 100
 
 		// not ok to overspend with single
 		// This one is not quite working with a single at the bottom
@@ -430,7 +430,7 @@ describe("CostCenter", () => {
 			delegations: [
 				{
 					id: "d1",
-					amount: { interval: "month", value: 150, currency: "USD", created: "2023-02-01" },
+					amount: { interval: "month", value: 200, currency: "USD", created: "2023-02-01" },
 					costCenter: "Development",
 					created: "2023-01-01T13:37:42Z",
 					modified: "2024-01-01T13:37:42Z",
@@ -441,7 +441,7 @@ describe("CostCenter", () => {
 					delegations: [
 						{
 							id: "d2",
-							amount: { interval: "single", value: 10, currency: "USD", created: "2023-02-15" },
+							amount: { interval: "single", value: 300, currency: "USD", created: "2023-03-15" },
 							costCenter: "Development",
 							created: "2023-01-01T13:37:42Z",
 							modified: "2024-01-01T13:37:42Z",
@@ -468,6 +468,6 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-03-15" })).toEqual(false)
 	})
 })

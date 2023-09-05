@@ -44,7 +44,9 @@ export namespace Cadence {
 			else
 				result = cadence.value
 		}
-		return options?.limit == undefined ? result : Math.min(options.limit, result)
+		return options?.limit == undefined
+			? result
+			: Math.trunc(Math.min(options.limit, result) / cadence.value) * cadence.value
 	}
 	function partition<T>(array: T[], filter: (item: T) => boolean): [T[], T[]] {
 		const pass: T[] = []
@@ -93,18 +95,14 @@ export namespace Cadence {
 		options?: { limit?: number }
 	): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
-		// which one to use?
-		// const t0 = Math.min(...[allocated(self, date)].concat(options?.limit ?? []))
-		// const t1 = options?.limit == undefined ? allocated(self, date) : Math.min(allocated(self, date), options.limit)
-		// const t2 = Math.min(allocated(self, date), options?.limit ?? Number.MAX_SAFE_INTEGER)
 		const limit =
-			Math.min(...[allocated(self, date)].concat(options?.limit ?? [])) -
+			Math.min(allocated(self, date), options?.limit ?? Infinity) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 
 		const max = duration(date, self.created)
 		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { limit })))
 		const approximationDate = isoly.Date.next(self.created, approximation)
-		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
+		const childCost = cadences.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
 		const approximateCap =
 			Math.min(allocated(self, approximationDate), limit) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
