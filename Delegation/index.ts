@@ -160,9 +160,16 @@ export namespace Delegation {
 			)
 		)
 	}
-	function calculateAllocatedBalance(root: Delegation | CostCenter, date?: isoly.Date): number {
-		date = date ?? Cadence.getDate(root.amount)
-		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
+	function calculateAllocatedBalance(
+		root: Delegation | CostCenter,
+		date: isoly.Date,
+		options?: { allocated?: number }
+	): number {
+		return isoly.Currency.subtract(
+			root.amount.currency,
+			Cadence.allocated(root.amount, date),
+			options?.allocated ?? allocated(root, date)
+		)
 	}
 
 	export function validate(
