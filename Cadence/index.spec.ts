@@ -96,7 +96,7 @@ describe("Amount", () => {
 		expect(issuefab.Cadence.allocated(day, "2023-03-04")).toEqual(10)
 		expect(issuefab.Cadence.allocated(day, "2023-03-05")).toEqual(20)
 		expect(issuefab.Cadence.allocated(day, "2023-03-06")).toEqual(30)
-		expect(issuefab.Cadence.allocated(day, "2023-03-06", { cap: 20 })).toEqual(20)
+		expect(issuefab.Cadence.allocated(day, "2023-03-06", { limit: 20 })).toEqual(20)
 	})
 	it("sustainable", () => {
 		let parent: issuefab.Cadence

@@ -54,25 +54,36 @@ export namespace CostCenter {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
 			  ) && result
 	}
-	// validation must chest that all children occurs after created date
 	export function validate(
 		costCenter: CostCenter,
-		date?: isoly.Date,
-		options?: { limit?: number; spent?: boolean; currency?: isoly.Currency }
+		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
-		date = date ?? isoly.Date.lastOfYear(isoly.Date.now())
-		const cadence = Cadence.allocated(costCenter.amount, date)
-		const balance = Delegation.allocated.balance(costCenter, date)
+		const date = options?.date ?? isoly.Date.now()
+		const allocated = Cadence.allocated(costCenter.amount, date, { limit: options?.limit })
+		const sustainable = isoly.Date.next(
+			costCenter.amount.created,
+			Cadence.sustainable(
+				costCenter.amount,
+				costCenter.costCenters.map(c => c.amount).concat(costCenter.delegations.map(d => d.amount)),
+				date,
+				{ limit: allocated }
+			)
+		)
 		return (
-			cadence > 0 &&
-			balance >= 0 &&
+			allocated > 0 &&
+			(!options?.limit || allocated <= options.limit) &&
+			isoly.DateTime.getDate(costCenter.created) <= costCenter.amount.created &&
+			costCenter.amount.created <= sustainable &&
 			(!options?.currency || costCenter.amount.currency == options.currency) &&
-			(options?.limit == undefined || cadence <= options.limit) &&
-			costCenter.delegations.every(d =>
-				Delegation.validate(d, date, { currency: costCenter.amount.currency, spent: options?.spent })
+			costCenter.costCenters.every(
+				c =>
+					costCenter.created <= c.created &&
+					CostCenter.validate(c, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
 			) &&
-			costCenter.costCenters.every(c =>
-				CostCenter.validate(c, date, { currency: costCenter.amount.currency, spent: options?.spent })
+			costCenter.delegations.every(
+				d =>
+					costCenter.created <= d.created &&
+					Delegation.validate(d, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
 			)
 		)
 	}

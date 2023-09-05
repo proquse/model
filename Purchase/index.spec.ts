@@ -13,8 +13,8 @@ describe("Purchase", () => {
 			{
 				id: "---id---",
 				total: [
-					{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } },
-					{ net: { value: 20, currency: "USD" }, vat: { value: 5, currency: "USD" } },
+					{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } },
+					{ net: { value: 20, currency: "EUR" }, vat: { value: 5, currency: "EUR" } },
 				],
 				date: "2023-01-01T00:00:42Z",
 				original: "https://example.com/receipt.pdf",
@@ -375,19 +375,18 @@ describe("Purchase", () => {
 		expect(issuefab.Purchase.spent(costCenter.delegations[0].purchases[0])).toEqual(598)
 	})
 	it("validate", () => {
-		expect(issuefab.Purchase.validate(purchase, "2023-12-31")).toEqual(true)
-		expect(issuefab.Purchase.validate(purchase, "2022-12-31")).toEqual(false)
+		expect(issuefab.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual(true)
+		expect(issuefab.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual(false)
 		expect(
 			issuefab.Purchase.validate(
 				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
-				"2023-12-31"
+				{ date: "2023-12-31" }
 			)
 		).toEqual(true)
 		expect(
 			issuefab.Purchase.validate(
 				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
-				"2023-12-31",
-				{ spent: true }
+				{ date: "2023-12-31", spent: true }
 			)
 		).toEqual(false)
 	})

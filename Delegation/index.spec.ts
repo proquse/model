@@ -503,6 +503,6 @@ describe("Delegation", () => {
 		])
 	})
 	it("validate", () => {
-		expect(issuefab.Delegation.validate(initialDelegation, "2023-12-31")).toEqual(true)
+		expect(issuefab.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual(true)
 	})
 })

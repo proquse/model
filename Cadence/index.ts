@@ -21,7 +21,7 @@ export namespace Cadence {
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export function allocated(cadence: Cadence, date: isoly.Date, options?: { cap?: number }): number {
+	export function allocated(cadence: Cadence, date: isoly.Date, options?: { limit?: number }): number {
 		let result = 0
 		if (cadence.created <= date) {
 			if (cadence.interval == "year") {
@@ -44,7 +44,9 @@ export namespace Cadence {
 			else
 				result = cadence.value
 		}
-		return options?.cap == undefined ? result : Math.min(options.cap, result)
+		return options?.limit == undefined
+			? result
+			: Math.trunc(Math.min(options.limit, result) / cadence.value) * cadence.value
 	}
 	function partition<T>(array: T[], filter: (item: T) => boolean): [T[], T[]] {
 		const pass: T[] = []
@@ -54,11 +56,13 @@ export namespace Cadence {
 	}
 	/**
 	 * formula described here https://github.com/issuefab/app/issues/232
+	 *
+	 * parameters explained by sustainable(...)
 	 */
-	function approximate(self: Cadence, children: Cadence[], date: isoly.Date, options?: { cap?: number }): number {
+	function approximate(parent: Cadence, children: Cadence[], date: isoly.Date, options?: { limit?: number }): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
 		const funds =
-			Math.max(allocated(self, date), options?.cap ?? 0) -
+			Math.max(allocated(parent, date), options?.limit ?? 0) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 		const rates = cadences.map(cadence => {
 			const days = Math.abs(duration(date, cadence.created)) + 1
@@ -68,15 +72,27 @@ export namespace Cadence {
 		const numerator =
 			funds +
 			cadences.reduce((result, cadence, index) => {
-				const time = Math.abs(duration(cadence.created, self.created))
+				const time = Math.abs(duration(cadence.created, parent.created))
 				const rate = rates[index]
 				return result + rate * time
 			}, 0)
 		const denominator = rates.reduce((result, cost) => result + cost, 0)
-		const result = numerator / denominator
-		return Math.trunc(result)
+		const result = Math.trunc(numerator / denominator)
+		return !Number.isNaN(result) ? result : Infinity
 	}
 	/**
+	 * calculates the number of days from the parents creation the parent can sustain its children.
+	 *
+	 * the provided date is the latest date that should be considered when
+	 * calculating how long the parent can sustain its children.
+	 *
+	 * the result of the function is days relative to the parents created date.
+	 * `isoly.Date.next(parent.created, sustainable(...))` can be used
+	 * to calculate the absolute date.
+	 *
+	 * providing a limit reduces the caps the parents
+	 * resources to the limit if it is calculated to be more
+	 *
 	 * Potential optimizations:
 	 * 1: dynamically change the next function
 	 * and use it for iteration
@@ -86,42 +102,43 @@ export namespace Cadence {
 	 * 4: frontend can put the work in a background worker
 	 */
 	export function sustainable(
-		self: Cadence,
+		parent: Cadence,
 		children: Cadence[],
 		date: isoly.Date,
-		options?: { cap?: number }
+		options?: { limit?: number }
 	): number {
 		const [cadences, singles] = partition(children, child => child.interval != "single")
-		const cap =
-			Math.max(allocated(self, date), options?.cap ?? 0) -
+		const limit =
+			Math.min(allocated(parent, date), options?.limit ?? Infinity) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
 
-		const max = duration(date, self.created)
-		const approximation = Math.max(0, Math.min(max, approximate(self, children, date, { cap })))
-		const approximationDate = isoly.Date.next(self.created, approximation)
-		const childCost = children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
+		const max = duration(date, parent.created)
+		const approximation = Math.max(0, Math.min(max, approximate(parent, children, date, { limit })))
+		const approximationDate = isoly.Date.next(parent.created, approximation)
+		const childCost = cadences.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
 		const approximateCap =
-			Math.min(allocated(self, approximationDate), cap) - singles.reduce((result, cadence) => result + cadence.value, 0)
+			Math.min(allocated(parent, approximationDate), limit) -
+			singles.reduce((result, cadence) => result + cadence.value, 0)
 
 		let days: number
 		if (childCost <= approximateCap)
 			for (days = approximation; days < max; days++) {
-				const next = isoly.Date.next(self.created, days)
-				const cap =
-					Math.min(allocated(self, next), approximateCap) -
+				const next = isoly.Date.next(parent.created, days)
+				const limit =
+					Math.min(allocated(parent, next), approximateCap) -
 					singles.reduce((result, cadence) => result + cadence.value, 0)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
-				if (sum >= cap)
+				if (sum >= limit)
 					break
 			}
 		else
 			for (days = approximation; days > -1; days--) {
-				const next = isoly.Date.next(self.created, days)
-				const cap =
-					Math.min(allocated(self, next), approximateCap) -
+				const next = isoly.Date.next(parent.created, days)
+				const limit =
+					Math.min(allocated(parent, next), approximateCap) -
 					singles.reduce((result, cadence) => result + cadence.value, 0)
 				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
-				if (sum <= cap)
+				if (sum <= limit)
 					break
 			}
 		return days
