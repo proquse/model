@@ -23,7 +23,7 @@ export namespace Cadence {
 	export const flaw = type.flaw
 	export function allocated(cadence: Cadence, date: isoly.Date, options?: { limit?: number }): number {
 		let result = 0
-		if (isoly.DateTime.getDate(cadence.created) <= date) {
+		if (cadence.created <= date) {
 			if (cadence.interval == "year") {
 				const initial = isoly.Date.firstOfYear(cadence.created)
 				result = Math.max(0, (isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * cadence.value + cadence.value)
