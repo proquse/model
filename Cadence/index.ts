@@ -26,27 +26,62 @@ export namespace Cadence {
 		if (cadence.created <= date) {
 			if (cadence.interval == "year") {
 				const initial = isoly.Date.firstOfYear(cadence.created)
-				result = Math.max(0, (isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * cadence.value + cadence.value)
+				result = Math.max(
+					0,
+					isoly.Currency.add(
+						cadence.currency,
+						isoly.Currency.multiply(
+							cadence.currency,
+							isoly.Date.getYear(date) - isoly.Date.getYear(initial),
+							cadence.value
+						),
+						cadence.value
+					)
+				)
 			} else if (cadence.interval == "month") {
 				const initial = isoly.Date.firstOfMonth(cadence.created)
 				result = Math.max(
 					0,
-					((isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * 12 +
-						(isoly.Date.getMonth(date) - isoly.Date.getMonth(initial))) *
-						cadence.value +
+					isoly.Currency.add(
+						cadence.currency,
+						isoly.Currency.multiply(
+							cadence.currency,
+							(isoly.Date.getYear(date) - isoly.Date.getYear(initial)) * 12 +
+								(isoly.Date.getMonth(date) - isoly.Date.getMonth(initial)),
+							cadence.value
+						),
 						cadence.value
+					)
 				)
 			} else if (cadence.interval == "week") {
 				const initial = isoly.Date.firstOfWeek(cadence.created)
-				result = Math.max(0, Math.trunc(duration(date, initial) / 7) * cadence.value + cadence.value)
+				result = Math.max(
+					0,
+					isoly.Currency.add(
+						cadence.currency,
+						isoly.Currency.multiply(cadence.currency, Math.trunc(duration(date, initial) / 7), cadence.value),
+						cadence.value
+					)
+				)
 			} else if (cadence.interval == "day")
-				result = Math.max(0, duration(date, cadence.created) * cadence.value + cadence.value)
+				result = Math.max(
+					0,
+					isoly.Currency.add(
+						cadence.currency,
+						isoly.Currency.multiply(cadence.currency, duration(date, cadence.created), cadence.value),
+						cadence.value
+					)
+				)
 			else
 				result = cadence.value
 		}
 		return options?.limit == undefined
 			? result
-			: Math.trunc(Math.min(options.limit, result) / cadence.value) * cadence.value
+			: isoly.Currency.multiply(
+					cadence.currency,
+					Math.trunc(isoly.Currency.divide(cadence.currency, Math.min(options.limit, result), cadence.value)),
+					cadence.value
+			  )
 	}
 	function partition<T>(array: T[], filter: (item: T) => boolean): [T[], T[]] {
 		const pass: T[] = []

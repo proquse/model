@@ -127,8 +127,16 @@ export namespace Delegation {
 				  )
 		)
 	}
-	function calculateSpentBalance(root: Delegation | CostCenter, date: isoly.Date, options?: { vat?: boolean }): number {
-		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), spent(root, options))
+	function calculateSpentBalance(
+		root: Delegation | CostCenter,
+		date: isoly.Date,
+		options?: { vat?: boolean; allocated?: number }
+	): number {
+		return isoly.Currency.subtract(
+			root.amount.currency,
+			options?.allocated ?? Cadence.allocated(root.amount, date),
+			spent(root, options)
+		)
 	}
 	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
 	function calculateAllocated(root: Delegation | CostCenter, date?: isoly.Date): number {
