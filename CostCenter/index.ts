@@ -54,7 +54,6 @@ export namespace CostCenter {
 					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
 			  ) && result
 	}
-	// validation must chest that all children occurs after created date
 	export function validate(
 		costCenter: CostCenter,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
