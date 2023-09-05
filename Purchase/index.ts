@@ -151,11 +151,14 @@ export namespace Purchase {
 			0
 		)
 	}
-	export function calculateSpentBalance(purchase: Purchase, date?: isoly.Date): number {
-		date = date ?? Cadence.getDate(purchase.payment.limit)
+	export function calculateSpentBalance(
+		purchase: Purchase,
+		date: isoly.Date,
+		options?: { allocated?: number }
+	): number {
 		return isoly.Currency.subtract(
 			purchase.payment.limit.currency,
-			Cadence.allocated(purchase.payment.limit, date),
+			options?.allocated ?? Cadence.allocated(purchase.payment.limit, date),
 			spent(purchase)
 		)
 	}
