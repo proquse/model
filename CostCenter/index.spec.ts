@@ -414,7 +414,6 @@ describe("CostCenter", () => {
 		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
 		costCenter.delegations[0].amount.value = 101
 		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(false)
-		costCenter.delegations[0].amount.value = 100
 
 		// not ok to overspend with single
 		// This one is not quite working with a single at the bottom
