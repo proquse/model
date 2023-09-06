@@ -151,16 +151,11 @@ export namespace Purchase {
 			0
 		)
 	}
-	export function calculateSpentBalance(
-		purchase: Purchase,
-		date: isoly.Date,
-		options?: { allocated?: number }
-	): number {
-		return isoly.Currency.subtract(
-			purchase.payment.limit.currency,
-			options?.allocated ?? Cadence.allocated(purchase.payment.limit, date),
-			spent(purchase)
-		)
+	export function calculateSpentBalance(purchase: Purchase, allocated: number): number
+	export function calculateSpentBalance(purchase: Purchase, date: isoly.Date): number
+	export function calculateSpentBalance(purchase: Purchase, allocated: isoly.Date | number): number {
+		allocated = typeof allocated == "number" ? allocated : Cadence.allocated(purchase.payment.limit, allocated)
+		return isoly.Currency.subtract(purchase.payment.limit.currency, allocated, spent(purchase))
 	}
 	export type Creatable = PurchaseCreatable
 	export const Creatable = PurchaseCreatable

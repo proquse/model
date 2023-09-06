@@ -127,49 +127,39 @@ export namespace Delegation {
 				  )
 		)
 	}
+	function calculateSpentBalance(root: Delegation | CostCenter, date: isoly.Date, options?: { vat?: boolean }): number
+	function calculateSpentBalance(root: Delegation | CostCenter, allocated: number, options?: { vat?: boolean }): number
 	function calculateSpentBalance(
 		root: Delegation | CostCenter,
-		date: isoly.Date,
-		options?: { vat?: boolean; allocated?: number }
+		allocated: isoly.Date | number,
+		options?: { vat?: boolean }
 	): number {
-		return isoly.Currency.subtract(
-			root.amount.currency,
-			options?.allocated ?? Cadence.allocated(root.amount, date),
-			spent(root, options)
-		)
+		allocated = typeof allocated == "number" ? allocated : Cadence.allocated(root.amount, allocated)
+		return isoly.Currency.subtract(root.amount.currency, allocated, spent(root, options))
 	}
 	export const allocated = Object.assign(calculateAllocated, { balance: calculateAllocatedBalance })
-	function calculateAllocated(root: Delegation | CostCenter, date?: isoly.Date): number {
-		const cadenceDate = date ?? Cadence.getDate(root.amount)
+	function calculateAllocated(root: Delegation | CostCenter, date: isoly.Date): number {
 		return (
 			("purchases" in root
 				? root.purchases.reduce(
 						(result, purchase) =>
-							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(purchase.payment.limit, cadenceDate)),
+							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(purchase.payment.limit, date)),
 						0
 				  )
 				: root.costCenters.reduce(
 						(result, costCenter) =>
-							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(costCenter.amount, cadenceDate)),
+							isoly.Currency.add(root.amount.currency, result, Cadence.allocated(costCenter.amount, date)),
 						0
 				  )) +
 			root.delegations.reduce(
 				(result, delegation) =>
-					isoly.Currency.add(root.amount.currency, result, Cadence.allocated(delegation.amount, cadenceDate)),
+					isoly.Currency.add(root.amount.currency, result, Cadence.allocated(delegation.amount, date)),
 				0
 			)
 		)
 	}
-	function calculateAllocatedBalance(
-		root: Delegation | CostCenter,
-		date: isoly.Date,
-		options?: { allocated?: number }
-	): number {
-		return isoly.Currency.subtract(
-			root.amount.currency,
-			Cadence.allocated(root.amount, date),
-			options?.allocated ?? allocated(root, date)
-		)
+	function calculateAllocatedBalance(root: Delegation | CostCenter, date: isoly.Date): number {
+		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
 	}
 
 	export function validate(
