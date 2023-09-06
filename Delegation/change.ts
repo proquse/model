@@ -55,10 +55,10 @@ export function changeCostCenter(
 		: { root: search.root, changed: search.found }
 	if (result) {
 		if (result.root.id == result.changed.id && result.root.name != change.name) {
-			Object.assign(result.changed, change) // (({ name, ...change }) => change)(change)
+			Object.assign(result.changed, change)
 			changeName(result.root, change.name)
 		} else
-			Object.assign(result.changed, change) // (({ name, ...change }) => change)(change)
+			Object.assign(result.changed, change)
 	}
 	return result
 }
