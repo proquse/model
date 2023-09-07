@@ -142,7 +142,7 @@ export namespace Cadence {
 		date: isoly.Date,
 		options?: { limit?: number }
 	): number {
-		const [, singles] = partition(children, child => child.interval != "single")
+		const singles = children.filter(child => child.interval == "single")
 		const limit =
 			Math.min(allocated(parent, date), options?.limit ?? Infinity) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
