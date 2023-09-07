@@ -7,11 +7,6 @@ import type { CostCenter } from "../CostCenter"
 import { findCostCenter, findDelegation } from "./find"
 import type { Delegation } from "./index"
 
-function* chain<T>(...iterables: Iterable<T>[]): Iterable<T> {
-	for (const iterable of iterables)
-		yield* iterable
-}
-
 export function changeDelegation<T extends Delegation | CostCenter>(
 	roots: T[],
 	change: Delegation
@@ -41,7 +36,7 @@ function changeName(root: CostCenter | Delegation, name: string): string {
 		root.name = name
 	else
 		root.costCenter = name
-	for (const child of chain<Delegation | CostCenter>(root.delegations, "costCenters" in root ? root.costCenters : []))
+	for (const child of root.delegations)
 		changeName(child, name)
 	return name
 }
@@ -54,9 +49,11 @@ export function changeCostCenter(
 		? search
 		: { root: search.root, changed: search.found }
 	if (result) {
-		if (result.root.id == result.changed.id && result.root.name != change.name)
-			changeName(result.root, change.name)
-		Object.assign(result.changed, change)
+		if (result.changed.name != change.name) {
+			Object.assign(result.changed, change)
+			changeName(result.changed, change.name)
+		} else
+			Object.assign(result.changed, change)
 	}
 	return result
 }
