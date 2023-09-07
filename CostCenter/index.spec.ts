@@ -493,5 +493,38 @@ describe("CostCenter", () => {
 			],
 		}
 		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-03-15" })).toEqual(false)
+
+		costCenter = {
+			from: "jessie@example.com",
+			name: "insta warning",
+			amount: { value: 100, currency: "EUR", interval: "single", created: "2023-09-07" },
+			id: "vAw9hMxQ",
+			created: "2023-09-07T09:11:38.198Z",
+			modified: "2023-09-07T09:11:38.198Z",
+			delegations: [],
+			costCenters: [
+				{
+					from: "jessie@example.com",
+					name: "Too much",
+					amount: { value: 10, currency: "EUR", interval: "day", created: "2023-09-07" },
+					id: "uBSPAELO",
+					created: "2023-09-07T09:12:06.566Z",
+					modified: "2023-09-07T09:12:06.566Z",
+					delegations: [],
+					costCenters: [],
+				},
+				{
+					from: "jessie@example.com",
+					name: "moore",
+					amount: { value: 50, currency: "EUR", interval: "single", created: "2023-09-07" },
+					id: "ZVTbB-TD",
+					created: "2023-09-07T09:52:22.731Z",
+					modified: "2023-09-07T09:52:22.731Z",
+					delegations: [],
+					costCenters: [],
+				},
+			],
+		}
+		expect(issuefab.CostCenter.validate(costCenter)).toEqual(true)
 	})
 })
