@@ -7,11 +7,6 @@ import type { CostCenter } from "../CostCenter"
 import { findCostCenter, findDelegation } from "./find"
 import type { Delegation } from "./index"
 
-function* chain<T>(...iterables: Iterable<T>[]): Iterable<T> {
-	for (const iterable of iterables)
-		yield* iterable
-}
-
 export function changeDelegation<T extends Delegation | CostCenter>(
 	roots: T[],
 	change: Delegation
@@ -41,7 +36,7 @@ function changeName(root: CostCenter | Delegation, name: string): string {
 		root.name = name
 	else
 		root.costCenter = name
-	for (const child of chain<Delegation | CostCenter>(root.delegations))
+	for (const child of root.delegations)
 		changeName(child, name)
 	return name
 }

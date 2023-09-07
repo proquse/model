@@ -85,13 +85,17 @@ describe("CostCenter", () => {
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).toBe(result?.changed)
 		expect(result?.root?.amount.value).toEqual(600)
-		result = issuefab.CostCenter.change([costCenter], { ...costCenter.costCenters[0], name: "development" })
+		result = issuefab.CostCenter.change([costCenter], {
+			...costCenter.costCenters[0],
+			name: "NewName",
+		})
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).not.toBe(result?.changed)
 		expect(result?.changed).toBe(costCenter.costCenters[0])
 		expect(costCenter.name).toEqual("Development")
-		expect(costCenter.costCenters[0].name).toEqual("development")
-		expect(costCenter.costCenters[0].delegations[0].costCenter).toEqual("Development")
+		expect(costCenter.costCenters[0].name).toEqual("NewName")
+		expect(costCenter.costCenters[0].delegations[0].costCenter).toEqual("NewName")
+		expect(costCenter.costCenters[0].delegations[0].costCenter).not.toEqual("RandomName")
 	})
 	it("create", () => {
 		const creatable: issuefab.CostCenter.Creatable = {
