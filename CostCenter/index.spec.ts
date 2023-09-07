@@ -493,7 +493,7 @@ describe("CostCenter", () => {
 			],
 		}
 		expect(issuefab.CostCenter.validate(costCenter, { date: "2023-03-15" })).toEqual(false)
-		// ???
+
 		costCenter = {
 			from: "jessie@example.com",
 			name: "insta warning",
