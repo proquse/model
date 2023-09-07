@@ -142,7 +142,7 @@ export namespace Cadence {
 		date: isoly.Date,
 		options?: { limit?: number }
 	): number {
-		const [cadences, singles] = partition(children, child => child.interval != "single")
+		const [, singles] = partition(children, child => child.interval != "single")
 		const limit =
 			Math.min(allocated(parent, date), options?.limit ?? Infinity) -
 			singles.reduce((result, cadence) => result + cadence.value, 0)
@@ -150,30 +150,25 @@ export namespace Cadence {
 		const max = duration(date, parent.created)
 		const approximation = Math.max(0, Math.min(max, approximate(parent, children, date, { limit })))
 		const approximationDate = isoly.Date.next(parent.created, approximation)
-		const childCost = cadences.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
-		const approximateCap =
-			Math.min(allocated(parent, approximationDate), limit) -
-			singles.reduce((result, cadence) => result + cadence.value, 0)
+		const balance =
+			allocated(parent, approximationDate) -
+			children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
 
 		let days: number
-		if (childCost <= approximateCap)
+		if (balance >= 0)
 			for (days = approximation; days < max; days++) {
 				const next = isoly.Date.next(parent.created, days)
-				const limit =
-					Math.min(allocated(parent, next), approximateCap) -
-					singles.reduce((result, cadence) => result + cadence.value, 0)
-				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
-				if (sum >= limit)
+				const balance =
+					allocated(parent, next) - children.reduce((result, cadence) => result + allocated(cadence, next), 0)
+				if (balance <= 0)
 					break
 			}
 		else
 			for (days = approximation; days > -1; days--) {
 				const next = isoly.Date.next(parent.created, days)
-				const limit =
-					Math.min(allocated(parent, next), approximateCap) -
-					singles.reduce((result, cadence) => result + cadence.value, 0)
-				const sum = cadences.reduce((r, c) => r + allocated(c, next), 0)
-				if (sum <= limit)
+				const balance =
+					allocated(parent, next) - children.reduce((result, cadence) => result + allocated(cadence, next), 0)
+				if (balance >= 0)
 					break
 			}
 		return days
