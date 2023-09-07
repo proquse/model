@@ -41,7 +41,7 @@ function changeName(root: CostCenter | Delegation, name: string): string {
 		root.name = name
 	else
 		root.costCenter = name
-	for (const child of chain<Delegation | CostCenter>(root.delegations, "costCenters" in root ? root.costCenters : []))
+	for (const child of chain<Delegation | CostCenter>(root.delegations))
 		changeName(child, name)
 	return name
 }
@@ -54,9 +54,9 @@ export function changeCostCenter(
 		? search
 		: { root: search.root, changed: search.found }
 	if (result) {
-		if (result.root.id == result.changed.id && result.root.name != change.name) {
+		if (result.changed.name != change.name) {
 			Object.assign(result.changed, change)
-			changeName(result.root, change.name)
+			changeName(result.changed, change.name)
 		} else
 			Object.assign(result.changed, change)
 	}
