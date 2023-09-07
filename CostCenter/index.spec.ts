@@ -50,7 +50,20 @@ describe("CostCenter", () => {
 			modified: "2022-12-20T13:37:42Z",
 			from: "jessie@example.com",
 			description: "description",
-			delegations: [],
+			delegations: [
+				{
+					id: "d1",
+					amount: { interval: "year", value: 300, currency: "USD", created: "2023-01-01" },
+					costCenter: "Development",
+					created: "2021-12-20T13:37:42Z",
+					modified: "2022-12-20T13:37:42Z",
+					from: "jessie@example.com",
+					purpose: "Software services",
+					to: ["james@example.com"],
+					delegations: [],
+					purchases: [],
+				},
+			],
 			costCenters: [
 				{
 					id: "c2",
@@ -96,6 +109,8 @@ describe("CostCenter", () => {
 		expect(costCenter.costCenters[0].name).toEqual("NewName")
 		expect(costCenter.costCenters[0].delegations[0].costCenter).toEqual("NewName")
 		expect(costCenter.costCenters[0].delegations[0].costCenter).not.toEqual("RandomName")
+		expect(costCenter.delegations[0].costCenter).not.toEqual("NewName")
+		expect(costCenter.delegations[0].costCenter).toEqual("Development")
 	})
 	it("create", () => {
 		const creatable: issuefab.CostCenter.Creatable = {
