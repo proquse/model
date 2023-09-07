@@ -94,10 +94,16 @@ describe("CostCenter", () => {
 		let result = issuefab.CostCenter.change([costCenter], {
 			...costCenter,
 			amount: { interval: "year", value: 600, currency: "USD", created: "2023-01-01" },
+			name: "Cars",
 		})
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).toBe(result?.changed)
 		expect(result?.root?.amount.value).toEqual(600)
+		expect(costCenter.name).toEqual("Cars")
+		expect(costCenter.delegations[0].costCenter).toEqual("Cars")
+		expect(costCenter.costCenters[0].name).not.toEqual("Cars")
+		expect(costCenter.costCenters[0].delegations[0].costCenter).not.toEqual("Cars")
+
 		result = issuefab.CostCenter.change([costCenter], {
 			...costCenter.costCenters[0],
 			name: "NewName",
@@ -105,12 +111,12 @@ describe("CostCenter", () => {
 		expect(result?.root).toBe(costCenter)
 		expect(result?.root).not.toBe(result?.changed)
 		expect(result?.changed).toBe(costCenter.costCenters[0])
-		expect(costCenter.name).toEqual("Development")
+		expect(costCenter.name).toEqual("Cars")
 		expect(costCenter.costCenters[0].name).toEqual("NewName")
 		expect(costCenter.costCenters[0].delegations[0].costCenter).toEqual("NewName")
 		expect(costCenter.costCenters[0].delegations[0].costCenter).not.toEqual("RandomName")
 		expect(costCenter.delegations[0].costCenter).not.toEqual("NewName")
-		expect(costCenter.delegations[0].costCenter).toEqual("Development")
+		expect(costCenter.delegations[0].costCenter).toEqual("Cars")
 	})
 	it("create", () => {
 		const creatable: issuefab.CostCenter.Creatable = {
