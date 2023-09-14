@@ -3,7 +3,7 @@ import { proquse } from "../index"
 
 describe("Financial Controller", () => {
 	it("satisfies", () => {
-		const key: userwidgets.User.Key<userwidgets.User.Key.Creatable.Claims, proquse.Roles.Permissions.Issuefab> = {
+		const key: userwidgets.User.Key<userwidgets.User.Key.Creatable.Claims, proquse.Roles.Permissions.Proquse> = {
 			issuer: "",
 			audience: "",
 			issued: "",

@@ -4,7 +4,7 @@ import { Roles } from "../Roles"
 
 export type Creatable = userwidgets.User.Key.Creatable<
 	userwidgets.User.Key.Creatable.Claims,
-	Roles.Permissions.Issuefab
+	Roles.Permissions.Proquse
 >
 export namespace Creatable {
 	export const type: isly.Type<Creatable> = userwidgets.User.Key.Creatable.type.create<

@@ -61,7 +61,7 @@ describe("Key", () => {
 	}
 	const key: proquse.Key = {
 		...creatable,
-		audience: "issuefab",
+		audience: "proquse",
 		expires: "2023-08-19T00:25:25.000Z",
 		issued: "2023-08-18T12:08:21.000Z",
 		issuer: "userwidgets",
@@ -76,7 +76,7 @@ describe("Key", () => {
 		expect(proquse.Key.type.get((({ issuer, ...key }) => key)(key))).toEqual(undefined)
 	})
 	it("signing and verifying", async () => {
-		const issuer = userwidgets.User.Key.Issuer.create("userwidgets", "issuefab", publicKey, privateKey)
+		const issuer = userwidgets.User.Key.Issuer.create("userwidgets", "proquse", publicKey, privateKey)
 		const token = await issuer.sign(creatable, now.getTime() / 1000)
 		if (token == undefined) {
 			expect(token).not.toEqual(undefined)

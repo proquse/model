@@ -90,7 +90,15 @@ export namespace Cadence {
 		return [pass, fail]
 	}
 	/**
-	 * formula described here https://github.com/issuefab/app/issues/232
+	 * Cadence max cap calculated from the parents delegation max support day
+	 *		d = (y + sum(c * t)) / (sum(c))
+	 *	  where:
+	 *
+	 *    c = cost per day of a delegation (sum is sum of all)
+	 *    t = the delta of parents delegations created date and the childs created date
+	 *    d = the days where the child delegation reach its cap (parents money is 0)
+	 *    y = upper limit, the parents: cap - sinlge childrens amounts
+	 *
 	 *
 	 * parameters explained by sustainable(...)
 	 */

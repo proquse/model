@@ -1,9 +1,9 @@
 import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 
-export type Permissions = userwidgets.User.Permissions<Permissions.Issuefab>
+export type Permissions = userwidgets.User.Permissions<Permissions.Proquse>
 export namespace Permissions {
-	export type Issuefab = {
+	export type Proquse = {
 		delegation?: { create?: true; read?: true; edit?: true; view?: true } | true
 		purchase?: { create?: true; read?: true; edit?: true; view?: true } | true
 		costCenter?:
@@ -16,7 +16,7 @@ export namespace Permissions {
 		payment?: { expense?: true; prepaid?: true; card?: true } | true
 		banking?: true
 	}
-	export namespace Issuefab {
+	export namespace Proquse {
 		export const type = isly.object<Permissions>({
 			delegation: isly
 				.object({
@@ -90,8 +90,8 @@ export namespace Permissions {
 			"banking",
 		] as const
 	}
-	export const type = userwidgets.User.Permissions.type.create<Permissions>(Issuefab.type)
+	export const type = userwidgets.User.Permissions.type.create<Permissions>(Proquse.type)
 	export const is = type.is
 	export const flaw = type.flaw
-	export const flags = Array.from(new Set([...userwidgets.User.Permissions.flags, ...Issuefab.flags]))
+	export const flags = Array.from(new Set([...userwidgets.User.Permissions.flags, ...Proquse.flags]))
 }

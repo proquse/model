@@ -30,7 +30,7 @@ describe("CostCenter", () => {
 		}
 		expect(proquse.CostCenter.is(costCenter)).toEqual(true)
 		expect(proquse.CostCenter.is({ ...costCenter, to: [] })).toEqual(true)
-		expect(proquse.CostCenter.type.get({ ...costCenter, to: ["james@issuefab.com"] })).toEqual(costCenter)
+		expect(proquse.CostCenter.type.get({ ...costCenter, to: ["james@proquse.com"] })).toEqual(costCenter)
 		expect(proquse.CostCenter.is((({ id, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(proquse.CostCenter.is((({ amount, ...costCenter }) => costCenter)(costCenter))).toEqual(false)
 		expect(proquse.CostCenter.is((({ name, ...rest }) => rest)(costCenter))).toEqual(false)
@@ -127,7 +127,7 @@ describe("CostCenter", () => {
 		}
 		expect(proquse.CostCenter.is(proquse.CostCenter.create(creatable))).toEqual(true)
 		expect(proquse.CostCenter.create(creatable, { id: "d4" }).id).toEqual("d4")
-		expect(proquse.CostCenter.create(creatable, { from: "james@issuefab.com" }).from).toEqual("james@issuefab.com")
+		expect(proquse.CostCenter.create(creatable, { from: "james@proquse.com" }).from).toEqual("james@proquse.com")
 		expect(proquse.CostCenter.is(proquse.CostCenter.create(creatable, { from: undefined }))).toEqual(false)
 	})
 	it("find", () => {
