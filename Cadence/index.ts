@@ -97,7 +97,7 @@ export namespace Cadence {
 	 *    c = cost per day of a delegation (sum is sum of all)
 	 *    t = the delta of parents delegations created date and the childs created date
 	 *    d = the days where the child delegation reach its cap (parents money is 0)
-	 *    y = upper limit, the parents: cap - sinlge childrens amounts
+	 *    y = upper limit, the parents: cap - single childrens amounts
 	 *
 	 *
 	 * parameters explained by sustainable(...)
