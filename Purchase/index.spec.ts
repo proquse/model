@@ -1,7 +1,7 @@
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Purchase", () => {
-	const purchase: issuefab.Purchase = {
+	const purchase: proquse.Purchase = {
 		id: "---p----",
 		created: "2023-01-01T00:00:42Z",
 		modified: "2023-01-01T00:00:42Z",
@@ -21,7 +21,7 @@ describe("Purchase", () => {
 			},
 		],
 	}
-	const costCenter: issuefab.CostCenter = {
+	const costCenter: proquse.CostCenter = {
 		id: "c1",
 		from: "jane@example.com",
 		name: "budget",
@@ -247,18 +247,18 @@ describe("Purchase", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Purchase.is(purchase)).toEqual(true)
-		expect(issuefab.Purchase.is((({ id, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ created, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ modified, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ buyer, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ purpose, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ email, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ payment, ...purchase }) => purchase)(purchase))).toEqual(false)
-		expect(issuefab.Purchase.is((({ receipts, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is(purchase)).toEqual(true)
+		expect(proquse.Purchase.is((({ id, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ created, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ modified, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ buyer, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ purpose, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ email, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ payment, ...purchase }) => purchase)(purchase))).toEqual(false)
+		expect(proquse.Purchase.is((({ receipts, ...purchase }) => purchase)(purchase))).toEqual(false)
 	})
 	it("create", () => {
-		const purchase: issuefab.Purchase.Creatable = {
+		const purchase: proquse.Purchase.Creatable = {
 			purpose: "buy things",
 			payment: {
 				type: "card",
@@ -266,19 +266,19 @@ describe("Purchase", () => {
 			},
 			buyer: "jane@example.com",
 		}
-		const result = issuefab.Purchase.create(purchase, "organizationId", "receipt@example.com")
-		expect(issuefab.Purchase.is(result))
+		const result = proquse.Purchase.create(purchase, "organizationId", "receipt@example.com")
+		expect(proquse.Purchase.is(result))
 		expect(result.email).toMatch(/^receipt\+organizationId_[^@]+@example.com$/)
 	})
 	it("find", () => {
-		expect(issuefab.Purchase.find([costCenter], "p1")).toEqual({
+		expect(proquse.Purchase.find([costCenter], "p1")).toEqual({
 			root: costCenter,
 			parent: costCenter.delegations[0].delegations[0],
 			found: costCenter.delegations[0].delegations[0].purchases[0],
 		})
 	})
 	it("change", () => {
-		const target: issuefab.Purchase = issuefab.Purchase.create(
+		const target: proquse.Purchase = proquse.Purchase.create(
 			{
 				purpose: "buy things",
 				payment: {
@@ -290,19 +290,19 @@ describe("Purchase", () => {
 			"organizationId",
 			"receipt@example.com"
 		)
-		const updated: issuefab.Purchase = {
+		const updated: proquse.Purchase = {
 			...target,
 			purpose: "buy more things",
 			payment: { type: "card", limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 			buyer: "john@example.com",
 		}
-		const after: issuefab.Purchase = {
+		const after: proquse.Purchase = {
 			...target,
 			purpose: "buy more things",
 			payment: { type: "card", limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 			buyer: "john@example.com",
 		}
-		const root: issuefab.Delegation = {
+		const root: proquse.Delegation = {
 			id: "d1",
 			created: "2023-01-01T13:37:42Z",
 			modified: "2023-01-01T13:37:42Z",
@@ -315,15 +315,15 @@ describe("Purchase", () => {
 			purchases: [target],
 		}
 		expect(target).not.toEqual(updated)
-		const first = issuefab.Purchase.change(target, updated)
+		const first = proquse.Purchase.change(target, updated)
 		expect(target).toEqual(after)
 		expect(first).not.toBe(after)
-		const second = issuefab.Purchase.change([root], updated)
+		const second = proquse.Purchase.change([root], updated)
 		expect(second).toEqual({ root: root, parent: root, changed: updated })
 		expect(second?.changed).not.toBe(updated)
 	})
 	it("remove", () => {
-		const target: issuefab.Purchase = issuefab.Purchase.create(
+		const target: proquse.Purchase = proquse.Purchase.create(
 			{
 				purpose: "buy things",
 				payment: {
@@ -335,7 +335,7 @@ describe("Purchase", () => {
 			"organizationId",
 			"receipt@example.com"
 		)
-		const root: issuefab.Delegation = {
+		const root: proquse.Delegation = {
 			id: "d1",
 			created: "2023-01-01T13:37:42Z",
 			modified: "2023-01-01T13:37:42Z",
@@ -347,22 +347,22 @@ describe("Purchase", () => {
 			delegations: [],
 			purchases: [target],
 		}
-		const result = issuefab.Purchase.remove([root], target.id)
+		const result = proquse.Purchase.remove([root], target.id)
 		expect(root.purchases.length).toEqual(0)
 		expect(result?.removed).toBe(target)
 	})
 	it("list", () => {
-		expect(issuefab.Purchase.list(costCenter.delegations).length).toEqual(3)
+		expect(proquse.Purchase.list(costCenter.delegations).length).toEqual(3)
 		expect(
-			issuefab.Purchase.list(
+			proquse.Purchase.list(
 				costCenter.delegations,
-				purchase => issuefab.Cadence.allocated(purchase.payment.limit, "2023-12-31") <= 500
+				purchase => proquse.Cadence.allocated(purchase.payment.limit, "2023-12-31") <= 500
 			).length
 		).toEqual(2)
 		expect(
-			issuefab.Purchase.list(costCenter.delegations, purchase => purchase.buyer == "mary@example.com").length
+			proquse.Purchase.list(costCenter.delegations, purchase => purchase.buyer == "mary@example.com").length
 		).toEqual(1)
-		const result = issuefab.Purchase.list(
+		const result = proquse.Purchase.list(
 			[costCenter],
 			p => p.buyer == "mary@example.com",
 			(p, d) => ({ ...p, delegationId: d.id })
@@ -370,21 +370,21 @@ describe("Purchase", () => {
 		expect(result.length).toEqual(1)
 	})
 	it("spent", () => {
-		expect(issuefab.Purchase.spent(purchase)).toEqual(37.5)
-		expect(issuefab.Purchase.spent(purchase, { vat: false })).toEqual(30)
-		expect(issuefab.Purchase.spent(costCenter.delegations[0].purchases[0])).toEqual(598)
+		expect(proquse.Purchase.spent(purchase)).toEqual(37.5)
+		expect(proquse.Purchase.spent(purchase, { vat: false })).toEqual(30)
+		expect(proquse.Purchase.spent(costCenter.delegations[0].purchases[0])).toEqual(598)
 	})
 	it("validate", () => {
-		expect(issuefab.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual(true)
-		expect(issuefab.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual(false)
+		expect(proquse.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual(true)
+		expect(proquse.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual(false)
 		expect(
-			issuefab.Purchase.validate(
+			proquse.Purchase.validate(
 				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
 				{ date: "2023-12-31" }
 			)
 		).toEqual(true)
 		expect(
-			issuefab.Purchase.validate(
+			proquse.Purchase.validate(
 				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
 				{ date: "2023-12-31", spent: true }
 			)

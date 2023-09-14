@@ -1,12 +1,12 @@
-import { issuefab } from "../../index"
+import { proquse } from "../../index"
 describe("Expense Creatable", () => {
-	const creatable: issuefab.Report.Receipt.Creatable = {
+	const creatable: proquse.Report.Receipt.Creatable = {
 		costCenters: ["---c1---"],
 	}
 
 	it("is", () => {
-		expect(issuefab.Report.Receipt.Creatable.is(creatable)).toEqual(true)
-		expect(issuefab.Report.Receipt.Creatable.is((({ costCenters, ...creatable }) => creatable)(creatable))).toEqual(
+		expect(proquse.Report.Receipt.Creatable.is(creatable)).toEqual(true)
+		expect(proquse.Report.Receipt.Creatable.is((({ costCenters, ...creatable }) => creatable)(creatable))).toEqual(
 			false
 		)
 	})

@@ -1,7 +1,7 @@
-import { issuefab } from "../../index"
+import { proquse } from "../../index"
 
 describe("Payment.Card", () => {
-	const card: issuefab.Payment.Card = {
+	const card: proquse.Payment.Card = {
 		type: "card",
 		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 		details: {
@@ -15,10 +15,10 @@ describe("Payment.Card", () => {
 		},
 	}
 	it("is", () => {
-		expect(issuefab.Payment.Card.is(card)).toEqual(true)
+		expect(proquse.Payment.Card.is(card)).toEqual(true)
 		expect(
-			issuefab.Payment.Card.is({ ...card, details: { ...card.details, expire: { month: "13", year: "22" } } })
+			proquse.Payment.Card.is({ ...card, details: { ...card.details, expire: { month: "13", year: "22" } } })
 		).toEqual(false)
-		expect(issuefab.Payment.Card.is({ ...card, details: { pan: "123" } })).toEqual(false)
+		expect(proquse.Payment.Card.is({ ...card, details: { pan: "123" } })).toEqual(false)
 	})
 })

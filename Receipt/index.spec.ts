@@ -1,13 +1,13 @@
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Receipt", () => {
-	const receipt: issuefab.Receipt = {
+	const receipt: proquse.Receipt = {
 		id: "---r----",
 		original: "https://example.com/receipt.pdf",
 		total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 		date: "2022-01-01T00:00:42Z",
 	}
-	const costCenter: issuefab.CostCenter = {
+	const costCenter: proquse.CostCenter = {
 		id: "c1",
 		from: "jane@example.com",
 		name: "budget",
@@ -232,40 +232,40 @@ describe("Receipt", () => {
 		],
 	}
 	it("is", () => {
-		expect(issuefab.Receipt.is(receipt)).toEqual(true)
-		expect(issuefab.Receipt.is((({ original, ...receipt }) => receipt)(receipt))).toEqual(false)
+		expect(proquse.Receipt.is(receipt)).toEqual(true)
+		expect(proquse.Receipt.is((({ original, ...receipt }) => receipt)(receipt))).toEqual(false)
 	})
 	it("validate", () => {
 		expect(
-			issuefab.Receipt.validate(
+			proquse.Receipt.validate(
 				costCenter.delegations[0].purchases[0].receipts[0],
 				costCenter.delegations[0].purchases[0].payment.limit.currency
 			)
 		).toEqual(true)
-		expect(issuefab.Receipt.validate(costCenter.delegations[0].purchases[0].receipts[0], "AMD")).toEqual(false)
+		expect(proquse.Receipt.validate(costCenter.delegations[0].purchases[0].receipts[0], "AMD")).toEqual(false)
 	})
 	it("spent", () => {
 		expect(
-			issuefab.Receipt.spent(
+			proquse.Receipt.spent(
 				costCenter.delegations[0].purchases[0].receipts[0],
 				costCenter.delegations[0].purchases[0].payment.limit.currency
 			)
 		).toEqual(299)
 		expect(
-			issuefab.Receipt.spent(
+			proquse.Receipt.spent(
 				costCenter.delegations[0].purchases[0].receipts[0],
 				costCenter.delegations[0].purchases[0].payment.limit.currency,
 				{ vat: false }
 			)
 		).toEqual(299)
 		expect(
-			issuefab.Receipt.spent(
+			proquse.Receipt.spent(
 				costCenter.delegations[0].delegations[0].purchases[0].receipts[0],
 				costCenter.delegations[0].delegations[0].purchases[0].payment.limit.currency
 			)
 		).toEqual(12.5)
 		expect(
-			issuefab.Receipt.spent(
+			proquse.Receipt.spent(
 				costCenter.delegations[0].delegations[0].purchases[0].receipts[0],
 				costCenter.delegations[0].delegations[0].purchases[0].payment.limit.currency,
 				{ vat: false }
@@ -273,19 +273,19 @@ describe("Receipt", () => {
 		).toEqual(10)
 	})
 	it("find", () => {
-		expect(issuefab.Receipt.find([costCenter], "r1")).toEqual({
+		expect(proquse.Receipt.find([costCenter], "r1")).toEqual({
 			root: costCenter,
 			delegation: costCenter.delegations[0].delegations[0],
 			purchase: costCenter.delegations[0].delegations[0].purchases[0],
 			found: costCenter.delegations[0].delegations[0].purchases[0].receipts[0],
 		})
-		expect(issuefab.Receipt.find([costCenter], "r14")).toEqual({
+		expect(proquse.Receipt.find([costCenter], "r14")).toEqual({
 			root: costCenter,
 			delegation: costCenter.delegations[0],
 			purchase: costCenter.delegations[0].purchases[0],
 			found: costCenter.delegations[0].purchases[0].receipts[1],
 		})
-		expect(issuefab.Receipt.find([costCenter], "r12")).toEqual({
+		expect(proquse.Receipt.find([costCenter], "r12")).toEqual({
 			root: costCenter,
 			delegation: costCenter.delegations[0].delegations[0],
 			purchase: costCenter.delegations[0].delegations[0].purchases[0],
@@ -293,18 +293,18 @@ describe("Receipt", () => {
 		})
 	})
 	it("list", () => {
-		expect(issuefab.Receipt.list([costCenter]).length).toEqual(14)
-		expect(issuefab.Receipt.list(costCenter.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(14)
-		expect(issuefab.Receipt.list([costCenter], (_, p) => p.buyer == "mary@example.com").length).toEqual(2)
+		expect(proquse.Receipt.list([costCenter]).length).toEqual(14)
+		expect(proquse.Receipt.list(costCenter.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(14)
+		expect(proquse.Receipt.list([costCenter], (_, p) => p.buyer == "mary@example.com").length).toEqual(2)
 		expect(
-			issuefab.Receipt.list(
+			proquse.Receipt.list(
 				[costCenter],
-				(receipt, purchase) => issuefab.Receipt.spent(receipt, purchase.payment.limit.currency) < 100
+				(receipt, purchase) => proquse.Receipt.spent(receipt, purchase.payment.limit.currency) < 100
 			).length
 		).toEqual(12)
-		const result = issuefab.Receipt.list(
+		const result = proquse.Receipt.list(
 			[costCenter],
-			(receipt, purchase) => issuefab.Receipt.spent(receipt, purchase.payment.limit.currency) > 100,
+			(receipt, purchase) => proquse.Receipt.spent(receipt, purchase.payment.limit.currency) > 100,
 			(r, p, d) => ({ ...r, purchase: p.id, delegation: d.id })
 		)
 		expect(result.length).toEqual(2)

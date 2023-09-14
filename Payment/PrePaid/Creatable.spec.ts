@@ -1,7 +1,7 @@
-import { issuefab } from "../../index"
+import { proquse } from "../../index"
 
 describe("Payment.PrePaid.Creatable", () => {
-	const payment: issuefab.Payment.PrePaid = {
+	const payment: proquse.Payment.PrePaid = {
 		type: "pre-paid",
 		limit: {
 			interval: "month",
@@ -11,7 +11,7 @@ describe("Payment.PrePaid.Creatable", () => {
 		},
 	}
 	it("is", () => {
-		expect(issuefab.Payment.PrePaid.is(payment)).toEqual(true)
-		expect(issuefab.Payment.PrePaid.is({ ...payment, type: "invoice" })).toEqual(false)
+		expect(proquse.Payment.PrePaid.is(payment)).toEqual(true)
+		expect(proquse.Payment.PrePaid.is({ ...payment, type: "invoice" })).toEqual(false)
 	})
 })

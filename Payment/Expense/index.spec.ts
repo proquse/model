@@ -1,7 +1,7 @@
-import { issuefab } from "../../index"
+import { proquse } from "../../index"
 
 describe("Payment.Expense", () => {
-	const payment: issuefab.Payment.Expense = {
+	const payment: proquse.Payment.Expense = {
 		type: "expense",
 		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
 		reimbursement: {
@@ -9,9 +9,9 @@ describe("Payment.Expense", () => {
 		},
 	}
 	it("is", () => {
-		expect(issuefab.Payment.Expense.is(payment)).toEqual(true)
-		expect(issuefab.Payment.Expense.is((({ reimbursement, ...expense }) => expense)(payment))).toEqual(true)
-		expect(issuefab.Payment.Expense.is((({ type, ...expense }) => expense)(payment))).toEqual(false)
-		expect(issuefab.Payment.Expense.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
+		expect(proquse.Payment.Expense.is(payment)).toEqual(true)
+		expect(proquse.Payment.Expense.is((({ reimbursement, ...expense }) => expense)(payment))).toEqual(true)
+		expect(proquse.Payment.Expense.is((({ type, ...expense }) => expense)(payment))).toEqual(false)
+		expect(proquse.Payment.Expense.is({ type: "invoice", limit: [10, "EUR"] })).toEqual(false)
 	})
 })

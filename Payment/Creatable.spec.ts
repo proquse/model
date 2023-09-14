@@ -1,13 +1,13 @@
-import { issuefab } from "../index"
+import { proquse } from "../index"
 import { Creatable } from "./Creatable"
 
 describe("Payment.Creatable", () => {
 	it("is", () => {
-		const card: issuefab.Payment.Creatable.Card = {
+		const card: proquse.Payment.Creatable.Card = {
 			type: "card",
 			limit: { interval: "month", value: 123, currency: "SEK", created: "2023-01-01" },
 		}
-		const prePaid: issuefab.Payment.Creatable.PrePaid = {
+		const prePaid: proquse.Payment.Creatable.PrePaid = {
 			...card,
 			type: "pre-paid",
 		}

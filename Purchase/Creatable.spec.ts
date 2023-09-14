@@ -1,7 +1,7 @@
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Purchase.Creatable", () => {
-	const creatable: issuefab.Purchase.Creatable = {
+	const creatable: proquse.Purchase.Creatable = {
 		purpose: "buy things",
 		payment: {
 			type: "expense",
@@ -10,7 +10,7 @@ describe("Purchase.Creatable", () => {
 		buyer: "jane@example.com",
 	}
 	it("is", () => {
-		expect(issuefab.Purchase.Creatable.is(creatable)).toEqual(true)
-		expect(issuefab.Purchase.Creatable.is((({ payment, ...creatable }) => creatable)(creatable))).toEqual(false)
+		expect(proquse.Purchase.Creatable.is(creatable)).toEqual(true)
+		expect(proquse.Purchase.Creatable.is((({ payment, ...creatable }) => creatable)(creatable))).toEqual(false)
 	})
 })

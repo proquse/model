@@ -1,8 +1,8 @@
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Key.Creatable", () => {
 	it("is", () => {
-		const key: issuefab.Key.Creatable = {
+		const key: proquse.Key.Creatable = {
 			name: { first: "jessie", last: "doe" },
 			email: "jessie@example.com",
 			permissions: {
@@ -21,9 +21,9 @@ describe("Key.Creatable", () => {
 				},
 			},
 		}
-		expect(issuefab.Key.Creatable.is(key)).toEqual(true)
-		expect(issuefab.Key.is((({ name, ...key }) => key)(key))).toEqual(false)
-		expect(issuefab.Key.Creatable.type.get(key)).toEqual(key)
-		expect(issuefab.Key.type.get((({ name, ...key }) => key)(key))).toEqual(undefined)
+		expect(proquse.Key.Creatable.is(key)).toEqual(true)
+		expect(proquse.Key.is((({ name, ...key }) => key)(key))).toEqual(false)
+		expect(proquse.Key.Creatable.type.get(key)).toEqual(key)
+		expect(proquse.Key.type.get((({ name, ...key }) => key)(key))).toEqual(undefined)
 	})
 })

@@ -1,9 +1,9 @@
 import { userwidgets } from "@userwidgets/model"
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Financial Controller", () => {
 	it("satisfies", () => {
-		const key: userwidgets.User.Key<userwidgets.User.Key.Creatable.Claims, issuefab.Roles.Permissions.Issuefab> = {
+		const key: userwidgets.User.Key<userwidgets.User.Key.Creatable.Claims, proquse.Roles.Permissions.Issuefab> = {
 			issuer: "",
 			audience: "",
 			issued: "",
@@ -24,9 +24,9 @@ describe("Financial Controller", () => {
 				},
 			},
 		}
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("admin", key.permissions)).toEqual(false)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("admin", key.permissions)).toEqual(false)
 		key.permissions = {
 			["*"]: {
 				org: { edit: true },
@@ -42,31 +42,31 @@ describe("Financial Controller", () => {
 				reports: true,
 			},
 		}
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "")).toEqual(false)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "")).toEqual(false)
-		expect(issuefab.Roles.satisfies("admin", key.permissions)).toEqual(false)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "")).toEqual(false)
+		expect(proquse.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("user", key.permissions, "")).toEqual(false)
+		expect(proquse.Roles.satisfies("admin", key.permissions)).toEqual(false)
 		key.permissions = {
 			organizationId: {
 				user: { invite: true, view: true },
 				payment: true,
 			},
 		}
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "")).toEqual(false)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "")).toEqual(false)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "")).toEqual(false)
+		expect(proquse.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("user", key.permissions, "")).toEqual(false)
 		key.permissions = {
 			["*"]: {
 				user: { invite: true, view: true },
 				payment: true,
 			},
 		}
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "")).toEqual(false)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "")).toEqual(true)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(false)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "")).toEqual(false)
+		expect(proquse.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("user", key.permissions, "")).toEqual(true)
 		key.permissions = {
 			"*": {
 				org: { view: true, edit: true, create: true },
@@ -81,8 +81,8 @@ describe("Financial Controller", () => {
 			},
 			whatever: { org: {} },
 		}
-		expect(issuefab.Roles.satisfies("admin", key.permissions)).toEqual(true)
-		expect(issuefab.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
-		expect(issuefab.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("admin", key.permissions)).toEqual(true)
+		expect(proquse.Roles.satisfies("financialController", key.permissions, "organizationId")).toEqual(true)
+		expect(proquse.Roles.satisfies("user", key.permissions, "organizationId")).toEqual(true)
 	})
 })

@@ -1,7 +1,7 @@
-import { issuefab } from "../../index"
+import { proquse } from "../../index"
 
 describe("receipt Preview", () => {
-	const dummyPreview: issuefab.Report.Receipt.Preview = {
+	const dummyPreview: proquse.Report.Receipt.Preview = {
 		costCenters: [
 			{
 				costCenter: {
@@ -55,9 +55,9 @@ describe("receipt Preview", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Report.Receipt.Preview.is(dummyPreview)).toEqual(true)
+		expect(proquse.Report.Receipt.Preview.is(dummyPreview)).toEqual(true)
 		expect(
-			issuefab.Report.Receipt.Preview.is((({ organization, ...dummyPreview }) => dummyPreview)(dummyPreview))
+			proquse.Report.Receipt.Preview.is((({ organization, ...dummyPreview }) => dummyPreview)(dummyPreview))
 		).toEqual(false)
 	})
 })
