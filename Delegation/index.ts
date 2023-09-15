@@ -104,15 +104,22 @@ export namespace Delegation {
 	}
 	export function path<
 		T extends Delegation | CostCenter,
-		TResult extends T extends Delegation ? Delegation | CostCenter : T
-	>(roots: T[], id: string): TResult[] | undefined {
-		const found = roots.find(root => root.id == id) as TResult
-		let result: TResult[] | undefined = found ? [found] : []
-		return result?.length
-			? result
-			: roots.find(
-					root => (result = path(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
-			  ) && result
+		TResult extends T extends Delegation ? Delegation : CostCenter | Delegation
+	>(nodes: T[], id: string, path: TResult[] = []): TResult[] | undefined {
+		const found = nodes.find(root => root.id == id) as TResult | undefined
+		let result: TResult[] | undefined
+		if (found)
+			result = [...path, found]
+		else if (nodes.length)
+			for (const node of nodes) {
+				const nodes = "costCenters" in node ? [...node.costCenters, ...node.delegations] : node.delegations
+				result = Delegation.path(nodes as T[], id, [...path, node] as TResult[])
+				if (result)
+					break
+			}
+		else
+			result = undefined
+		return result
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
@@ -161,7 +168,6 @@ export namespace Delegation {
 	function calculateAllocatedBalance(root: Delegation | CostCenter, date: isoly.Date): number {
 		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
 	}
-
 	export function validate(
 		delegation: Delegation,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }

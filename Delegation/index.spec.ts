@@ -490,6 +490,7 @@ describe("Delegation", () => {
 	})
 	it("path", () => {
 		expect(issuefab.Delegation.path([costCenter], "c1")).toEqual([costCenter])
+		expect(issuefab.Delegation.path([costCenter], "d1")).toEqual([costCenter, costCenter.delegations[0]])
 		expect(issuefab.Delegation.path([costCenter], "d2")).toEqual([
 			costCenter,
 			costCenter.delegations[0],
