@@ -121,6 +121,39 @@ export namespace Delegation {
 			result = undefined
 		return result
 	}
+	function sustainablePath<T extends Delegation | CostCenter>(
+		path: T[],
+		options?: { date?: isoly.Date; limit?: number }
+	): void {
+		const node = path.at(0)
+		const nodes = path.slice(1)
+		if (node) {
+			const date = options?.date ?? isoly.Date.now()
+			const allocated = Cadence.allocated(node.amount, date, { limit: options?.limit })
+			const children = ("costCenters" in node ? [...node.delegations, ...node.costCenters] : node.delegations).map(
+				node => node.amount
+			)
+			const sustainable = isoly.Date.next(
+				node.amount.created,
+				Cadence.sustainable(node.amount, children, date, { limit: allocated })
+			)
+			if (nodes.length)
+				sustainablePath(nodes, { date: sustainable })
+			else
+				node.amount.sustainable = sustainable
+		}
+	}
+	export function sustainable<T extends Delegation | CostCenter>(
+		ancestors: CostCenter[],
+		descendants: T[],
+		options?: { date: isoly.Date }
+	): T[] {
+		const paths = descendants
+			.map(descendant => path(ancestors, descendant.id)?.slice(1).concat(descendant)) // splice in the descendant into the new path. they might be diffrent objects? only mutate descendants
+			.filter((descendant: CostCenter[] | undefined): descendant is CostCenter[] => !!descendant)
+		paths.forEach(path => sustainablePath(path, options))
+		return descendants
+	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
 		return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
