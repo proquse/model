@@ -148,8 +148,11 @@ export namespace Delegation {
 		options?: { date?: isoly.Date }
 	): T[] {
 		const paths = descendants
-			.map(descendant => path(ancestors, descendant.id)?.slice(1).concat(descendant)) // splice in the descendant into the new path. they might be diffrent objects? only mutate descendants
-			.filter((descendant: CostCenter[] | undefined): descendant is CostCenter[] => !!descendant)
+			.map(descendant => {
+				const result = path(ancestors, descendant.id)?.slice(1).concat(descendant)
+				return result
+			})
+			.filter((value: (CostCenter | Delegation)[] | undefined): value is (CostCenter | Delegation)[] => !!value)
 		paths.forEach(path => sustainablePath(path, options))
 		return descendants
 	}
