@@ -9,12 +9,14 @@ describe("CostCenter", () => {
 		expect(typeof issuefab.CostCenter.find).toEqual("function")
 		expect(typeof issuefab.CostCenter.remove).toEqual("function")
 		expect(typeof issuefab.CostCenter.validate).toEqual("function")
+		expect(typeof issuefab.CostCenter.sustainable).toEqual("function")
 		expect(issuefab.CostCenter.findUser).toEqual(issuefab.Delegation.findUser)
 		expect(issuefab.CostCenter.findParent).toEqual(issuefab.Delegation.findParent)
 		expect(issuefab.CostCenter.findParents).toEqual(issuefab.Delegation.findParents)
 		expect(issuefab.CostCenter.path).toEqual(issuefab.Delegation.path)
 		expect(issuefab.CostCenter.allocated).toEqual(issuefab.Delegation.allocated)
 		expect(issuefab.CostCenter.spent).toEqual(issuefab.Delegation.spent)
+		expect(issuefab.CostCenter.sustainable).toEqual(issuefab.Delegation.sustainable)
 	})
 	it("is", () => {
 		const costCenter: issuefab.CostCenter = {

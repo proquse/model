@@ -1,3 +1,4 @@
+import { isoly } from "isoly"
 import { issuefab } from "../index"
 
 describe("Delegation", () => {
@@ -490,6 +491,7 @@ describe("Delegation", () => {
 	})
 	it("path", () => {
 		expect(issuefab.Delegation.path([costCenter], "c1")).toEqual([costCenter])
+		expect(issuefab.Delegation.path([costCenter], "d1")).toEqual([costCenter, costCenter.delegations[0]])
 		expect(issuefab.Delegation.path([costCenter], "d2")).toEqual([
 			costCenter,
 			costCenter.delegations[0],
@@ -504,5 +506,77 @@ describe("Delegation", () => {
 	})
 	it("validate", () => {
 		expect(issuefab.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual(true)
+	})
+	it("sustainable", () => {
+		const costCenter: issuefab.CostCenter = {
+			id: "c1",
+			amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
+			name: "Development",
+			created: "2023-01-01T13:37:42Z",
+			modified: "2024-01-01T13:37:42Z",
+			from: "jessie@example.com",
+			description: "description",
+			delegations: [
+				{
+					id: "d1",
+					amount: { interval: "month", value: 550, currency: "USD", created: "2023-02-01" },
+					costCenter: "Development",
+					created: "2023-01-01T13:37:42Z",
+					modified: "2024-01-01T13:37:42Z",
+					from: "jessie@example.com",
+					purpose: "Software services",
+					to: ["james@example.com"],
+					purchases: [],
+					delegations: [
+						{
+							id: "d2",
+							amount: { interval: "week", value: 50, currency: "USD", created: "2023-03-28" },
+							costCenter: "Development",
+							created: "2023-01-01T13:37:42Z",
+							modified: "2024-01-01T13:37:42Z",
+							from: "james@example.com",
+							purpose: "Software services",
+							to: ["jessie@example.com"],
+							delegations: [],
+							purchases: [],
+						},
+						{
+							id: "d3",
+							amount: { interval: "day", value: 75, currency: "USD", created: "2023-03-29" },
+							costCenter: "Development",
+							created: "2023-01-01T13:37:42Z",
+							modified: "2024-01-01T13:37:42Z",
+							from: "james@example.com",
+							purpose: "Software services",
+							to: ["jessie@example.com"],
+							delegations: [],
+							purchases: [],
+						},
+					],
+				},
+			],
+			costCenters: [],
+		}
+		const end = "2023-12-31"
+		const parentSustainableDate = isoly.Date.next(
+			costCenter.amount.created,
+			issuefab.Cadence.sustainable(
+				costCenter.amount,
+				costCenter.delegations.map(d => d.amount),
+				end
+			)
+		)
+		expect(parentSustainableDate).toEqual("2023-03-31")
+		const delegations = structuredClone(issuefab.Delegation.findUser([costCenter], "jessie@example.com"))
+		const expected = structuredClone(delegations).map(d => ({
+			...d,
+			amount: {
+				...d.amount,
+				sustainable: "2023-04-16",
+			},
+		}))
+		const result = issuefab.Delegation.sustainable([costCenter], delegations, { date: end })
+		expect(result).toBe(delegations)
+		expect(result).toEqual(expected)
 	})
 })
