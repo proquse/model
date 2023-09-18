@@ -147,13 +147,10 @@ export namespace Delegation {
 		descendants: T[],
 		options?: { date?: isoly.Date }
 	): T[] {
-		const paths = descendants
-			.map(descendant => {
-				const result = path(ancestors, descendant.id)?.slice(1).concat(descendant)
-				return result
-			})
+		descendants
+			.map(descendant => path(ancestors, descendant.id)?.slice(1).concat(descendant))
 			.filter((value: (CostCenter | Delegation)[] | undefined): value is (CostCenter | Delegation)[] => !!value)
-		paths.forEach(path => sustainablePath(path, options))
+			.forEach(path => sustainablePath(path, options))
 		return descendants
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
