@@ -146,7 +146,7 @@ export namespace Delegation {
 	export function sustainable<T extends Delegation | CostCenter>(
 		ancestors: CostCenter[],
 		descendants: T[],
-		options?: { date: isoly.Date }
+		options?: { date?: isoly.Date }
 	): T[] {
 		const paths = descendants
 			.map(descendant => path(ancestors, descendant.id)?.slice(1).concat(descendant)) // splice in the descendant into the new path. they might be diffrent objects? only mutate descendants
