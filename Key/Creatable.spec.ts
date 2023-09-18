@@ -5,21 +5,8 @@ describe("Key.Creatable", () => {
 		const key: issuefab.Key.Creatable = {
 			name: { first: "jessie", last: "doe" },
 			email: "jessie@example.com",
-			permissions: {
-				"*": {
-					org: true,
-					payment: { expense: true },
-					delegation: true,
-					app: {
-						view: true,
-					},
-				},
-				a1b2c3d4: {
-					org: true,
-					payment: { expense: true },
-					delegation: true,
-				},
-			},
+			permissions:
+				"*.org *.payment.expense *.delegation *.app.view a1b2c3d4.org a1b2c3d4.payment.expense a1b2c3d4-delegation",
 		}
 		expect(issuefab.Key.Creatable.is(key)).toEqual(true)
 		expect(issuefab.Key.is((({ name, ...key }) => key)(key))).toEqual(false)
