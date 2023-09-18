@@ -122,11 +122,10 @@ export namespace Delegation {
 		return result
 	}
 	function sustainablePath<T extends Delegation | CostCenter>(
-		path: T[],
+		[node, ...nodes]: T[],
 		options?: { date?: isoly.Date; limit?: number }
 	): void {
-		const node = path.at(0)
-		const nodes = path.slice(1)
+		// typescript does not understand node can be undefined!
 		if (node) {
 			const date = options?.date ?? isoly.Date.now()
 			const allocated = Cadence.allocated(node.amount, date, { limit: options?.limit })
