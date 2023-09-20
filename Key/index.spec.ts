@@ -48,7 +48,7 @@ describe("Key", () => {
 	}
 	const key: proquse.Key = {
 		...(({ permissions, ...creatable }) => creatable)(creatable),
-		audience: "issuefab",
+		audience: "proquse",
 		expires: "2023-08-19T00:25:25.000Z",
 		issued: "2023-08-18T12:08:21.000Z",
 		issuer: "userwidgets",
