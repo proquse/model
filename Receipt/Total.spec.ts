@@ -1,22 +1,22 @@
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Receipt.Total", () => {
 	it("is", () => {
-		const total: issuefab.Receipt.Total = {
+		const total: proquse.Receipt.Total = {
 			net: { value: 10, currency: "EUR" },
 			vat: { value: 2.5, currency: "EUR" },
 		}
-		expect(issuefab.Receipt.Total.is(total)).toEqual(true)
-		expect(issuefab.Receipt.Total.is((({ net, ...total }) => total)(total))).toEqual(false)
-		expect(issuefab.Receipt.Total.is((({ vat, ...total }) => total)(total))).toEqual(false)
+		expect(proquse.Receipt.Total.is(total)).toEqual(true)
+		expect(proquse.Receipt.Total.is((({ net, ...total }) => total)(total))).toEqual(false)
+		expect(proquse.Receipt.Total.is((({ vat, ...total }) => total)(total))).toEqual(false)
 	})
 
 	it("spent", () => {
-		const total: issuefab.Receipt.Total = {
+		const total: proquse.Receipt.Total = {
 			net: { value: 10, currency: "EUR" },
 			vat: { value: 25, currency: "EUR" },
 		}
 
-		expect(issuefab.Receipt.Total.spent(total, total.net.currency)).toEqual(35)
+		expect(proquse.Receipt.Total.spent(total, total.net.currency)).toEqual(35)
 	})
 })

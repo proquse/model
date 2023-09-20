@@ -1,8 +1,8 @@
 import { isoly } from "isoly"
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 describe("Delegation", () => {
-	const initialDelegation: issuefab.Delegation = {
+	const initialDelegation: proquse.Delegation = {
 		id: "---d1---",
 		from: "jane@example.com",
 		costCenter: "budget",
@@ -14,7 +14,7 @@ describe("Delegation", () => {
 		delegations: [],
 		purchases: [],
 	}
-	const costCenter: issuefab.CostCenter = {
+	const costCenter: proquse.CostCenter = {
 		id: "c1",
 		from: "jane@example.com",
 		name: "budget",
@@ -240,53 +240,53 @@ describe("Delegation", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Delegation.is(initialDelegation)).toEqual(true)
-		expect(issuefab.Delegation.is((({ from, ...delegation }) => delegation)(initialDelegation))).toEqual(false)
-		expect(issuefab.Delegation.is({ ...initialDelegation, to: [] })).toEqual(false)
-		expect(issuefab.Delegation.is(costCenter)).toEqual(false)
+		expect(proquse.Delegation.is(initialDelegation)).toEqual(true)
+		expect(proquse.Delegation.is((({ from, ...delegation }) => delegation)(initialDelegation))).toEqual(false)
+		expect(proquse.Delegation.is({ ...initialDelegation, to: [] })).toEqual(false)
+		expect(proquse.Delegation.is(costCenter)).toEqual(false)
 	})
 
 	it("findUser", () => {
-		expect(issuefab.Delegation.findUser([costCenter], "john@example.com")).toEqual([
+		expect(proquse.Delegation.findUser([costCenter], "john@example.com")).toEqual([
 			costCenter.delegations[0].delegations[0].delegations[0],
 			costCenter.delegations[1].delegations[0],
 		])
-		expect(new Set(issuefab.Delegation.findUser([costCenter], "richard@example.com"))).toEqual(
+		expect(new Set(proquse.Delegation.findUser([costCenter], "richard@example.com"))).toEqual(
 			new Set([costCenter.delegations[1], costCenter.delegations[0].delegations[0]])
 		)
 	})
 	it("find", () => {
-		expect(issuefab.CostCenter.find([costCenter], "c1")).toEqual({
+		expect(proquse.CostCenter.find([costCenter], "c1")).toEqual({
 			root: costCenter,
 			found: costCenter,
 		})
-		expect(issuefab.Delegation.find([costCenter], "d1")).toEqual({
+		expect(proquse.Delegation.find([costCenter], "d1")).toEqual({
 			root: costCenter,
 			found: costCenter.delegations[0],
 		})
-		expect(issuefab.Delegation.find([costCenter], "d5")).toEqual({
+		expect(proquse.Delegation.find([costCenter], "d5")).toEqual({
 			root: costCenter,
 			found: costCenter.delegations[1].delegations[0],
 		})
-		expect(issuefab.Delegation.find([costCenter], "abcd0001")).toEqual(undefined)
-		expect(issuefab.Delegation.find.node([costCenter], "c1")).toEqual({
+		expect(proquse.Delegation.find([costCenter], "abcd0001")).toEqual(undefined)
+		expect(proquse.Delegation.find.node([costCenter], "c1")).toEqual({
 			root: costCenter,
 			found: costCenter,
 		})
 	})
 	it("findParent", () => {
-		expect(issuefab.Delegation.findParent([costCenter], costCenter.delegations[0].id)).toEqual({
+		expect(proquse.Delegation.findParent([costCenter], costCenter.delegations[0].id)).toEqual({
 			root: costCenter,
 			found: costCenter,
 		})
-		expect(issuefab.Delegation.findParent([costCenter.delegations[1]], "d6")).toEqual({
+		expect(proquse.Delegation.findParent([costCenter.delegations[1]], "d6")).toEqual({
 			root: costCenter.delegations[1],
 			found: costCenter.delegations[1].delegations[0],
 		})
-		expect(issuefab.Delegation.findParent([costCenter.delegations[0]], "d6")).toEqual(undefined)
+		expect(proquse.Delegation.findParent([costCenter.delegations[0]], "d6")).toEqual(undefined)
 	})
 	it("change", () => {
-		let before: issuefab.Delegation = {
+		let before: proquse.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -311,7 +311,7 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		let updated: issuefab.Delegation = {
+		let updated: proquse.Delegation = {
 			id: "abcd0002",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -323,7 +323,7 @@ describe("Delegation", () => {
 			delegations: [],
 			purchases: [],
 		}
-		let after: issuefab.Delegation = {
+		let after: proquse.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -335,11 +335,11 @@ describe("Delegation", () => {
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
-		let result = issuefab.Delegation.change([before], updated)
+		let result = proquse.Delegation.change([before], updated)
 		expect(before).toEqual(after)
 		expect(result).toEqual({ root: before, changed: updated })
 		const final = { ...before, to: ["jane@example.com"] }
-		result = issuefab.Delegation.change([before], final)
+		result = proquse.Delegation.change([before], final)
 		expect(before).toEqual(final)
 		expect(result).toEqual({ root: before, changed: final })
 
@@ -392,15 +392,15 @@ describe("Delegation", () => {
 			delegations: [{ ...updated }],
 			purchases: [],
 		}
-		result = issuefab.Delegation.change([before], updated)
+		result = proquse.Delegation.change([before], updated)
 		expect(result).toEqual(undefined)
 		updated = { ...updated, id: "abcd0001" }
 		after = { ...updated }
-		result = issuefab.Delegation.change([before], updated)
+		result = proquse.Delegation.change([before], updated)
 		expect(result).toEqual(undefined)
 	})
 	it("remove", () => {
-		const toBeRemoved: issuefab.Delegation = {
+		const toBeRemoved: proquse.Delegation = {
 			id: "abcd0003",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -412,7 +412,7 @@ describe("Delegation", () => {
 			delegations: [],
 			purchases: [],
 		}
-		const after: issuefab.Delegation = {
+		const after: proquse.Delegation = {
 			id: "abcd0001",
 			from: "jane@example.com",
 			costCenter: "budget",
@@ -437,38 +437,38 @@ describe("Delegation", () => {
 			],
 			purchases: [],
 		}
-		const before: issuefab.Delegation = {
+		const before: proquse.Delegation = {
 			...after,
 			delegations: [...after.delegations, toBeRemoved],
 		}
-		expect(issuefab.Delegation.remove([before], toBeRemoved.id)).toEqual({ root: before, removed: toBeRemoved })
+		expect(proquse.Delegation.remove([before], toBeRemoved.id)).toEqual({ root: before, removed: toBeRemoved })
 		expect(before).toEqual(after)
-		expect(issuefab.Delegation.remove([before], before.id)).toEqual({ root: before, removed: before })
-		expect(issuefab.Delegation.remove([after], "xyz")).toEqual(undefined)
+		expect(proquse.Delegation.remove([before], before.id)).toEqual({ root: before, removed: before })
+		expect(proquse.Delegation.remove([after], "xyz")).toEqual(undefined)
 	})
 	it("spent", () => {
-		expect(issuefab.Delegation.spent(costCenter)).toEqual(748)
-		expect(issuefab.Delegation.spent(costCenter, { vat: false })).toEqual(718)
-		expect(issuefab.Delegation.spent(costCenter.delegations[1])).toEqual(0)
-		expect(issuefab.Delegation.spent(costCenter.delegations[0])).toEqual(748)
-		expect(issuefab.Delegation.spent(costCenter.delegations[0], { vat: false })).toEqual(718)
-		expect(issuefab.Delegation.spent(costCenter.delegations[0].delegations[0], { vat: false })).toEqual(120)
-		expect(issuefab.Delegation.spent.balance(costCenter, "2023-12-31")).toEqual(19_252)
-		expect(issuefab.Delegation.spent.balance(costCenter, "2023-12-31", { vat: false })).toEqual(19_282)
-		expect(issuefab.Delegation.spent.balance(costCenter.delegations[0], "2023-12-31")).toEqual(1_252)
-		expect(issuefab.Delegation.spent.balance(costCenter.delegations[0], "2023-12-31", { vat: false })).toEqual(1_282)
+		expect(proquse.Delegation.spent(costCenter)).toEqual(748)
+		expect(proquse.Delegation.spent(costCenter, { vat: false })).toEqual(718)
+		expect(proquse.Delegation.spent(costCenter.delegations[1])).toEqual(0)
+		expect(proquse.Delegation.spent(costCenter.delegations[0])).toEqual(748)
+		expect(proquse.Delegation.spent(costCenter.delegations[0], { vat: false })).toEqual(718)
+		expect(proquse.Delegation.spent(costCenter.delegations[0].delegations[0], { vat: false })).toEqual(120)
+		expect(proquse.Delegation.spent.balance(costCenter, "2023-12-31")).toEqual(19_252)
+		expect(proquse.Delegation.spent.balance(costCenter, "2023-12-31", { vat: false })).toEqual(19_282)
+		expect(proquse.Delegation.spent.balance(costCenter.delegations[0], "2023-12-31")).toEqual(1_252)
+		expect(proquse.Delegation.spent.balance(costCenter.delegations[0], "2023-12-31", { vat: false })).toEqual(1_282)
 	})
 	it("allocated", () => {
-		expect(issuefab.Delegation.allocated(costCenter, "2023-12-31")).toEqual(6_000)
-		expect(issuefab.Delegation.allocated.balance(costCenter, "2023-12-31")).toEqual(14_000)
+		expect(proquse.Delegation.allocated(costCenter, "2023-12-31")).toEqual(6_000)
+		expect(proquse.Delegation.allocated.balance(costCenter, "2023-12-31")).toEqual(14_000)
 		expect(
-			issuefab.Delegation.allocated.balance(costCenter.delegations[1].delegations[0].delegations[0], "2023-12-31")
+			proquse.Delegation.allocated.balance(costCenter.delegations[1].delegations[0].delegations[0], "2023-12-31")
 		).toEqual(1_000)
 	})
 	it("create", () => {
 		expect(
-			issuefab.Delegation.is(
-				issuefab.Delegation.create({
+			proquse.Delegation.is(
+				proquse.Delegation.create({
 					to: ["james@example.com"],
 					amount: { interval: "year", value: 100_000, currency: "EUR", created: "2023-01-01" },
 					costCenter: "gear",
@@ -479,25 +479,25 @@ describe("Delegation", () => {
 		).toEqual(true)
 	})
 	it("findParents", () => {
-		expect(issuefab.Delegation.findParents([costCenter], "d2")).toEqual([costCenter, costCenter.delegations[0]])
-		expect(issuefab.Delegation.findParents([costCenter], "c1")).toEqual([])
-		expect(issuefab.Delegation.findParents([costCenter], "d6")).toEqual([
+		expect(proquse.Delegation.findParents([costCenter], "d2")).toEqual([costCenter, costCenter.delegations[0]])
+		expect(proquse.Delegation.findParents([costCenter], "c1")).toEqual([])
+		expect(proquse.Delegation.findParents([costCenter], "d6")).toEqual([
 			costCenter,
 			costCenter.delegations[1],
 			costCenter.delegations[1].delegations[0],
 		])
-		expect(issuefab.Delegation.findParents([costCenter], "d1")).toEqual([costCenter])
-		expect(issuefab.Delegation.findParents([costCenter], "xyz")).toEqual(undefined)
+		expect(proquse.Delegation.findParents([costCenter], "d1")).toEqual([costCenter])
+		expect(proquse.Delegation.findParents([costCenter], "xyz")).toEqual(undefined)
 	})
 	it("path", () => {
-		expect(issuefab.Delegation.path([costCenter], "c1")).toEqual([costCenter])
-		expect(issuefab.Delegation.path([costCenter], "d1")).toEqual([costCenter, costCenter.delegations[0]])
-		expect(issuefab.Delegation.path([costCenter], "d2")).toEqual([
+		expect(proquse.Delegation.path([costCenter], "c1")).toEqual([costCenter])
+		expect(proquse.Delegation.path([costCenter], "d1")).toEqual([costCenter, costCenter.delegations[0]])
+		expect(proquse.Delegation.path([costCenter], "d2")).toEqual([
 			costCenter,
 			costCenter.delegations[0],
 			costCenter.delegations[0].delegations[0],
 		])
-		expect(issuefab.Delegation.path([costCenter], "d6")).toEqual([
+		expect(proquse.Delegation.path([costCenter], "d6")).toEqual([
 			costCenter,
 			costCenter.delegations[1],
 			costCenter.delegations[1].delegations[0],
@@ -505,10 +505,10 @@ describe("Delegation", () => {
 		])
 	})
 	it("validate", () => {
-		expect(issuefab.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual(true)
+		expect(proquse.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual(true)
 	})
 	it("sustainable", () => {
-		const costCenter: issuefab.CostCenter = {
+		const costCenter: proquse.CostCenter = {
 			id: "c1",
 			amount: { interval: "month", value: 400, currency: "USD", created: "2023-01-01" },
 			name: "Development",
@@ -560,14 +560,14 @@ describe("Delegation", () => {
 		const end = "2023-12-31"
 		const parentSustainableDate = isoly.Date.next(
 			costCenter.amount.created,
-			issuefab.Cadence.sustainable(
+			proquse.Cadence.sustainable(
 				costCenter.amount,
 				costCenter.delegations.map(d => d.amount),
 				end
 			)
 		)
 		expect(parentSustainableDate).toEqual("2023-03-31")
-		const delegations = structuredClone(issuefab.Delegation.findUser([costCenter], "jessie@example.com"))
+		const delegations = structuredClone(proquse.Delegation.findUser([costCenter], "jessie@example.com"))
 		const expected = structuredClone(delegations).map(d => ({
 			...d,
 			amount: {
@@ -575,7 +575,7 @@ describe("Delegation", () => {
 				sustainable: "2023-04-16",
 			},
 		}))
-		const result = issuefab.Delegation.sustainable([costCenter], delegations, { date: end })
+		const result = proquse.Delegation.sustainable([costCenter], delegations, { date: end })
 		expect(result).toBe(delegations)
 		expect(result).toEqual(expected)
 	})

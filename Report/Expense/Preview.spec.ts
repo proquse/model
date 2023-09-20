@@ -1,7 +1,7 @@
-import { issuefab } from "../../index"
+import { proquse } from "../../index"
 
 describe("Expense Preview", () => {
-	const purchase: issuefab.Purchase = {
+	const purchase: proquse.Purchase = {
 		id: "---p----",
 		created: "2022-01-01T00:00:42Z",
 		modified: "2022-01-01T00:00:42Z",
@@ -18,7 +18,7 @@ describe("Expense Preview", () => {
 			},
 		],
 	}
-	const preview: issuefab.Report.Expense.Preview = {
+	const preview: proquse.Report.Expense.Preview = {
 		userExpenses: {
 			"jessie@rocket.com": [purchase, purchase],
 			"james@rocket.com": [purchase],
@@ -31,10 +31,10 @@ describe("Expense Preview", () => {
 	}
 
 	it("is", () => {
-		expect(issuefab.Report.Expense.Preview.is(preview)).toEqual(true)
-		expect(issuefab.Report.Expense.Preview.is((({ organization, ...preview }) => preview)(preview))).toEqual(false)
-		expect(issuefab.Report.Expense.Preview.type.get({ ...preview, test: "dummy text" })).toEqual(preview)
-		expect(issuefab.Report.Expense.Preview.is((({ dateRange, ...preview }) => preview)(preview))).toEqual(false)
-		expect(issuefab.Report.Expense.Preview.is((({ userExpenses, ...preview }) => preview)(preview))).toEqual(false)
+		expect(proquse.Report.Expense.Preview.is(preview)).toEqual(true)
+		expect(proquse.Report.Expense.Preview.is((({ organization, ...preview }) => preview)(preview))).toEqual(false)
+		expect(proquse.Report.Expense.Preview.type.get({ ...preview, test: "dummy text" })).toEqual(preview)
+		expect(proquse.Report.Expense.Preview.is((({ dateRange, ...preview }) => preview)(preview))).toEqual(false)
+		expect(proquse.Report.Expense.Preview.is((({ userExpenses, ...preview }) => preview)(preview))).toEqual(false)
 	})
 })

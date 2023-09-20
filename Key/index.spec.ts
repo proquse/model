@@ -1,6 +1,6 @@
 import { authly } from "authly"
 import { userwidgets } from "@userwidgets/model"
-import { issuefab } from "../index"
+import { proquse } from "../index"
 
 const now = new Date(Math.floor(new Date().getTime() / 1000) * 1000)
 authly.Issuer.defaultIssuedAt = Math.floor(now.getTime() / 1000)
@@ -40,15 +40,15 @@ describe("Key", () => {
 		"0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg" +
 		"cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc" +
 		"mwIDAQAB"
-	const creatable: issuefab.Key.Creatable = {
+	const creatable: proquse.Key.Creatable = {
 		name: { first: "jessie", last: "doe" },
 		email: "jessie@example.com",
 		permissions:
 			"*.org *.payhemt.expense *.delegation *.app.view a1b2c3d4.org a1b2c3d4.payment.expense a1b2c3d4.delegation",
 	}
-	const key: issuefab.Key = {
+	const key: proquse.Key = {
 		...(({ permissions, ...creatable }) => creatable)(creatable),
-		audience: "issuefab",
+		audience: "proquse",
 		expires: "2023-08-19T00:25:25.000Z",
 		issued: "2023-08-18T12:08:21.000Z",
 		issuer: "userwidgets",
@@ -71,25 +71,25 @@ describe("Key", () => {
 			"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ1c2Vyd2lkZ2V0cyIsImlhdCI6MTY5MjM2MTUyNSwiYXVkIjoiaXNzdWVmYWIiLCJleHAiOjE2OTI0MDQ3MjUsIm5hbSI6eyJmaXJzdCI6Implc3NpZSIsImxhc3QiOiJkb2UifSwic3ViIjoiamVzc2llQGV4YW1wbGUuY29tIiwicGVyIjoiKi5vcmcgKi5wYXltZW50LmV4cGVuc2UgKi5kZWxlZ2F0aW9uICouYXBwLnZpZXcgYTFiMmMzZDQub3JnIGExYjJjM2Q0LnBheW1lbnQuZXhwZW5zZSBhMWIyYzNkNC5kZWxlZ2F0aW9uIn0.irrOnQOKWlG5TcD1PxBCbiVFQYhMVbueKvtvFyBIy8ueEGftgvltCNhBfW3cx0AJunSP-f6rQwjPFU4huWQlo54UDOTXk7AX6igLDSThB44W-eRCUGHclid_67KIwsq7c5uVqWAbb4UMLILWHMg8ooYafKpeCtjlfLNNRTlYHduZz1dLQSoPqJR40Jpl0UmfKMGXXP-OXQH9cStKg2ZY9L76prhFcH1wTcCFp4-1GjpxI8Ewd-O_djpkRJ8OJCq07X7BckJAyOOo2dV5dOZW9Bb-0ncfKKNDmY2qnhw3jHWO8R5HF0yvkUF05edh_7uE57dPM3vqpspHkfoU_VvORQ",
 	}
 	it("is", () => {
-		expect(issuefab.Key.is(key)).toEqual(true)
-		expect(issuefab.Key.is((({ issuer, ...key }) => key)(key))).toEqual(false)
-		expect(issuefab.Key.Creatable.type.get(key)).toEqual(undefined)
-		expect(issuefab.Key.type.get(key)).toEqual(key)
-		expect(issuefab.Key.type.get((({ issuer, ...key }) => key)(key))).toEqual(undefined)
+		expect(proquse.Key.is(key)).toEqual(true)
+		expect(proquse.Key.is((({ issuer, ...key }) => key)(key))).toEqual(false)
+		expect(proquse.Key.Creatable.type.get(key)).toEqual(undefined)
+		expect(proquse.Key.type.get(key)).toEqual(key)
+		expect(proquse.Key.type.get((({ issuer, ...key }) => key)(key))).toEqual(undefined)
 	})
 	it("signing and verifying", async () => {
-		const issuer = userwidgets.User.Key.Issuer.create("userwidgets", "issuefab", publicKey, privateKey)
+		const issuer = userwidgets.User.Key.Issuer.create("userwidgets", "proquse", publicKey, privateKey)
 		const token = await issuer.sign(creatable, now.getTime() / 1000)
 		if (token == undefined) {
 			expect(token).not.toEqual(undefined)
 			return
 		}
-		const verifier = issuefab.Key.Verifier.create(publicKey)
+		const verifier = proquse.Key.Verifier.create(publicKey)
 		const key = await verifier.verify(token)
 		if (key == undefined) {
 			expect(key).not.toEqual(undefined)
 			return
 		}
-		expect(issuefab.Key.is(key))
+		expect(proquse.Key.is(key))
 	})
 })

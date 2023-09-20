@@ -8,7 +8,7 @@ export namespace Roles {
 	export type Permissions = RolesPermissions
 	export const Permissions = RolesPermissions
 	export namespace Permissions {
-		export type Issuefab = RolesPermissions.Issuefab
+		export type Proquse = RolesPermissions.Proquse
 	}
 	export const type = isly.union<Roles, "admin", "financialController", "user">(
 		isly.string("admin"),
@@ -19,7 +19,7 @@ export namespace Roles {
 	export const flaw = type.flaw
 	export const record = {
 		admin: [...Permissions.flags],
-		financialController: [...Permissions.Issuefab.flags, ...userwidgets.User.Permissions.Organization.flags],
+		financialController: [...Permissions.Proquse.flags, ...userwidgets.User.Permissions.Organization.flags],
 		user: ["user.view", "user.invite", "payment"],
 	}
 	export const roles = Object.keys(record)
