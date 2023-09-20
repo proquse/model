@@ -94,4 +94,5 @@ export namespace CostCenter {
 	export const path = Delegation.path
 	export const spent = Delegation.spent
 	export const allocated = Delegation.allocated
+	export const sustainable = Delegation.sustainable
 }

@@ -104,15 +104,54 @@ export namespace Delegation {
 	}
 	export function path<
 		T extends Delegation | CostCenter,
-		TResult extends T extends Delegation ? Delegation | CostCenter : T
-	>(roots: T[], id: string): TResult[] | undefined {
-		const found = roots.find(root => root.id == id) as TResult
-		let result: TResult[] | undefined = found ? [found] : []
-		return result?.length
-			? result
-			: roots.find(
-					root => (result = path(root.delegations, id)) && (result = [root as unknown as TResult, ...result])
-			  ) && result
+		TResult extends T extends Delegation ? Delegation : CostCenter | Delegation
+	>(nodes: T[], id: string, path: TResult[] = []): TResult[] | undefined {
+		const found = nodes.find(root => root.id == id) as TResult | undefined
+		let result: TResult[] | undefined
+		if (found)
+			result = [...path, found]
+		else if (nodes.length)
+			for (const node of nodes) {
+				const nodes = "costCenters" in node ? [...node.costCenters, ...node.delegations] : node.delegations
+				result = Delegation.path(nodes as T[], id, [...path, node] as TResult[])
+				if (result)
+					break
+			}
+		else
+			result = undefined
+		return result
+	}
+	function sustainablePath<T extends Delegation | CostCenter>(
+		[node, ...nodes]: T[],
+		options?: { date?: isoly.Date; limit?: number }
+	): void {
+		// typescript does not understand node can be undefined!
+		if (node) {
+			const date = options?.date ?? isoly.Date.now()
+			const allocated = Cadence.allocated(node.amount, date, { limit: options?.limit })
+			const children = ("costCenters" in node ? [...node.delegations, ...node.costCenters] : node.delegations).map(
+				node => node.amount
+			)
+			const sustainable = isoly.Date.next(
+				node.amount.created,
+				Cadence.sustainable(node.amount, children, date, { limit: allocated })
+			)
+			if (nodes.length)
+				sustainablePath(nodes, { date: sustainable })
+			else
+				node.amount.sustainable = sustainable
+		}
+	}
+	export function sustainable<T extends Delegation | CostCenter>(
+		ancestors: CostCenter[],
+		descendants: T[],
+		options?: { date?: isoly.Date }
+	): T[] {
+		descendants
+			.map(descendant => path(ancestors, descendant.id)?.slice(1).concat(descendant))
+			.filter((value: (CostCenter | Delegation)[] | undefined): value is (CostCenter | Delegation)[] => !!value)
+			.forEach(path => sustainablePath(path, options))
+		return descendants
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
@@ -161,7 +200,6 @@ export namespace Delegation {
 	function calculateAllocatedBalance(root: Delegation | CostCenter, date: isoly.Date): number {
 		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
 	}
-
 	export function validate(
 		delegation: Delegation,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }

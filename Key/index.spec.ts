@@ -43,6 +43,15 @@ describe("Key", () => {
 	const creatable: proquse.Key.Creatable = {
 		name: { first: "jessie", last: "doe" },
 		email: "jessie@example.com",
+		permissions:
+			"*.org *.payhemt.expense *.delegation *.app.view a1b2c3d4.org a1b2c3d4.payment.expense a1b2c3d4.delegation",
+	}
+	const key: issuefab.Key = {
+		...(({ permissions, ...creatable }) => creatable)(creatable),
+		audience: "issuefab",
+		expires: "2023-08-19T00:25:25.000Z",
+		issued: "2023-08-18T12:08:21.000Z",
+		issuer: "userwidgets",
 		permissions: {
 			"*": {
 				org: true,

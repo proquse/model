@@ -5,6 +5,7 @@ import { Amount } from "../Amount"
 export interface Cadence extends Amount {
 	interval: Cadence.Interval
 	created: isoly.Date
+	sustainable?: isoly.Date
 }
 export namespace Cadence {
 	export const intervals = ["single", "day", "week", "month", "year"] as const
@@ -17,12 +18,14 @@ export namespace Cadence {
 			isly.string("month"),
 			isly.string("year")
 		),
-		created: isly.fromIs("Date", isoly.Date.is),
+		created: isly.fromIs("isoly.Date", isoly.Date.is),
+		sustainable: isly.fromIs("isoly.Date", isoly.Date.is).optional(),
 	})
 	export const is = type.is
 	export const flaw = type.flaw
 	export function allocated(cadence: Cadence, date: isoly.Date, options?: { limit?: number }): number {
 		let result = 0
+		date = cadence.sustainable && cadence.sustainable < date ? cadence.sustainable : date
 		if (cadence.created <= date) {
 			if (cadence.interval == "year") {
 				const initial = isoly.Date.firstOfYear(cadence.created)
