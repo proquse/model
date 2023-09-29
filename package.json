@@ -71,8 +71,8 @@
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
-		"@userwidgets/model": "^0.8.2",
-		"authly": "^3.0.6",
+		"@userwidgets/model": "^0.8.5",
+		"authly": "^3.0.7",
 		"cryptly": "^3.0.8",
 		"flagly": "^0.1.13",
 		"isly": "^0.1.10",
