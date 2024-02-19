@@ -12,21 +12,28 @@ export interface CostCenter extends CostCenter.Creatable {
 	id: CostCenter.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
-	delegations: Delegation[]
-	costCenters: CostCenter[]
+	usage: (Delegation | CostCenter)[]
+	type: "costCenter"
 }
 export namespace CostCenter {
 	export type Identifier = CostCenterIdentifier
 	export const Identifier = CostCenterIdentifier
 	export type Creatable = CostCenterCreatable
 	export const Creatable = CostCenterCreatable
+
 	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
-		delegations: isly.array(Delegation.type),
-		costCenters: isly.array(isly.lazy(() => type, "CostCenter")),
+		usage: isly.array(
+			isly.union(
+				Delegation.type,
+				isly.lazy(() => type, "costCenter")
+			)
+		),
+		type: isly.string("costCenter"),
 	})
+
 	export const is = type.is
 	export const flaw = type.flaw
 
@@ -38,8 +45,8 @@ export namespace CostCenter {
 			id: override?.id ?? cryptly.Identifier.generate(Identifier.length),
 			created: override?.created ?? now,
 			modified: override?.modified ?? now,
-			delegations: override?.delegations ?? [],
-			costCenters: override?.costCenters ?? [],
+			usage: override?.usage ?? [],
+			type: "costCenter",
 		}
 	}
 	export const change = changeCostCenter
@@ -51,7 +58,13 @@ export namespace CostCenter {
 		return result
 			? result
 			: roots.find(
-					root => (result = (result => (!result ? result : { ...result, root }))(remove(root.costCenters, id)))
+					root =>
+						(result = (result => (!result ? result : { ...result, root }))(
+							remove(
+								root.usage.filter((action): action is CostCenter => CostCenter.is(action)),
+								id
+							)
+						))
 			  ) && result
 	}
 	export function validate(
@@ -64,7 +77,7 @@ export namespace CostCenter {
 			costCenter.amount.created,
 			Cadence.sustainable(
 				costCenter.amount,
-				costCenter.costCenters.map(c => c.amount).concat(costCenter.delegations.map(d => d.amount)),
+				costCenter.usage.map(use => use.amount),
 				date,
 				{ limit: allocated }
 			)
@@ -75,16 +88,30 @@ export namespace CostCenter {
 			isoly.DateTime.getDate(costCenter.created) <= costCenter.amount.created &&
 			costCenter.amount.created <= sustainable &&
 			(!options?.currency || costCenter.amount.currency == options.currency) &&
-			costCenter.costCenters.every(
-				c =>
-					costCenter.created <= c.created &&
-					CostCenter.validate(c, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
-			) &&
-			costCenter.delegations.every(
-				d =>
-					costCenter.created <= d.created &&
-					Delegation.validate(d, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
-			)
+			costCenter.usage.every(action => {
+				if (costCenter.created <= action.created)
+					CostCenter.is(action)
+						? CostCenter.validate(action, {
+								date: sustainable,
+								currency: costCenter.amount.currency,
+								spent: options?.spent,
+						  })
+						: Delegation.validate(action, {
+								date: sustainable,
+								currency: costCenter.amount.currency,
+								spent: options?.spent,
+						  })
+			})
+			// costCenter.usage.every(
+			// 	c =>
+			// 		costCenter.created <= c.created &&
+			// 		CostCenter.validate(c, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
+			// ) &&
+			// costCenter.usage.every(
+			// 	d =>
+			// 		costCenter.created <= d.created &&
+			// 		Delegation.validate(d, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
+			// )
 		)
 	}
 	export const find = Object.assign(findCostCenter, { node: findNode })
