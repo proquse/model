@@ -3,7 +3,7 @@ import { isoly } from "isoly"
 import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
-import { CostCenter } from "../CostCenter"
+import type { CostCenter } from "../CostCenter"
 import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
@@ -49,55 +49,94 @@ export namespace Delegation {
 		}
 	}
 	export const change = changeDelegation
-	export function remove<T extends Delegation | CostCenter>(
-		roots: T[],
+	export function remove(
+		//it appears that we doesnt mutate
+		roots: (CostCenter | Delegation)[],
 		id: string
-	): { root: T; removed: Delegation } | undefined {
-		let result: { root: T; removed: Delegation } | undefined
-		const index = roots.findIndex(
-			root => root.id == id && root.type == "delegation" && (result = { root: root, removed: root })
-		)
-		if (index >= 0)
-			roots.splice(index, 1)
+	): { root: CostCenter | Delegation; removed: Delegation } | undefined {
+		let result: { root: CostCenter | Delegation; removed: Delegation } | undefined
+		const index = roots.findIndex(root => root.id == id && root.type == "delegation")
+		const found = index == -1 ? undefined : roots[index]
+
+		if (found != undefined && found.type == "delegation")
+			result = { root: found, removed: found }
+
+		if (result == undefined)
+			for (const root of roots) {
+				const usage = root.usage.reduce<(Delegation | CostCenter)[]>(
+					(result, node) => result.concat(node.type != "purchase" ? node : []),
+					[]
+				)
+				result = remove(usage, id)
+				if (result) {
+					//we need to splice here
+					const index = root.usage.findIndex(node => node.id == id)
+					if (index != -1)
+						root.usage.splice(index, 1)
+					result = { ...result, root }
+					break
+				}
+			}
 		return result
-			? result
-			: roots.find(
-					root =>
-						(result = (result => (!result ? result : { ...result, root }))(
-							remove(root.usage.filter(Delegation.is || CostCenter.is), id)
-						))
-			  ) && result
 	}
+
 	export const find = Object.assign(findDelegation, { node: findNode })
-	export function findUser<T extends Delegation | CostCenter>(roots: T[], email: userwidgets.Email): Delegation[] {
+	export function findUser(roots: (CostCenter | Delegation)[], email: userwidgets.Email): Delegation[] {
+		//returns on array of Delegations that a user has received
 		const result: Delegation[] = []
 		for (const root of roots) {
-			if (root.type == "costCenter")
-				result.push(...findUser(root.usage.filter(CostCenter.is), email))
-			else
-				root.to.includes(email) && result.push(root)
-			result.push(...findUser(root.usage.filter(Delegation.is), email))
+			if (root.type == "costCenter") {
+				const costCenters = root.usage.reduce<CostCenter[]>(
+					(result, node) => result.concat(node.type == "costCenter" ? node : []),
+					[]
+				)
+				result.push(...findUser(costCenters, email))
+			} else if (root.to.includes(email))
+				result.push(root)
+
+			const delegations = root.usage.reduce<Delegation[]>(
+				(result, node) => result.concat(node.type == "delegation" ? node : []),
+				[]
+			)
+			result.push(...findUser(delegations, email))
 		}
+
 		return result
 	}
-	export function findParent<
-		T extends Delegation | CostCenter,
-		TResult extends T extends Delegation ? Delegation | CostCenter : T
-	>(roots: T[], id: string): { root: TResult; found: TResult } | undefined {
-		let result: { root: TResult; found: TResult } | undefined
-		return roots.find(
-			root =>
-				root.usage.filter(Delegation.is).find(delegation => delegation.id == id) && //is this typesafe?
-				(result = { root: root as any as TResult, found: root as any as TResult })
-		)
-			? result
-			: roots.find(
-					root =>
-						(result = (result =>
-							!result ? result : ({ ...result, root } as unknown as { root: TResult; found: TResult }))(
-							findParent(root.usage.filter(Delegation.is), id) //is this typesafe?
-						))
-			  ) && result
+
+	export function findParent(
+		roots: (Delegation | CostCenter)[],
+		id: string
+	): { root: Delegation | CostCenter; found: Delegation | CostCenter } | undefined {
+		let result: { root: Delegation | CostCenter; found: Delegation | CostCenter } | undefined
+
+		for (const root of roots) {
+			if (root.usage.find(node => node.id == id))
+				result = { root: root, found: root }
+			else {
+				for (const node of root.usage)
+					if (node.type != "purchase") {
+						result = findParent([node], id)
+						if (result)
+							result = { ...result, root }
+					}
+			}
+		}
+
+		return result
+		// return roots.find(
+		// 	root =>
+		// 		root.usage.filter(Delegation.is).find(delegation => delegation.id == id) &&
+		// 		(result = { root: root as any as TResult, found: root as any as TResult })
+		// )
+		// 	? result
+		// 	: roots.find(
+		// 			root =>
+		// 				(result = (result =>
+		// 					!result ? result : ({ ...result, root } as unknown as { root: TResult; found: TResult }))(
+		// 					findParent(root.usage.filter(Delegation.is), id)
+		// 				))
+		// 	  ) && result
 	}
 	export function findParents<
 		T extends Delegation | CostCenter,
@@ -112,18 +151,26 @@ export namespace Delegation {
 						(result = [root as unknown as TResult, ...result])
 			  ) && result
 	}
-	export function path<
-		T extends Delegation | CostCenter,
-		TResult extends T extends Delegation ? Delegation : CostCenter | Delegation
-	>(nodes: T[], id: string, path: TResult[] = []): TResult[] | undefined {
-		const found = nodes.find(root => root.id == id) as TResult | undefined
-		let result: TResult[] | undefined
+	export function path(
+		nodes: (Delegation | CostCenter)[],
+		id: string,
+		path: (Delegation | CostCenter)[] = []
+	): (Delegation | CostCenter)[] | undefined {
+		const currentNodes = nodes
+		currentNodes
+		const found = nodes.find(root => root.id == id)
+		let result: (Delegation | CostCenter)[] | undefined
 		if (found)
 			result = [...path, found]
 		else if (nodes.length)
 			for (const node of nodes) {
-				const nodes = node.usage
-				result = Delegation.path(nodes as T[], id, [...path, node] as TResult[])
+				// here we remove Purchases
+				let nodes = node.usage
+				nodes = nodes.reduce<(Delegation | CostCenter)[]>(
+					(result, node) => result.concat(node.type != "purchase" ? node : []),
+					[]
+				)
+				result = Delegation.path(nodes, id, [...path, node])
 				if (result)
 					break
 			}
@@ -169,13 +216,15 @@ export namespace Delegation {
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
-		return root.usage.reduce(
+		let result: number
+		result = root.usage.reduce(
 			(result, current) =>
 				Purchase.is(current)
 					? isoly.Currency.add(root.amount.currency, result, Purchase.spent(current, { vat: options?.vat }))
 					: result + spent(current, { ...options }),
 			0
 		)
+		return result
 
 		// root.usage
 		// 	.filter((value): value is Delegation | CostCenter => Delegation.is(value) || CostCenter.is(value))
@@ -215,7 +264,7 @@ export namespace Delegation {
 	function calculateAllocated(root: Delegation | CostCenter, date: isoly.Date): number {
 		return root.usage.reduce(
 			(result, current) =>
-				CostCenter.is(current)
+				current.type == "costCenter"
 					? isoly.Currency.add(root.amount.currency, result, Cadence.allocated(current.amount, date))
 					: Delegation.is(current)
 					? isoly.Currency.add(root.amount.currency, result, Cadence.allocated(current.amount, date))

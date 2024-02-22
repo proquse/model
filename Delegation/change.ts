@@ -7,12 +7,12 @@ import type { CostCenter } from "../CostCenter"
 import { findCostCenter, findDelegation } from "./find"
 import type { Delegation } from "./index"
 
-export function changeDelegation<T extends Delegation | CostCenter>(
-	roots: T[],
+export function changeDelegation(
+	roots: (CostCenter | Delegation)[],
 	change: Delegation
-): { root: T; changed: Delegation } | undefined {
+): { root: CostCenter | Delegation; changed: Delegation } | undefined {
 	const search = findDelegation(roots, change.id)
-	let result: { root: T; changed: Delegation } | undefined = !search
+	let result: { root: CostCenter | Delegation; changed: Delegation } | undefined = !search
 		? search
 		: "costCenters" in search.found
 		? undefined
@@ -24,7 +24,7 @@ export function changeDelegation<T extends Delegation | CostCenter>(
 	if (result) {
 		if ("name" in result.root && result.root.name != change.costCenter)
 			result = undefined
-		else if ("purchases" in result.root && result.root.costCenter != change.costCenter)
+		else if (result.root.type == "delegation" && result.root.costCenter != change.costCenter)
 			result = undefined
 		else
 			Object.assign(result.changed, change)
@@ -32,12 +32,13 @@ export function changeDelegation<T extends Delegation | CostCenter>(
 	return result
 }
 function changeName(root: CostCenter | Delegation, name: string): string {
-	if ("name" in root)
+	if (root.type == "costCenter")
 		root.name = name
 	else
 		root.costCenter = name
-	for (const child of root.delegations)
-		changeName(child, name)
+	for (const child of root.usage) {
+		child.type == "delegation" && changeName(child, name)
+	}
 	return name
 }
 export function changeCostCenter(

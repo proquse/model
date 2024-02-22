@@ -10,9 +10,6 @@ import { Receipt } from "../Receipt"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
 
-const t = Purchase.list([], undefined)
-console.log(t)
-
 export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	id: Purchase.Identifier
 	created: isoly.DateTime
@@ -62,24 +59,33 @@ export namespace Purchase {
 		roots: (CostCenter | Delegation)[],
 		id: string
 	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-		let result: { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined
-		for (const root of roots) {
-			const usage: (CostCenter | Delegation)[] = []
+		let result: { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined = undefined
+
+		for (const root of roots)
 			if (root.type == "delegation") {
 				for (const use of root.usage)
 					if (use.type == "purchase" && use.id == id) {
 						result = { root, parent: root, found: use }
 						break
-					} else if (use.type == "delegation")
-						usage.push(use)
-			} else
-				usage.push(...root.usage)
-			result = find(usage, id)
-			if (result) {
-				result = { ...result, root }
-				break
+					} else if (use.type == "delegation") {
+						result = find([use], id)
+						if (result) {
+							result = { ...result, root }
+							break
+						}
+					}
+
+				if (result) {
+					result = { ...result, root }
+					break
+				}
+			} else {
+				result = find(root.usage, id)
+				if (result) {
+					result = { ...result, root }
+					break
+				}
 			}
-		}
 
 		return result
 	}
@@ -91,11 +97,11 @@ export namespace Purchase {
 	): T[] {
 		function* list(roots: Iterable<Delegation | CostCenter>): Generator<T, undefined> {
 			for (const root of roots)
-				if (root.type != "delegation")
+				if (root.type == "costCenter")
 					yield* list(root.usage)
 				else
 					for (const use of root.usage)
-						if (use.type != "purchase")
+						if (use.type == "delegation")
 							yield* list([use])
 						else if (!filter || filter(use, root))
 							yield map ? map(use, root) : (use as T)

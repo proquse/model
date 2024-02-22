@@ -42,40 +42,73 @@ export namespace Receipt {
 		let result: { root: T; delegation: Delegation; purchase: Purchase; found: Receipt } | undefined
 		roots.find(
 			root =>
-				"purchases" in root &&
-				root.purchases.find(purchase =>
-					purchase.receipts.find(
-						receipt =>
-							receipt.id == id &&
-							(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt })
-					)
+				root.type == "delegation" &&
+				root.usage.find(
+					purchase =>
+						purchase.type == "purchase" &&
+						purchase.receipts.find(
+							receipt =>
+								receipt.id == id &&
+								(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt }) //look at this later
+						)
 				)
 		) ??
 			roots.find(
-				root =>
-					(result = (result => (!result ? result : { ...result, root }))(find(root.delegations, id))) ??
-					("costCenters" in root &&
-						(result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id))))
+				root => {
+					const notPurchase = root.usage.reduce<(CostCenter | Delegation)[]>(
+						(result, node) => result.concat(node.type != "purchase" ? node : []),
+						[]
+					)
+					result = (result => (!result ? result : { ...result, root }))(find(notPurchase, id))
+					return result
+				}
+
+				// (result = (result => (!result ? result : { ...result, root }))(find(root.delegations, id))) ??
+				// ("costCenters" in root &&
+				// 	(result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id))))
 			)
 		return result
 	}
-	export function list<T = Receipt, TRoot extends Delegation | CostCenter = Delegation | CostCenter>(
-		roots: Iterable<TRoot>,
+	export function list<T = Receipt>(
+		roots: (CostCenter | Delegation)[],
 		filter?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => boolean | any,
 		map?: (receipt: Receipt, purchase: Purchase, delegation: Delegation) => T
 	): T[] {
-		function* list<TRoot extends Delegation | CostCenter>(roots: Iterable<TRoot>): Generator<T> {
-			for (const root of roots) {
-				if ("purchases" in root)
-					for (const purchase of root.purchases)
-						for (const receipt of purchase.receipts)
-							(!filter || filter(receipt, purchase, root)) &&
-								(yield map ? map(receipt, purchase, root) : (receipt as T))
+		function* list(roots: (CostCenter | Delegation | Purchase)[], delegation?: Delegation): Generator<T> {
+			for (const root of roots)
+				if (root.type == "costCenter")
+					yield* list(root.usage)
+				else if (root.type == "purchase") {
+					if (delegation)
+						for (const receipt of root.receipts)
+							if (!filter || filter(receipt, root, delegation))
+								yield map ? map(receipt, root, delegation) : (receipt as T)
+				} else
+					for (const usage of root.usage)
+						if (usage.type == "delegation")
+							yield* list(usage.usage, usage)
+						else if (usage.type == "purchase")
+							for (const receipt of usage.receipts)
+								if (!filter || filter(receipt, usage, root))
+									yield map ? map(receipt, usage, root) : (receipt as T)
 
-				yield* list(root.delegations)
-				if ("costCenters" in root)
-					yield* list(root.costCenters)
-			}
+			// for (const root of roots) {
+			// 	if (root.type == "delegation") {
+			// 		const purchases = root.usage.reduce<Purchase[]>(
+			// 			(result, node) => result.concat(node.type == "purchase" ? node : []),
+			// 			[]
+			// 		)
+			// 		for (const purchase of purchases)
+			// 			for (const receipt of purchase.receipts)
+			// 				(!filter || filter(receipt, purchase, root)) &&
+			// 					(yield map ? map(receipt, purchase, root) : (receipt as T))
+			// 	}
+			// 	const notPurchases = root.usage.reduce<(CostCenter | Delegation)[]>(
+			// 		(result, node) => result.concat(node.type != "purchase" ? node : []),
+			// 		[]
+			// 	)
+			// 	yield* list(notPurchases)
+			// }
 		}
 		return Array.from(list(roots))
 	}

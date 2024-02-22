@@ -50,22 +50,41 @@ export namespace CostCenter {
 		}
 	}
 	export const change = changeCostCenter
-	export function remove(roots: CostCenter[], id: string): { root: CostCenter; removed: CostCenter } | undefined {
+	export function remove(
+		//remove function does not work on removing costCenters without a parent
+		roots: CostCenter[],
+		id: string
+	): { root: CostCenter; parent: CostCenter; removed: CostCenter } | undefined {
 		let result: ReturnType<typeof remove>
-		const index = roots.findIndex(root => root.id == id && (result = { root: root, removed: root }))
-		if (index >= 0)
-			roots.splice(index, 1)
+		const search = find(roots, id)
+
+		if (search?.parent == undefined)
+			result = undefined
+		else {
+			const index = search.parent.usage.findIndex(costCenter => costCenter == search.found) ?? -1
+			result =
+				index < 0
+					? undefined
+					: search.parent.usage.splice(index, 1) && {
+							root: search.root,
+							parent: search.parent,
+							removed: search.found,
+					  }
+		}
 		return result
-			? result
-			: roots.find(
-					root =>
-						(result = (result => (!result ? result : { ...result, root }))(
-							remove(
-								root.usage.filter((action): action is CostCenter => CostCenter.is(action)),
-								id
-							)
-						))
-			  ) && result
+		// if (index >= 0)
+		// 	roots.splice(index, 1)
+		// return result
+		// 	? result
+		// 	: roots.find(
+		// 			root =>
+		// 				(result = (result => (!result ? result : { ...result, root }))(
+		// 					remove(
+		// 						root.usage.filter((action): action is CostCenter => CostCenter.is(action)), //NOT SAFE
+		// 						id
+		// 					)
+		// 				))
+		// 	  ) && result
 	}
 	export function validate(
 		costCenter: CostCenter,
@@ -88,20 +107,21 @@ export namespace CostCenter {
 			isoly.DateTime.getDate(costCenter.created) <= costCenter.amount.created &&
 			costCenter.amount.created <= sustainable &&
 			(!options?.currency || costCenter.amount.currency == options.currency) &&
-			costCenter.usage.every(action => {
-				if (costCenter.created <= action.created)
-					CostCenter.is(action)
-						? CostCenter.validate(action, {
-								date: sustainable,
-								currency: costCenter.amount.currency,
-								spent: options?.spent,
-						  })
-						: Delegation.validate(action, {
-								date: sustainable,
-								currency: costCenter.amount.currency,
-								spent: options?.spent,
-						  })
-			})
+			costCenter.usage.every(action =>
+				costCenter.created > action.created
+					? false //get date?
+					: action.type == "costCenter"
+					? CostCenter.validate(action, {
+							date: sustainable,
+							currency: costCenter.amount.currency,
+							spent: options?.spent,
+					  })
+					: Delegation.validate(action, {
+							date: sustainable,
+							currency: costCenter.amount.currency,
+							spent: options?.spent,
+					  })
+			)
 			// costCenter.usage.every(
 			// 	c =>
 			// 		costCenter.created <= c.created &&
