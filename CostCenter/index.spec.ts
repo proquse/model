@@ -99,7 +99,7 @@ describe("CostCenter", () => {
 		expect(result?.root).toBe(result?.changed)
 		expect(result?.root?.amount.value).toEqual(600)
 		expect(costCenter.name).toEqual("Cars")
-		expect(costCenter.usage[0].type == "delegation" ? costCenter.usage[0].costCenter : "").toEqual("Cars") //this is checking delegation d1
+		expect(costCenter.usage[0].type == "delegation" ? costCenter.usage[0].costCenter : "").toEqual("Cars")
 		expect(costCenter.usage[1].type == "costCenter" ? costCenter.usage[1].name : "").not.toEqual("Cars")
 		expect(
 			costCenter.usage[1].usage[0].type == "delegation" ? costCenter.usage[1].usage[0].costCenter : ""
