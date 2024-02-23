@@ -50,7 +50,6 @@ export namespace Delegation {
 	}
 	export const change = changeDelegation
 	export function remove(
-		//it appears that we doesnt mutate
 		roots: (CostCenter | Delegation)[],
 		id: string
 	): { root: CostCenter | Delegation; removed: Delegation } | undefined {
@@ -69,7 +68,6 @@ export namespace Delegation {
 				)
 				result = remove(usage, id)
 				if (result) {
-					//we need to splice here
 					const index = root.usage.findIndex(node => node.id == id)
 					if (index != -1)
 						root.usage.splice(index, 1)
@@ -82,7 +80,6 @@ export namespace Delegation {
 
 	export const find = Object.assign(findDelegation, { node: findNode })
 	export function findUser(roots: (CostCenter | Delegation)[], email: userwidgets.Email): Delegation[] {
-		//returns on array of Delegations that a user has received
 		const result: Delegation[] = []
 		for (const root of roots) {
 			if (root.type == "costCenter") {
@@ -124,19 +121,6 @@ export namespace Delegation {
 		}
 
 		return result
-		// return roots.find(
-		// 	root =>
-		// 		root.usage.filter(Delegation.is).find(delegation => delegation.id == id) &&
-		// 		(result = { root: root as any as TResult, found: root as any as TResult })
-		// )
-		// 	? result
-		// 	: roots.find(
-		// 			root =>
-		// 				(result = (result =>
-		// 					!result ? result : ({ ...result, root } as unknown as { root: TResult; found: TResult }))(
-		// 					findParent(root.usage.filter(Delegation.is), id)
-		// 				))
-		// 	  ) && result
 	}
 	export function findParents<
 		T extends Delegation | CostCenter,
@@ -147,7 +131,7 @@ export namespace Delegation {
 			? result
 			: roots.find(
 					root =>
-						(result = findParents(root.usage.filter(Delegation.is), id)) && //is this typesafe?
+						(result = findParents(root.usage.filter(Delegation.is), id)) &&
 						(result = [root as unknown as TResult, ...result])
 			  ) && result
 	}
@@ -164,7 +148,6 @@ export namespace Delegation {
 			result = [...path, found]
 		else if (nodes.length)
 			for (const node of nodes) {
-				// here we remove Purchases
 				let nodes = node.usage
 				nodes = nodes.reduce<(Delegation | CostCenter)[]>(
 					(result, node) => result.concat(node.type != "purchase" ? node : []),
@@ -190,8 +173,6 @@ export namespace Delegation {
 				(result, node) => result.concat(node.type != "purchase" ? node.amount : []),
 				[]
 			)
-			// .filter((value): value is CostCenter | Delegation => value.type != "purchase")
-			// .map(node => node.amount)
 			const sustainable = isoly.Date.next(
 				node.amount.created,
 				Cadence.sustainable(node.amount, children, date, { limit: allocated })
@@ -208,9 +189,7 @@ export namespace Delegation {
 		options?: { date?: isoly.Date }
 	): T[] {
 		descendants
-			//does this work properly? it seems fishy
 			.map(descendant => path(ancestors, descendant.id)?.slice(1).concat(descendant))
-			// .filter((value: (CostCenter | Delegation)[] | undefined): value is (CostCenter | Delegation)[] => !!value)
 			.forEach(path => !!path && sustainablePath(path, options))
 		return descendants
 	}
@@ -225,30 +204,6 @@ export namespace Delegation {
 			0
 		)
 		return result
-
-		// root.usage
-		// 	.filter((value): value is Delegation | CostCenter => Delegation.is(value) || CostCenter.is(value))
-		// 	.reduce(
-		// 		(result, current) => result + spent(current, { ...options }),
-		// 		root.usage
-		// 			.filter(Purchase.is)
-		// 			.reduce(
-		// 				(result, purchase) =>
-		// 					isoly.Currency.add(root.amount.currency, result, Purchase.spent(purchase, { vat: options?.vat })),
-		// 				0
-		// 			)
-		// 	)
-
-		// return [...root.delegations, ...("costCenters" in root ? root.costCenters : [])].reduce(
-		// 	(result, current) => result + spent(current, { ...options }),
-		// 	!("purchases" in root)
-		// 		? 0
-		// 		: root.purchases.reduce(
-		// 				(result, purchase) =>
-		// 					isoly.Currency.add(root.amount.currency, result, Purchase.spent(purchase, { vat: options?.vat })),
-		// 				0
-		// 		  )
-		// )
 	}
 	function calculateSpentBalance(root: Delegation | CostCenter, date: isoly.Date, options?: { vat?: boolean }): number
 	function calculateSpentBalance(root: Delegation | CostCenter, allocated: number, options?: { vat?: boolean }): number
@@ -273,22 +228,6 @@ export namespace Delegation {
 					: 0,
 			0
 		)
-		// ("purchases" in root
-		// 	? root.purchases.reduce(
-		// 			(result, purchase) =>
-		// 				isoly.Currency.add(root.amount.currency, result, Cadence.allocated(purchase.payment.limit, date)),
-		// 			0
-		// 	  )
-		// 	: root.costCenters.reduce(
-		// 			(result, costCenter) =>
-		// 				isoly.Currency.add(root.amount.currency, result, Cadence.allocated(costCenter.amount, date)),
-		// 			0
-		// 	  )) +
-		// root.delegations.reduce(
-		// 	(result, delegation) =>
-		// 		isoly.Currency.add(root.amount.currency, result, Cadence.allocated(delegation.amount, date)),
-		// 	0
-		// )
 	}
 	function calculateAllocatedBalance(root: Delegation | CostCenter, date: isoly.Date): number {
 		return isoly.Currency.subtract(root.amount.currency, Cadence.allocated(root.amount, date), allocated(root, date))
@@ -304,20 +243,10 @@ export namespace Delegation {
 			Cadence.sustainable(
 				delegation.amount,
 				delegation.usage.map(value => (value.type == "delegation" ? value.amount : value.payment.limit)),
-				// delegation.delegations.map(d => d.amount).concat(delegation.purchases.map(p => p.payment.limit)),
 				date,
 				{ limit: allocated }
 			)
 		)
-		// const sustainable = isoly.Date.next(
-		// 	delegation.amount.created,
-		// 	Cadence.sustainable(
-		// 		delegation.amount,
-		// 		delegation.delegations.map(d => d.amount).concat(delegation.purchases.map(p => p.payment.limit)),
-		// 		date,
-		// 		{ limit: allocated }
-		// 	)
-		// )
 		return (
 			allocated > 0 &&
 			(!options?.limit || allocated <= options.limit) &&
@@ -335,16 +264,6 @@ export namespace Delegation {
 					: delegation.created <= value.created &&
 					  Purchase.validate(value, { date: sustainable, currency: delegation.amount.currency, spent: options?.spent })
 			)
-			// delegation.delegations.every(
-			// 	d =>
-			// 		delegation.created <= d.created &&
-			// 		Delegation.validate(d, { date: sustainable, currency: delegation.amount.currency, spent: options?.spent })
-			// ) &&
-			// delegation.purchases.every(
-			// 	p =>
-			// 		delegation.created <= p.created &&
-			// 		Purchase.validate(p, { date: sustainable, currency: delegation.amount.currency, spent: options?.spent })
-			// )
 		)
 	}
 }

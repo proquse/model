@@ -72,19 +72,6 @@ export namespace CostCenter {
 					  }
 		}
 		return result
-		// if (index >= 0)
-		// 	roots.splice(index, 1)
-		// return result
-		// 	? result
-		// 	: roots.find(
-		// 			root =>
-		// 				(result = (result => (!result ? result : { ...result, root }))(
-		// 					remove(
-		// 						root.usage.filter((action): action is CostCenter => CostCenter.is(action)), //NOT SAFE
-		// 						id
-		// 					)
-		// 				))
-		// 	  ) && result
 	}
 	export function validate(
 		costCenter: CostCenter,
@@ -109,7 +96,7 @@ export namespace CostCenter {
 			(!options?.currency || costCenter.amount.currency == options.currency) &&
 			costCenter.usage.every(action =>
 				costCenter.created > action.created
-					? false //get date?
+					? false
 					: action.type == "costCenter"
 					? CostCenter.validate(action, {
 							date: sustainable,
@@ -122,16 +109,6 @@ export namespace CostCenter {
 							spent: options?.spent,
 					  })
 			)
-			// costCenter.usage.every(
-			// 	c =>
-			// 		costCenter.created <= c.created &&
-			// 		CostCenter.validate(c, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
-			// ) &&
-			// costCenter.usage.every(
-			// 	d =>
-			// 		costCenter.created <= d.created &&
-			// 		Delegation.validate(d, { date: sustainable, currency: costCenter.amount.currency, spent: options?.spent })
-			// )
 		)
 	}
 	export const find = Object.assign(findCostCenter, { node: findNode })

@@ -49,24 +49,18 @@ export namespace Receipt {
 						purchase.receipts.find(
 							receipt =>
 								receipt.id == id &&
-								(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt }) //look at this later
+								(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt })
 						)
 				)
 		) ??
-			roots.find(
-				root => {
-					const notPurchase = root.usage.reduce<(CostCenter | Delegation)[]>(
-						(result, node) => result.concat(node.type != "purchase" ? node : []),
-						[]
-					)
-					result = (result => (!result ? result : { ...result, root }))(find(notPurchase, id))
-					return result
-				}
-
-				// (result = (result => (!result ? result : { ...result, root }))(find(root.delegations, id))) ??
-				// ("costCenters" in root &&
-				// 	(result = (result => (!result ? result : { ...result, root }))(find(root.costCenters, id))))
-			)
+			roots.find(root => {
+				const notPurchase = root.usage.reduce<(CostCenter | Delegation)[]>(
+					(result, node) => result.concat(node.type != "purchase" ? node : []),
+					[]
+				)
+				result = (result => (!result ? result : { ...result, root }))(find(notPurchase, id))
+				return result
+			})
 		return result
 	}
 	export function list<T = Receipt>(
@@ -91,24 +85,6 @@ export namespace Receipt {
 							for (const receipt of usage.receipts)
 								if (!filter || filter(receipt, usage, root))
 									yield map ? map(receipt, usage, root) : (receipt as T)
-
-			// for (const root of roots) {
-			// 	if (root.type == "delegation") {
-			// 		const purchases = root.usage.reduce<Purchase[]>(
-			// 			(result, node) => result.concat(node.type == "purchase" ? node : []),
-			// 			[]
-			// 		)
-			// 		for (const purchase of purchases)
-			// 			for (const receipt of purchase.receipts)
-			// 				(!filter || filter(receipt, purchase, root)) &&
-			// 					(yield map ? map(receipt, purchase, root) : (receipt as T))
-			// 	}
-			// 	const notPurchases = root.usage.reduce<(CostCenter | Delegation)[]>(
-			// 		(result, node) => result.concat(node.type != "purchase" ? node : []),
-			// 		[]
-			// 	)
-			// 	yield* list(notPurchases)
-			// }
 		}
 		return Array.from(list(roots))
 	}

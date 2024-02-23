@@ -29,15 +29,6 @@ export function findNode(
 		}
 
 	return result
-	// result ??
-	// (roots.find(
-	// 	root =>
-	// 		(result = (result => (!result ? result : { ...result, root }))(
-	// 			findNode(root.delegations, id) ?? ("costCenters" in root ? findNode(root.costCenters, id) : undefined)
-	// 		))
-	// ) &&
-	// 	result)
-	// )
 }
 
 export function findDelegation(
@@ -60,23 +51,11 @@ export function findDelegation(
 			}
 		}
 	return result
-	// return (
-	// 	result ??
-	// 	(roots.find(
-	// 		root =>
-	// 			(result = (result => (!result ? result : { ...result, root }))(
-	// 				findDelegation(root.delegations, id) ??
-	// 					("costCenters" in root ? findDelegation(root.costCenters, id) : undefined)
-	// 			))
-	// 	) &&
-	// 		result)
-	// )
 }
 export function findCostCenter(
 	roots: CostCenter[],
 	id: cryptly.Identifier
 ): { root: CostCenter; parent: CostCenter | undefined; found: CostCenter } | undefined {
-	// const search = roots.find(root => root.id == id)
 	let result: { root: CostCenter; parent: CostCenter | undefined; found: CostCenter } | undefined
 
 	for (const root of roots)
@@ -98,25 +77,4 @@ export function findCostCenter(
 					}
 
 	return result
-
-	// if (!result)
-	// 	for (const root of roots) {
-	// 		const usage: CostCenter[] = []
-	// 		for (const action of root.usage)
-	// 			if (action.type == "costCenter")
-	// 				usage.push(action)
-	// 		result = findCostCenter(usage, id)
-	// 		if (result) {
-	// 			result = { ...result, root }
-	// 			break
-	// 		}
-	// 	}
-
-	// return (
-	// 	result ??
-	// 	(roots.find(
-	// 		root => (result = (result => (!result ? result : { ...result, root }))(findCostCenter(root.costCenters, id)))
-	// 	) &&
-	// 		result)
-	// )
 }
