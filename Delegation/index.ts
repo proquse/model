@@ -195,8 +195,7 @@ export namespace Delegation {
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(root: Delegation | CostCenter, options?: { vat?: boolean }): number {
-		let result: number
-		result = root.usage.reduce(
+		const result = root.usage.reduce(
 			(result, current) =>
 				Purchase.is(current)
 					? isoly.Currency.add(root.amount.currency, result, Purchase.spent(current, { vat: options?.vat }))
