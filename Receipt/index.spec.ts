@@ -296,7 +296,7 @@ describe("Receipt", () => {
 	})
 	it("list", () => {
 		expect(proquse.Receipt.list([costCenter]).length).toEqual(14)
-		// expect(proquse.Receipt.list(costCenter.delegations, (_, __, d) => d.costCenter == "IT").length).toEqual(14)
+		expect(proquse.Receipt.list(costCenter.usage, (_, __, d) => d.costCenter == "IT").length).toEqual(14)
 		expect(proquse.Receipt.list([costCenter], (_, p) => p.buyer == "mary@example.com").length).toEqual(2)
 		expect(
 			proquse.Receipt.list(
