@@ -4,7 +4,7 @@ import { Cadence } from "../Cadence"
 export interface Creatable {
 	from: userwidgets.Email
 	name: string
-	amount: Cadence //make this optional?
+	amount: Cadence
 	description?: string
 }
 export namespace Creatable {

@@ -50,8 +50,10 @@ export namespace CostCenter {
 		}
 	}
 	export const change = changeCostCenter
+	/**
+	 * remove function does not work on top level costCenter
+	 */
 	export function remove(
-		//remove function does not work on removing costCenters without a parent
 		roots: CostCenter[],
 		id: string
 	): { root: CostCenter; parent: CostCenter; removed: CostCenter } | undefined {
