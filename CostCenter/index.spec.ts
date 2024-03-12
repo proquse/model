@@ -112,7 +112,7 @@ describe("CostCenter", () => {
 			return
 		}
 		result = proquse.CostCenter.change([costCenter], {
-			...(oldCostCenter as any),
+			...oldCostCenter,
 			name: "NewName",
 		})
 		expect(result?.root).toBe(costCenter)
