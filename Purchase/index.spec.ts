@@ -8,6 +8,7 @@ describe("Purchase", () => {
 		buyer: "richard.stevensson@example.com",
 		purpose: "Production Workers",
 		email: "receipt@example.com",
+		type: "purchase",
 		payment: { type: "card", limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
 		receipts: [
 			{
@@ -22,16 +23,17 @@ describe("Purchase", () => {
 		],
 	}
 	const costCenter: proquse.CostCenter = {
-		id: "c1",
+		id: "c1------",
 		from: "jane@example.com",
 		name: "budget",
 		created: "2023-01-01T13:37:42Z",
 		modified: "2023-01-01T13:37:42Z",
 		description: "Total company Budget",
 		amount: { interval: "year", value: 20_000, currency: "EUR", created: "2023-01-01" },
-		delegations: [
+		type: "costCenter",
+		usage: [
 			{
-				id: "d1",
+				id: "c1d1----",
 				created: "2023-01-01T13:37:42Z",
 				modified: "2023-01-01T13:37:42Z",
 				to: ["mary@example.com"],
@@ -39,9 +41,10 @@ describe("Purchase", () => {
 				from: "john@example.com",
 				purpose: "hosting costs",
 				amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
-				delegations: [
+				type: "delegation",
+				usage: [
 					{
-						id: "d2",
+						id: "c1d1d2--",
 						created: "2021-12-28T13:37:42Z",
 						modified: "2021-12-28T13:37:42Z",
 						to: ["richard@example.com"],
@@ -49,9 +52,10 @@ describe("Purchase", () => {
 						from: "mary@example.com",
 						purpose: "Cloudflare",
 						amount: { interval: "year", value: 1_200, currency: "EUR", created: "2023-01-01" },
-						delegations: [
+						type: "delegation",
+						usage: [
 							{
-								id: "d3",
+								id: "c1d1d2d3",
 								created: "2021-12-28T13:37:42Z",
 								modified: "2021-12-28T13:37:42Z",
 								to: ["john@example.com"],
@@ -59,18 +63,17 @@ describe("Purchase", () => {
 								from: "mary@example.com",
 								purpose: "Cloudflare",
 								amount: { interval: "year", value: 100, currency: "EUR", created: "2023-01-01" },
-								delegations: [],
-								purchases: [],
+								type: "delegation",
+								usage: [],
 							},
-						],
-						purchases: [
 							{
-								id: "p1",
+								id: "c1d1d2p1",
 								email: "receipt@example.com",
 								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								purpose: "Production Workers",
+								type: "purchase",
 								payment: {
 									type: "card",
 									limit: { interval: "month", value: 15, currency: "EUR", created: "2023-01-01" },
@@ -151,12 +154,13 @@ describe("Purchase", () => {
 								],
 							},
 							{
-								id: "p2",
+								id: "c1d1d2p2",
 								email: "receipt@example.com",
 								created: "2022-01-01T00:00:42Z",
 								modified: "2022-01-01T00:00:42Z",
 								buyer: "richard@example.com",
 								purpose: "Production Workers",
+								type: "purchase",
 								payment: {
 									type: "card",
 									limit: { interval: "month", value: 30, currency: "EUR", created: "2023-01-01" },
@@ -165,15 +169,14 @@ describe("Purchase", () => {
 							},
 						],
 					},
-				],
-				purchases: [
 					{
-						id: "p3",
+						id: "c1d1p3--",
 						email: "receipt@example.com",
 						created: "2022-01-01T00:00:42Z",
 						modified: "2022-01-01T00:00:42Z",
 						buyer: "mary@example.com",
 						purpose: "Production Workers",
+						type: "purchase",
 						payment: { type: "card", limit: { interval: "month", value: 300, currency: "EUR", created: "2023-11-15" } },
 						receipts: [
 							{
@@ -193,7 +196,7 @@ describe("Purchase", () => {
 				],
 			},
 			{
-				id: "d4",
+				id: "c1d4----",
 				created: "2023-01-01T13:37:42Z",
 				modified: "2023-01-01T13:37:42Z",
 				to: ["richard@example.com"],
@@ -201,9 +204,10 @@ describe("Purchase", () => {
 				from: "john@example.com",
 				purpose: "Cloudflare",
 				amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
-				delegations: [
+				type: "delegation",
+				usage: [
 					{
-						id: "d5",
+						id: "c1d4d5--",
 						created: "2023-01-01T13:37:42Z",
 						modified: "2023-01-01T13:37:42Z",
 						to: ["john@example.com", "jane@example.com"],
@@ -211,9 +215,10 @@ describe("Purchase", () => {
 						from: "richard@example.com",
 						purpose: "Partial company budget",
 						amount: { interval: "year", value: 1_000, currency: "EUR", created: "2023-01-01" },
-						delegations: [
+						type: "delegation",
+						usage: [
 							{
-								id: "d6",
+								id: "c1d4d5d6",
 								created: "2023-01-01T13:37:42Z",
 								modified: "2023-01-01T13:37:42Z",
 								to: ["mary@example.com"],
@@ -221,27 +226,23 @@ describe("Purchase", () => {
 								from: "john@example.com",
 								purpose: "Partial company budget",
 								amount: { interval: "month", value: 100, currency: "EUR", created: "2023-03-01" },
-								delegations: [],
-								purchases: [],
+								type: "delegation",
+								usage: [],
 							},
 						],
-						purchases: [],
 					},
 				],
-				purchases: [],
 			},
-		],
-		costCenters: [
 			{
-				id: "c2",
+				id: "c1c2----",
 				from: "jane@example.com",
 				name: "partial budget",
 				created: "2023-01-01T13:37:42Z",
 				modified: "2023-01-01T13:37:42Z",
 				description: "Partial company budget",
 				amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
-				costCenters: [],
-				delegations: [],
+				type: "costCenter",
+				usage: [],
 			},
 		],
 	}
@@ -271,10 +272,10 @@ describe("Purchase", () => {
 		expect(result.email).toMatch(/^receipt\+organizationId_[^@]+@example.com$/)
 	})
 	it("find", () => {
-		expect(proquse.Purchase.find([costCenter], "p1")).toEqual({
+		expect(proquse.Purchase.find([costCenter], "c1d1d2p1")).toEqual({
 			root: costCenter,
-			parent: costCenter.delegations[0].delegations[0],
-			found: costCenter.delegations[0].delegations[0].purchases[0],
+			parent: costCenter.usage[0].usage[0],
+			found: (costCenter.usage[0].usage[0] as proquse.Delegation).usage[1],
 		})
 	})
 	it("change", () => {
@@ -311,8 +312,8 @@ describe("Purchase", () => {
 			from: "john@example.com",
 			purpose: "hosting costs",
 			amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
-			delegations: [],
-			purchases: [target],
+			type: "delegation",
+			usage: [target],
 		}
 		expect(target).not.toEqual(updated)
 		const first = proquse.Purchase.change(target, updated)
@@ -344,24 +345,22 @@ describe("Purchase", () => {
 			from: "john@example.com",
 			purpose: "hosting costs",
 			amount: { interval: "year", value: 2_000, currency: "EUR", created: "2023-01-01" },
-			delegations: [],
-			purchases: [target],
+			type: "delegation",
+			usage: [target],
 		}
 		const result = proquse.Purchase.remove([root], target.id)
-		expect(root.purchases.length).toEqual(0)
+		expect(root.usage.length).toEqual(0)
 		expect(result?.removed).toBe(target)
 	})
 	it("list", () => {
-		expect(proquse.Purchase.list(costCenter.delegations).length).toEqual(3)
+		expect(proquse.Purchase.list(costCenter.usage).length).toEqual(3)
 		expect(
 			proquse.Purchase.list(
-				costCenter.delegations,
+				costCenter.usage,
 				purchase => proquse.Cadence.allocated(purchase.payment.limit, "2023-12-31") <= 500
 			).length
 		).toEqual(2)
-		expect(
-			proquse.Purchase.list(costCenter.delegations, purchase => purchase.buyer == "mary@example.com").length
-		).toEqual(1)
+		expect(proquse.Purchase.list(costCenter.usage, purchase => purchase.buyer == "mary@example.com").length).toEqual(1)
 		const result = proquse.Purchase.list(
 			[costCenter],
 			p => p.buyer == "mary@example.com",
@@ -372,7 +371,7 @@ describe("Purchase", () => {
 	it("spent", () => {
 		expect(proquse.Purchase.spent(purchase)).toEqual(37.5)
 		expect(proquse.Purchase.spent(purchase, { vat: false })).toEqual(30)
-		expect(proquse.Purchase.spent(costCenter.delegations[0].purchases[0])).toEqual(598)
+		expect(proquse.Purchase.spent(costCenter.usage[0].usage[1] as proquse.Purchase)).toEqual(598)
 	})
 	it("validate", () => {
 		expect(proquse.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual(true)

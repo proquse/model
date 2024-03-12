@@ -18,8 +18,8 @@ describe("Delegation.Creatable", () => {
 			to: ["james@example.com"],
 			purpose: "testing",
 			amount: { interval: "year", value: 500, currency: "EUR", created: "2023-01-01" },
-			delegations: [],
-			purchases: [],
+			type: "delegation",
+			usage: [],
 		}
 		expect(proquse.Delegation.Creatable.is(creatable)).toEqual(true)
 		expect(proquse.Delegation.Creatable.is(delegation)).toEqual(true)

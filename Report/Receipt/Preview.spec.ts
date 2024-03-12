@@ -12,8 +12,8 @@ describe("receipt Preview", () => {
 					modified: "2022-12-20T13:37:42Z",
 					from: "jessie@example.com",
 					description: "description",
-					delegations: [],
-					costCenters: [],
+					type: "costCenter",
+					usage: [],
 				},
 				receipts: [
 					{
@@ -30,6 +30,7 @@ describe("receipt Preview", () => {
 							buyer: "richard.stevensson@example.com",
 							purpose: "Production Workers",
 							email: "receipt@example.com",
+							type: "purchase",
 							payment: {
 								type: "card",
 								limit: { interval: "month", value: 20, currency: "EUR", created: "2023-01-01" },
