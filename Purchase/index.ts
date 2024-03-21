@@ -35,26 +35,26 @@ export namespace Purchase {
 
 	export const is = type.is
 	export const flaw = type.flaw
-	export function create(
-		purchase: Purchase.Creatable,
-		organization: userwidgets.Organization["id"],
-		email: userwidgets.Email,
-		override?: Partial<Purchase>
-	): Purchase {
-		const now = isoly.DateTime.now()
-		const id = cryptly.Identifier.generate(Identifier.length)
-		const [recipient, domain] = email.split("@")
-		return {
-			...purchase,
-			...override,
-			id: override?.id ?? id,
-			created: override?.created ?? now,
-			modified: override?.modified ?? now,
-			email: override?.email ?? `${recipient}+${organization}_${id}@${domain}`,
-			receipts: override?.receipts ?? [],
-			type: "purchase",
-		}
-	}
+	// export function create(
+	// 	purchase: Purchase.Creatable,
+	// 	organization: userwidgets.Organization["id"],
+	// 	email: userwidgets.Email,
+	// 	override?: Partial<Purchase>
+	// ): Purchase {
+	// 	const now = isoly.DateTime.now()
+	// 	const id = cryptly.Identifier.generate(Identifier.length)
+	// 	const [recipient, domain] = email.split("@")
+	// 	return {
+	// 		...purchase,
+	// 		...override,
+	// 		id: override?.id ?? id,
+	// 		created: override?.created ?? now,
+	// 		modified: override?.modified ?? now,
+	// 		email: override?.email ?? `${recipient}+${organization}_${id}@${domain}`,
+	// 		receipts: override?.receipts ?? [],
+	// 		type: "purchase",
+	// 	}
+	// }
 	export function find(
 		roots: (CostCenter | Delegation)[],
 		id: string
