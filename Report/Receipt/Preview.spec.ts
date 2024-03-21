@@ -34,6 +34,7 @@ describe("receipt Preview", () => {
 							payment: {
 								type: "card",
 								limit: { interval: "month", value: 20, currency: "EUR", created: "2023-01-01" },
+								reference: "reference",
 							},
 							receipts: [
 								{

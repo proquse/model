@@ -62,6 +62,7 @@ describe("Receipt", () => {
 								payment: {
 									type: "card",
 									limit: { interval: "month", value: 15, currency: "EUR", created: "2023-01-01" },
+									reference: "reference",
 								},
 								receipts: [
 									{
@@ -149,6 +150,7 @@ describe("Receipt", () => {
 								payment: {
 									type: "card",
 									limit: { interval: "month", value: 30, currency: "EUR", created: "2023-01-01" },
+									reference: "reference",
 								},
 								receipts: [],
 							},
@@ -162,7 +164,11 @@ describe("Receipt", () => {
 						buyer: "mary@example.com",
 						purpose: "Production Workers",
 						type: "purchase",
-						payment: { type: "card", limit: { interval: "month", value: 300, currency: "EUR", created: "2023-11-15" } },
+						payment: {
+							type: "card",
+							limit: { interval: "month", value: 300, currency: "EUR", created: "2023-11-15" },
+							reference: "reference",
+						},
 						receipts: [
 							{
 								id: "r13-----",
