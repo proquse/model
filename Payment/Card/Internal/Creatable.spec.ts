@@ -1,4 +1,4 @@
-import { proquse } from "../../index"
+import { proquse } from "../../../index"
 
 describe("Payment.Card.Creatable", () => {
 	const payment: proquse.Payment.Card = {
