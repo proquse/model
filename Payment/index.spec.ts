@@ -4,6 +4,7 @@ describe("Payment", () => {
 	const payment: proquse.Payment = {
 		type: "card",
 		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+		reference: "our-suppliers-card-id",
 	}
 	const expense: proquse.Payment.Expense = {
 		type: "expense",
