@@ -12,6 +12,8 @@ describe("Purchase", () => {
 		payment: {
 			type: "card",
 			limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+			mask: "012345******6789",
+			expires: { month: 4, year: 24 },
 			reference: "reference",
 		},
 		receipts: [
@@ -81,6 +83,8 @@ describe("Purchase", () => {
 								payment: {
 									type: "card",
 									limit: { interval: "month", value: 15, currency: "EUR", created: "2023-01-01" },
+									mask: "012345******6789",
+									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
 								receipts: [
@@ -169,6 +173,8 @@ describe("Purchase", () => {
 								payment: {
 									type: "card",
 									limit: { interval: "month", value: 30, currency: "EUR", created: "2023-01-01" },
+									mask: "012345******6789",
+									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
 								receipts: [],
@@ -186,6 +192,8 @@ describe("Purchase", () => {
 						payment: {
 							type: "card",
 							limit: { interval: "month", value: 300, currency: "EUR", created: "2023-11-15" },
+							mask: "012345******6789",
+							expires: { month: 4, year: 24 },
 							reference: "reference",
 						},
 						receipts: [
@@ -299,6 +307,8 @@ describe("Purchase", () => {
 					currency: "EUR",
 					created: "2023-01-01",
 				},
+				mask: "012345******6789",
+				expires: { month: 4, year: 24 },
 				reference: "reference",
 			},
 			buyer: "jane@example.com",
@@ -315,6 +325,8 @@ describe("Purchase", () => {
 			payment: {
 				type: "card",
 				limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+				mask: "012345******6789",
+				expires: { month: 4, year: 24 },
 				reference: "reference",
 			},
 			buyer: "john@example.com",
@@ -325,6 +337,8 @@ describe("Purchase", () => {
 			payment: {
 				type: "card",
 				limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+				mask: "012345******6789",
+				expires: { month: 4, year: 24 },
 				reference: "reference",
 			},
 			buyer: "john@example.com",
@@ -360,6 +374,8 @@ describe("Purchase", () => {
 					currency: "EUR",
 					created: "2023-01-01",
 				},
+				mask: "012345******6789",
+				expires: { month: 4, year: 24 },
 				reference: "reference",
 			},
 			buyer: "jane@example.com",
