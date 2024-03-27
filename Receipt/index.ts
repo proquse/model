@@ -7,6 +7,7 @@ import type { Purchase } from "../Purchase"
 import { Creatable as ReceiptCreatable } from "./Creatable"
 import { Identifier as ReceiptIdentifier } from "./Identifier"
 import { Total as ReceiptTotal } from "./Total"
+
 export interface Receipt extends Omit<Receipt.Creatable, "file"> {
 	id: Receipt.Identifier
 	original: string

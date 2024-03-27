@@ -1,14 +1,15 @@
 import { proquse } from "../../index"
 
 describe("Payment.Card.Creatable", () => {
-	const payment: proquse.Payment.Card = {
+	const card: proquse.Payment.Card.Creatable = {
 		type: "card",
 		limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+		key: "cde-public-key",
 	}
 	it("is", () => {
-		expect(proquse.Payment.Card.Creatable.is(payment)).toEqual(true)
-		expect(proquse.Payment.Card.Creatable.is((({ type, ...payment }) => payment)(payment))).toEqual(false)
-		expect(proquse.Payment.Card.is({ ...payment, type: "invoice" })).toEqual(false)
-		expect(proquse.Payment.Card.is({ ...payment, limit: [10, "EUR"] })).toEqual(false)
+		expect(proquse.Payment.Card.Creatable.is(card)).toEqual(true)
+		expect(proquse.Payment.Card.Creatable.is((({ key: key, ...card }) => card)(card))).toEqual(true)
+		expect(proquse.Payment.Card.Creatable.is((({ limit, ...card }) => card)(card))).toEqual(false)
+		expect(proquse.Payment.Card.Creatable.is({ ...card, details: { pan: "123" } })).toEqual(true)
 	})
 })

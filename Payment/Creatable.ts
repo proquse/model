@@ -1,32 +1,15 @@
 import { isly } from "isly"
-import { Card as PaymentCard } from "./Card"
-import { Expense as PaymentExpense } from "./Expense"
-import { PrePaid as PaymentPrePaid } from "./PrePaid"
+import { Creatable as PaymentCard } from "./Card/Creatable"
+import { Creatable as PaymentExpense } from "./Expense/Creatable"
+import { Creatable as PaymentPrePaid } from "./PrePaid/Creatable"
 
-export type Creatable = Creatable.Card | Creatable.PrePaid | Creatable.Expense
+export type Creatable = Creatable.Card | Creatable.Expense | Creatable.PrePaid
 
 export namespace Creatable {
-	export const type = isly.union(
-		PaymentExpense.Creatable.type,
-		PaymentCard.Creatable.type,
-		PaymentPrePaid.Creatable.type
-	)
+	export import Card = PaymentCard
+	export import Expense = PaymentExpense
+	export import PrePaid = PaymentPrePaid
+	export const type = isly.union<Creatable, Card, Expense, PrePaid>(Card.type, Expense.type, PrePaid.type)
 	export const is = type.is
 	export const flaw = type.flaw
-
-	export type Card = PaymentCard.Creatable
-	export const Card = PaymentCard.Creatable
-	export namespace Card {
-		export type Creatable = PaymentCard.Creatable
-	}
-	export type PrePaid = PaymentPrePaid.Creatable
-	export const PrePaid = PaymentPrePaid.Creatable
-	export namespace PrePaid {
-		export type Creatable = PaymentPrePaid.Creatable
-	}
-	export type Expense = PaymentExpense.Creatable
-	export const Expense = PaymentExpense.Creatable
-	export namespace Expense {
-		export type Creatable = PaymentExpense.Creatable
-	}
 }

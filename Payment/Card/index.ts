@@ -1,19 +1,22 @@
 import { isly } from "isly"
 import { Creatable as CardCreatable } from "./Creatable"
-import { Details as CardDetails } from "./Details"
 
-export interface Card extends Card.Creatable {
-	details?: Card.Details
+export interface Card extends Omit<Card.Creatable, "key"> {
+	reference: string
+	mask: string
+	expires: { month: number; year: number }
+	holder?: string
+	token?: string
 }
 export namespace Card {
-	export const type: isly.object.ExtendableType<Card> = CardCreatable.type.extend<Card>({
-		details: CardDetails.type.optional(),
+	export import Creatable = CardCreatable
+	export const type = Creatable.type.omit(["key"]).extend<Card>({
+		reference: isly.string(),
+		mask: isly.string(),
+		expires: isly.object({ month: isly.number("integer"), year: isly.number("integer") }),
+		holder: isly.string().optional(),
+		token: isly.string().optional(),
 	})
-
 	export const is = type.is
 	export const flaw = type.flaw
-	export type Creatable = CardCreatable
-	export const Creatable = CardCreatable
-	export type Details = CardDetails
-	export const Details = CardDetails
 }

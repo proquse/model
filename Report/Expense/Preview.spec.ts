@@ -9,7 +9,13 @@ describe("Expense Preview", () => {
 		purpose: "Production Workers",
 		email: "receipt@example.com",
 		type: "purchase",
-		payment: { type: "card", limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" } },
+		payment: {
+			type: "card",
+			limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+			mask: "012345******6789",
+			expires: { month: 4, year: 24 },
+			reference: "reference",
+		},
 		receipts: [
 			{
 				id: "---id---",
