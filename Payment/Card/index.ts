@@ -5,6 +5,7 @@ export interface Card extends Omit<Card.Creatable, "key"> {
 	reference: string
 	mask: string
 	expires: { month: number; year: number }
+	holder?: string
 	token?: string
 }
 export namespace Card {
@@ -13,6 +14,7 @@ export namespace Card {
 		reference: isly.string(),
 		mask: isly.string(),
 		expires: isly.object({ month: isly.number("integer"), year: isly.number("integer") }),
+		holder: isly.string().optional(),
 		token: isly.string().optional(),
 	})
 	export const is = type.is
