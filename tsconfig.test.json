@@ -19,6 +19,9 @@
 		"outDir": "dist",
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
+		"types": [
+			"typedly/dist/global.d.ts"
+		],
 		"paths": {
 			"*": [
 				"types/*"

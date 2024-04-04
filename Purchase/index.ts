@@ -40,38 +40,54 @@ export namespace Purchase {
 	export const flaw = type.flaw
 
 	export function find(
+		roots: CostCenter[],
+		criteria: string | ((purchase: Purchase) => boolean)
+	): { root: CostCenter; parent: Delegation; found: Purchase } | undefined
+	export function find(
+		roots: Delegation[],
+		criteria: string | ((purchase: Purchase) => boolean)
+	): { root: Delegation; parent: Delegation; found: Purchase } | undefined
+	export function find(
 		roots: (CostCenter | Delegation)[],
-		id: string
+		criteria: string | ((purchase: Purchase) => boolean)
+	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined
+	export function find(
+		roots: (CostCenter | Delegation)[],
+		criteria: string | ((purchase: Purchase) => boolean)
 	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-		let result: { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined = undefined
-
-		for (const root of roots)
-			if (root.type == "delegation") {
-				for (const use of root.usage)
-					if (use.type == "purchase" && use.id == id) {
-						result = { root, parent: root, found: use }
-						break
-					} else if (use.type == "delegation") {
-						result = find([use], id)
-						if (result) {
-							result = { ...result, root }
+		function find(
+			roots: (CostCenter | Delegation)[],
+			criteria: (purchase: Purchase) => boolean
+		): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
+			let result: Return<typeof find>
+			for (const root of roots)
+				if (root.type == "delegation") {
+					for (const use of root.usage)
+						if (use.type == "purchase" && criteria(use)) {
+							result = { root, parent: root, found: use }
 							break
+						} else if (use.type == "delegation") {
+							result = find([use], criteria)
+							if (result) {
+								result = { ...result, root }
+								break
+							}
 						}
+
+					if (result) {
+						result = { ...result, root }
+						break
 					}
-
-				if (result) {
-					result = { ...result, root }
-					break
+				} else {
+					result = find(root.usage, criteria)
+					if (result) {
+						result = { ...result, root }
+						break
+					}
 				}
-			} else {
-				result = find(root.usage, id)
-				if (result) {
-					result = { ...result, root }
-					break
-				}
-			}
-
-		return result
+			return result
+		}
+		return find(roots, typeof criteria != "string" ? criteria : purchase => purchase.id == criteria)
 	}
 
 	export function list<T = Purchase>(

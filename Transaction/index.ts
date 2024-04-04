@@ -13,7 +13,8 @@ export interface Transaction {
 	operations: Transaction.Operation[]
 	status: Transaction.Status
 	amount: Amount
-	created: string
+	modified: isoly.DateTime
+	created: isoly.DateTime
 }
 export namespace Transaction {
 	export import Operation = TransactionOperation
@@ -27,6 +28,7 @@ export namespace Transaction {
 		operations: isly.array(Operation.type),
 		status: Status.type,
 		amount: Amount.type,
+		modified: isly.fromIs("isoly.DateTime", isoly.DateTime.is),
 		created: isly.fromIs("isoly.DateTime", isoly.DateTime.is),
 	})
 	export const is = type.is
