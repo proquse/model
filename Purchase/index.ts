@@ -6,30 +6,34 @@ import { CostCenter } from "../CostCenter"
 import { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
+import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
 
 export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
+	type: "purchase"
 	id: Purchase.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
 	email: userwidgets.Email
 	receipts: Receipt[]
 	payment: Payment
-	type: "purchase"
+	// one transaction per transaction operation of type: authorize, refund
+	transactions: Transaction[]
 }
 
 export namespace Purchase {
 	export type Identifier = PurchaseIdentifier
 	export const Identifier = PurchaseIdentifier
 	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
+		type: isly.string("purchase"),
 		id: Identifier.type,
 		created: isly.fromIs("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs("DateTime", isoly.DateTime.is),
 		email: userwidgets.Email.type,
 		receipts: isly.array(Receipt.type),
 		payment: Payment.type,
-		type: isly.string("purchase"),
+		transactions: isly.array(Transaction.type),
 	})
 
 	export const is = type.is
