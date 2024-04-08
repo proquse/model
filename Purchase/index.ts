@@ -6,49 +6,63 @@ import { CostCenter } from "../CostCenter"
 import { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
+import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
 
 export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
+	type: "purchase"
 	id: Purchase.Identifier
 	created: isoly.DateTime
 	modified: isoly.DateTime
 	email: userwidgets.Email
 	receipts: Receipt[]
 	payment: Payment
-	type: "purchase"
+	transactions: Transaction[]
 }
 
 export namespace Purchase {
 	export type Identifier = PurchaseIdentifier
 	export const Identifier = PurchaseIdentifier
 	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
+		type: isly.string("purchase"),
 		id: Identifier.type,
 		created: isly.fromIs("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs("DateTime", isoly.DateTime.is),
 		email: userwidgets.Email.type,
 		receipts: isly.array(Receipt.type),
 		payment: Payment.type,
-		type: isly.string("purchase"),
+		transactions: isly.array(Transaction.type),
 	})
 
 	export const is = type.is
 	export const flaw = type.flaw
 
 	export function find(
+		roots: CostCenter[],
+		criteria: string | ((purchase: Purchase) => boolean)
+	): { root: CostCenter; parent: Delegation; found: Purchase } | undefined
+	export function find(
+		roots: Delegation[],
+		criteria: string | ((purchase: Purchase) => boolean)
+	): { root: Delegation; parent: Delegation; found: Purchase } | undefined
+	export function find(
 		roots: (CostCenter | Delegation)[],
-		id: string
+		criteria: string | ((purchase: Purchase) => boolean)
+	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined
+	export function find(
+		roots: (CostCenter | Delegation)[],
+		criteria: string | ((purchase: Purchase) => boolean)
 	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-		let result: { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined = undefined
-
+		let result: Return<typeof find>
 		for (const root of roots)
 			if (root.type == "delegation") {
 				for (const use of root.usage)
-					if (use.type == "purchase" && use.id == id) {
+					if (use.type == "purchase" && (typeof criteria == "string" ? use.id == criteria : criteria(use))) {
 						result = { root, parent: root, found: use }
 						break
 					} else if (use.type == "delegation") {
-						result = find([use], id)
+						result = find([use], criteria)
 						if (result) {
 							result = { ...result, root }
 							break
@@ -60,13 +74,12 @@ export namespace Purchase {
 					break
 				}
 			} else {
-				result = find(root.usage, id)
+				result = find(root.usage, criteria)
 				if (result) {
 					result = { ...result, root }
 					break
 				}
 			}
-
 		return result
 	}
 

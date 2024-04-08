@@ -16,6 +16,7 @@ describe("Purchase", () => {
 			expires: { month: 4, year: 24 },
 			reference: "reference",
 		},
+		transactions: [],
 		receipts: [
 			{
 				id: "---id---",
@@ -87,6 +88,7 @@ describe("Purchase", () => {
 									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
+								transactions: [],
 								receipts: [
 									{
 										id: "r1",
@@ -177,6 +179,7 @@ describe("Purchase", () => {
 									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
+								transactions: [],
 								receipts: [],
 							},
 						],
@@ -196,6 +199,7 @@ describe("Purchase", () => {
 							expires: { month: 4, year: 24 },
 							reference: "reference",
 						},
+						transactions: [],
 						receipts: [
 							{
 								id: "r13",
@@ -317,6 +321,7 @@ describe("Purchase", () => {
 			modified: "2024-03-21T12:54:19.442Z",
 			email: "receipt+organizationId_1ZpzxMe2@example.com",
 			receipts: [],
+			transactions: [],
 			type: "purchase",
 		}
 		const updated: proquse.Purchase = {
@@ -384,6 +389,7 @@ describe("Purchase", () => {
 			modified: "2024-03-21T12:54:19.442Z",
 			email: "receipt+organizationId_1ZpzxMe2@example.com",
 			receipts: [],
+			transactions: [],
 			type: "purchase",
 		}
 		const root: proquse.Delegation = {
