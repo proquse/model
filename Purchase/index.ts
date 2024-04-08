@@ -18,7 +18,6 @@ export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	email: userwidgets.Email
 	receipts: Receipt[]
 	payment: Payment
-	// one transaction per transaction operation of type: authorize, refund
 	transactions: Transaction[]
 }
 
