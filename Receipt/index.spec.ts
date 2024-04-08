@@ -66,6 +66,7 @@ describe("Receipt", () => {
 									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
+								transactions: [],
 								receipts: [
 									{
 										id: "r1------",
@@ -156,6 +157,7 @@ describe("Receipt", () => {
 									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
+								transactions: [],
 								receipts: [],
 							},
 						],
@@ -175,6 +177,7 @@ describe("Receipt", () => {
 							expires: { month: 4, year: 24 },
 							reference: "reference",
 						},
+						transactions: [],
 						receipts: [
 							{
 								id: "r13-----",

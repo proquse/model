@@ -38,6 +38,7 @@ describe("receipt Preview", () => {
 								expires: { month: 4, year: 24 },
 								reference: "reference",
 							},
+							transactions: [],
 							receipts: [
 								{
 									id: "---r1---",

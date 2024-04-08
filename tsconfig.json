@@ -11,6 +11,9 @@
 				"types/*"
 			]
 		},
+		"types": [
+			"typedly/dist/global.d.ts",
+		],
 		"allowSyntheticDefaultImports": true
 	},
 	"files": [

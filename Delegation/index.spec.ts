@@ -73,6 +73,7 @@ describe("Delegation", () => {
 									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
+								transactions: [],
 								receipts: [
 									{
 										id: "r1------",
@@ -163,6 +164,7 @@ describe("Delegation", () => {
 									expires: { month: 4, year: 24 },
 									reference: "reference",
 								},
+								transactions: [],
 								receipts: [],
 							},
 						],
@@ -182,6 +184,7 @@ describe("Delegation", () => {
 							expires: { month: 4, year: 24 },
 							reference: "reference",
 						},
+						transactions: [],
 						receipts: [
 							{
 								id: "r13-----",

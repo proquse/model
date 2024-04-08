@@ -20,7 +20,9 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"types": [
-			"typedly/dist/global.d.ts"
+			"typedly/dist/global.d.ts",
+			"jest",
+			"node"
 		],
 		"paths": {
 			"*": [

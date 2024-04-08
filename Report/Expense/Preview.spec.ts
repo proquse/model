@@ -24,6 +24,7 @@ describe("Expense Preview", () => {
 				original: "https://example.com/receipt.pdf",
 			},
 		],
+		transactions: [],
 	}
 	const preview: proquse.Report.Expense.Preview = {
 		userExpenses: {
