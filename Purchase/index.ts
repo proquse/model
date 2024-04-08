@@ -55,39 +55,33 @@ export namespace Purchase {
 		roots: (CostCenter | Delegation)[],
 		criteria: string | ((purchase: Purchase) => boolean)
 	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-		function find(
-			roots: (CostCenter | Delegation)[],
-			criteria: (purchase: Purchase) => boolean
-		): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-			let result: Return<typeof find>
-			for (const root of roots)
-				if (root.type == "delegation") {
-					for (const use of root.usage)
-						if (use.type == "purchase" && criteria(use)) {
-							result = { root, parent: root, found: use }
+		let result: Return<typeof find>
+		for (const root of roots)
+			if (root.type == "delegation") {
+				for (const use of root.usage)
+					if (use.type == "purchase" && (typeof criteria == "string" ? use.id == criteria : criteria(use))) {
+						result = { root, parent: root, found: use }
+						break
+					} else if (use.type == "delegation") {
+						result = find([use], criteria)
+						if (result) {
+							result = { ...result, root }
 							break
-						} else if (use.type == "delegation") {
-							result = find([use], criteria)
-							if (result) {
-								result = { ...result, root }
-								break
-							}
 						}
+					}
 
-					if (result) {
-						result = { ...result, root }
-						break
-					}
-				} else {
-					result = find(root.usage, criteria)
-					if (result) {
-						result = { ...result, root }
-						break
-					}
+				if (result) {
+					result = { ...result, root }
+					break
 				}
-			return result
-		}
-		return find(roots, typeof criteria != "string" ? criteria : purchase => purchase.id == criteria)
+			} else {
+				result = find(root.usage, criteria)
+				if (result) {
+					result = { ...result, root }
+					break
+				}
+			}
+		return result
 	}
 
 	export function list<T = Purchase>(
