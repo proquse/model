@@ -1,6 +1,7 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
 import { Amount } from "../../Amount"
+import { Creatable as OperationCreatable } from "./Creatable"
 import { Status as OperationStatus } from "./Status"
 import { Type as OperationType } from "./Type"
 
@@ -15,6 +16,7 @@ export interface Operation {
 export namespace Operation {
 	export import Type = OperationType
 	export import Status = OperationStatus
+	export import Creatable = OperationCreatable
 	export const type = isly.object<Operation>({
 		type: Type.type,
 		reference: isly.string(),
