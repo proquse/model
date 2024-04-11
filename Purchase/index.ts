@@ -9,6 +9,7 @@ import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
+import { Link as PurchaseLink } from "./link"
 
 export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 	type: "purchase"
@@ -24,6 +25,7 @@ export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 export namespace Purchase {
 	export type Identifier = PurchaseIdentifier
 	export const Identifier = PurchaseIdentifier
+	export import Link = PurchaseLink
 	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
 		type: isly.string("purchase"),
 		id: Identifier.type,
