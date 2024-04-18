@@ -5,8 +5,7 @@ import { Creatable as KeyCreatable } from "./Creatable"
 
 export type Key = userwidgets.User.Key<userwidgets.User.Key.Creatable.Claims, Roles.Permissions.Proquse>
 export namespace Key {
-	export type Creatable = KeyCreatable
-	export const Creatable = KeyCreatable
+	export import Creatable = KeyCreatable
 	export const type: isly.Type<Key> = userwidgets.User.Key.type.create<
 		userwidgets.User.Key.Creatable.Claims,
 		Roles.Permissions

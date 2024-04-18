@@ -18,10 +18,8 @@ export interface Delegation extends Delegation.Creatable {
 	type: "delegation"
 }
 export namespace Delegation {
-	export type Identifier = DelegationIdentifier
-	export const Identifier = DelegationIdentifier
-	export type Creatable = DelegationCreatable
-	export const Creatable = DelegationCreatable
+	export import Identifier = DelegationIdentifier
+	export import Creatable = DelegationCreatable
 	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),

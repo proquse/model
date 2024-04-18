@@ -7,13 +7,11 @@ export interface Receipt {
 }
 
 export namespace Receipt {
+	export import Creatable = ReceiptCreatable
+	export import Preview = ReceiptPreview
 	export const type = isly.object<Receipt>({
 		file: isly.fromIs<File>("File", value => value instanceof File),
 	})
 	export const is = type.is
 	export const flaw = type.flaw
-	export type Creatable = ReceiptCreatable
-	export const Creatable = ReceiptCreatable
-	export type Preview = ReceiptPreview
-	export const Preview = ReceiptPreview
 }

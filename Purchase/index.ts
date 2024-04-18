@@ -23,8 +23,8 @@ export interface Purchase extends Omit<Purchase.Creatable, "payment"> {
 }
 
 export namespace Purchase {
-	export type Identifier = PurchaseIdentifier
-	export const Identifier = PurchaseIdentifier
+	export import Identifier = PurchaseIdentifier
+	export import Creatable = PurchaseCreatable
 	export import Link = PurchaseLink
 	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
 		type: isly.string("purchase"),
@@ -36,7 +36,6 @@ export namespace Purchase {
 		payment: Payment.type,
 		transactions: isly.array(Transaction.type),
 	})
-
 	export const is = type.is
 	export const flaw = type.flaw
 
@@ -143,18 +142,21 @@ export namespace Purchase {
 					removed: search.found,
 			  }
 	}
+	// TODO: handle transaction array
 	export function validate(
 		purchase: Purchase,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
 	): boolean {
 		const date = options?.date ?? isoly.Date.now()
-		const cadence = Cadence.allocated(purchase.payment.limit, date, { limit: options?.limit })
+		const limit = Payment.exchange(purchase.payment, options?.currency ?? purchase.payment.limit.currency)
+		const cadence = !limit ? undefined : Cadence.allocated(limit, date, { limit: options?.limit })
 		return (
+			limit !== undefined &&
+			cadence !== undefined &&
 			cadence > 0 &&
 			(!options?.limit || cadence <= options.limit) &&
 			isoly.DateTime.getDate(purchase.created) <= purchase.payment.limit.created &&
 			purchase.payment.limit.created <= date &&
-			(!options?.currency || purchase.payment.limit.currency == options.currency) &&
 			purchase.receipts.every(r => Receipt.validate(r, purchase.payment.limit.currency)) &&
 			(!options?.spent || Cadence.allocated(purchase.payment.limit, date, { limit: options.limit }) >= spent(purchase))
 		)
@@ -177,6 +179,4 @@ export namespace Purchase {
 		allocated = typeof allocated == "number" ? allocated : Cadence.allocated(purchase.payment.limit, allocated)
 		return isoly.Currency.subtract(purchase.payment.limit.currency, allocated, spent(purchase))
 	}
-	export type Creatable = PurchaseCreatable
-	export const Creatable = PurchaseCreatable
 }

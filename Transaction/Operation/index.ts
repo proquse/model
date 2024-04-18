@@ -7,7 +7,7 @@ import { Type as OperationType } from "./Type"
 export interface Operation {
 	type: Operation.Type
 	reference: string
-	amount: Amount
+	amount: { account: Amount; merchant: Amount; rate: number }
 	status: Operation.Status
 	modified: isoly.DateTime
 	created: isoly.DateTime
@@ -18,7 +18,7 @@ export namespace Operation {
 	export const type = isly.object<Operation>({
 		type: Type.type,
 		reference: isly.string(),
-		amount: Amount.type,
+		amount: isly.object({ account: Amount.type, merchant: Amount.type, rate: isly.number() }),
 		status: Status.type,
 		modified: isly.fromIs("isoly.DateTime", isoly.DateTime.is),
 		created: isly.fromIs("isoly.DateTime", isoly.DateTime.is),

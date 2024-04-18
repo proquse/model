@@ -16,19 +16,15 @@ export function changeDelegation(
 		? search
 		: "costCenters" in search.found
 		? undefined
-		: {
-				root: search.root,
-				changed: search.found,
-		  }
+		: { root: search.root, changed: search.found }
 
-	if (result) {
+	if (result)
 		if ("name" in result.root && result.root.name != change.costCenter)
 			result = undefined
 		else if (result.root.type == "delegation" && result.root.costCenter != change.costCenter)
 			result = undefined
 		else
 			Object.assign(result.changed, change)
-	}
 	return result
 }
 function changeName(root: CostCenter | Delegation, name: string): string {
@@ -36,9 +32,8 @@ function changeName(root: CostCenter | Delegation, name: string): string {
 		root.name = name
 	else
 		root.costCenter = name
-	for (const child of root.usage) {
+	for (const child of root.usage)
 		child.type == "delegation" && changeName(child, name)
-	}
 	return name
 }
 export function changeCostCenter(
@@ -49,12 +44,12 @@ export function changeCostCenter(
 	const result: { root: CostCenter; changed: CostCenter } | undefined = !search
 		? search
 		: { root: search.root, changed: search.found }
-	if (result) {
+	if (result)
 		if (result.changed.name != change.name) {
 			Object.assign(result.changed, change)
 			changeName(result.changed, change.name)
 		} else
 			Object.assign(result.changed, change)
-	}
+
 	return result
 }

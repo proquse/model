@@ -16,10 +16,8 @@ export interface CostCenter extends CostCenter.Creatable {
 	type: "costCenter"
 }
 export namespace CostCenter {
-	export type Identifier = CostCenterIdentifier
-	export const Identifier = CostCenterIdentifier
-	export type Creatable = CostCenterCreatable
-	export const Creatable = CostCenterCreatable
+	export import Identifier = CostCenterIdentifier
+	export import Creatable = CostCenterCreatable
 
 	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
 		id: Identifier.type,
