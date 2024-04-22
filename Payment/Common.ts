@@ -5,12 +5,12 @@ import { Cadence } from "../Cadence"
 export interface Common {
 	type: string
 	limit: Cadence
-	rates?: Record<isoly.Currency, number | undefined>
+	rates?: { [currency in isoly.Currency]?: number }
 }
 export namespace Common {
 	export const type = isly.object<Common>({
 		type: isly.string(),
 		limit: Cadence.type,
-		rates: isly.record(isly.fromIs("isoly.Currency", isoly.Currency.is), isly.number()).optional(),
+		rates: isly.record(isly.fromIs("isoly.Currency", isoly.Currency.is), isly.number().optional()).optional(),
 	})
 }

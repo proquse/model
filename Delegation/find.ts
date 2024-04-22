@@ -78,3 +78,28 @@ export function findCostCenter(
 
 	return result
 }
+
+export function findPath(
+	nodes: (Delegation | CostCenter)[],
+	id: string,
+	path: (Delegation | CostCenter)[] = []
+): (Delegation | CostCenter)[] | undefined {
+	const found = nodes.find(root => root.id == id)
+	let result: (Delegation | CostCenter)[] | undefined
+	if (found)
+		result = [...path, found]
+	else if (nodes.length)
+		for (const node of nodes) {
+			let nodes = node.usage
+			nodes = nodes.reduce<(Delegation | CostCenter)[]>(
+				(result, node) => result.concat(node.type != "purchase" ? node : []),
+				[]
+			)
+			result = findPath(nodes, id, [...path, node])
+			if (result)
+				break
+		}
+	else
+		result = undefined
+	return result
+}

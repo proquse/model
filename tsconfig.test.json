@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
-		"target": "es2021",
-		"module": "es2020",
+		"target": "ESNext",
+		"module": "ESNext",
 		"lib": [
-			"es2021",
+			"ESNext",
 			"WebWorker"
 		],
 		"allowJs": true,

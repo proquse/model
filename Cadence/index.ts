@@ -1,6 +1,9 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
 import { Amount } from "../Amount"
+import type { CostCenter } from "../CostCenter"
+import { findPath } from "../Delegation/find"
+import { exchange } from "../Payment/exchange"
 
 export interface Cadence extends Amount {
 	interval: Cadence.Interval
@@ -94,14 +97,16 @@ export namespace Cadence {
 	}
 	/**
 	 * Cadence max cap calculated from the parents delegation max support day
-	 *		d = (y + sum(c * t)) / (sum(c))
-	 *	  where:
+	 * d = (y + sum(c * t)) / (sum(c))
+	 * where:
 	 *
-	 *    c = cost per day of a delegation (sum is sum of all)
-	 *    t = the delta of parents delegations created date and the childs created date
-	 *    d = the days where the child delegation reach its cap (parents money is 0)
-	 *    y = upper limit, the parents: cap - single childrens amounts
+	 * c = cost per day of a delegation (sum is sum of all)
 	 *
+	 * t = the delta of parents delegations created date and the childs created date
+	 *
+	 * d = the days where the child delegation reach its cap (parents money is 0)
+	 *
+	 * y = upper limit, the parents: cap - single childrens amounts
 	 *
 	 * parameters explained by sustainable(...)
 	 */
@@ -187,7 +192,7 @@ export namespace Cadence {
 	function duration(first: isoly.Date | isoly.DateTime, other: isoly.Date | isoly.DateTime): number {
 		return Math.trunc((new Date(first).getTime() - new Date(other).getTime()) / 1_000 / 3_600 / 24)
 	}
-	export function getDate(cadence: Cadence) {
+	export function getDate(cadence: Cadence): isoly.Date {
 		let result: isoly.Date
 		switch (cadence.interval) {
 			case "year":
@@ -202,6 +207,44 @@ export namespace Cadence {
 			default:
 				result = isoly.Date.now()
 				break
+		}
+		return result
+	}
+	/**
+	 * checks if the parent node under root can sustain given cadence if it is added byt its created date.
+	 *
+	 * Optional date overrides the date on which the given cadence is added in case the cadence should be added as if it was added in the past.
+	 */
+	export function add(root: CostCenter, parent: string, cadence: Cadence, options?: { date?: isoly.Date }): boolean {
+		let result: Return<typeof add>
+		const path = findPath([root], parent)?.map(node => ({
+			node: node,
+			children: node.usage.map(child =>
+				child.type == "purchase" ? exchange(child.payment, node.amount.currency) ?? child.payment.limit : child.amount
+			),
+		}))
+		const target = path?.at(-1)
+		if (!path || !path.length || !target)
+			result = false
+		else {
+			const sustainable = path
+				.slice(0, -1)
+				.reduce<isoly.Date>(
+					(result: isoly.Date, { node, children }) =>
+						isoly.Date.next(
+							node.amount.created,
+							Cadence.sustainable(node.amount, children, result, { limit: Cadence.allocated(node.amount, result) })
+						),
+					options?.date && options.date > cadence.created ? options.date : cadence.created
+				)
+			const available = Cadence.allocated(target.node.amount, sustainable)
+			const allocated = target.children.reduce(
+				(result, cadence) =>
+					isoly.Currency.add(target.node.amount.currency, result, Cadence.allocated(cadence, sustainable)),
+				0
+			)
+			const addition = Cadence.allocated(cadence, sustainable)
+			result = isoly.Currency.subtract(target.node.amount.currency, available, allocated) >= addition
 		}
 		return result
 	}
