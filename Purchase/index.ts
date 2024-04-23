@@ -142,7 +142,7 @@ export namespace Purchase {
 					removed: search.found,
 			  }
 	}
-	// TODO: handle transaction array
+	// TODO: currently not validating transactions. Should we do that?
 	export function validate(
 		purchase: Purchase,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }

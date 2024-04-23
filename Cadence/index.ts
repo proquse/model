@@ -211,7 +211,7 @@ export namespace Cadence {
 		return result
 	}
 	/**
-	 * checks if the parent node under root can sustain given cadence if it is added byt its created date.
+	 * checks if the parent node under root can sustain given cadence if it is added.
 	 *
 	 * Optional date overrides the date on which the given cadence is added in case the cadence should be added as if it was added in the past.
 	 */
