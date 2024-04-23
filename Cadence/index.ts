@@ -2,6 +2,7 @@ import { isoly } from "isoly"
 import { isly } from "isly"
 import { Amount } from "../Amount"
 import type { CostCenter } from "../CostCenter"
+import type { Delegation } from "../Delegation"
 import { findPath } from "../Delegation/find"
 import { exchange } from "../Payment/exchange"
 
@@ -215,7 +216,12 @@ export namespace Cadence {
 	 *
 	 * Optional date overrides the date on which the given cadence is added in case the cadence should be added as if it was added in the past.
 	 */
-	export function add(root: CostCenter, parent: string, cadence: Cadence, options?: { date?: isoly.Date }): boolean {
+	export function add(
+		root: CostCenter,
+		parent: CostCenter.Identifier | Delegation.Identifier,
+		cadence: Cadence,
+		options?: { date?: isoly.Date }
+	): boolean {
 		let result: Return<typeof add>
 		const path = findPath([root], parent)?.map(node => ({
 			node: node,
