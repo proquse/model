@@ -15,8 +15,9 @@ export interface Receipt extends Omit<Receipt.Creatable, "file"> {
 }
 
 export namespace Receipt {
-	export type Identifier = ReceiptIdentifier
-	export const Identifier = ReceiptIdentifier
+	export import Identifier = ReceiptIdentifier
+	export import Creatable = ReceiptCreatable
+	export import Total = ReceiptTotal
 	export const type = isly.object<Receipt>({
 		id: Identifier.type,
 		original: isly.string(/^http.+$/),
@@ -104,8 +105,4 @@ export namespace Receipt {
 			0
 		)
 	}
-	export type Creatable = ReceiptCreatable
-	export const Creatable = ReceiptCreatable
-	export type Total = ReceiptTotal
-	export const Total = ReceiptTotal
 }

@@ -4,7 +4,7 @@ import { isly } from "isly"
 import { Cadence } from "../Cadence"
 import { Delegation } from "../Delegation"
 import { changeCostCenter } from "../Delegation/change"
-import { findCostCenter, findNode } from "../Delegation/find"
+import { findCostCenter, findNode, findPath } from "../Delegation/find"
 import { Creatable as CostCenterCreatable } from "./Creatable"
 import { Identifier as CostCenterIdentifier } from "./Identifier"
 
@@ -16,10 +16,8 @@ export interface CostCenter extends CostCenter.Creatable {
 	type: "costCenter"
 }
 export namespace CostCenter {
-	export type Identifier = CostCenterIdentifier
-	export const Identifier = CostCenterIdentifier
-	export type Creatable = CostCenterCreatable
-	export const Creatable = CostCenterCreatable
+	export import Identifier = CostCenterIdentifier
+	export import Creatable = CostCenterCreatable
 
 	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
 		id: Identifier.type,
@@ -117,7 +115,7 @@ export namespace CostCenter {
 	export const findUser = Delegation.findUser
 	export const findParent = Delegation.findParent
 	export const findParents = Delegation.findParents
-	export const path = Delegation.path
+	export const path = findPath
 	export const spent = Delegation.spent
 	export const allocated = Delegation.allocated
 	export const sustainable = Delegation.sustainable

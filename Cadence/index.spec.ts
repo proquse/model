@@ -311,4 +311,83 @@ describe("Amount", () => {
 		date = isoly.Date.next(parent.created, proquse.Cadence.sustainable(parent, children, end))
 		expect(date < end).toEqual(true)
 	})
+	it("add", () => {
+		const center: proquse.CostCenter = {
+			from: "jessie@rocket.com",
+			name: "Development",
+			amount: {
+				value: 3000,
+				currency: "EUR",
+				interval: "single",
+				created: "2024-04-22",
+			},
+			id: "------c1",
+			created: "2024-04-22T07:50:56.564Z",
+			modified: "2024-04-22T07:50:56.564Z",
+			usage: [
+				{
+					from: "jessie@rocket.com",
+					to: ["jessie@rocket.com"],
+					purpose: "Hosting",
+					amount: {
+						value: 3000,
+						currency: "EUR",
+						interval: "single",
+						created: "2024-04-22",
+					},
+					costCenter: "Development",
+					id: "----d1c1",
+					created: "2024-04-22T07:53:09.776Z",
+					modified: "2024-04-22T07:53:09.776Z",
+					usage: [
+						{
+							purpose: "Domain",
+							payment: {
+								type: "card",
+								limit: {
+									value: 1000,
+									currency: "GBP",
+									interval: "week",
+									created: "2024-04-22",
+								},
+								rates: {
+									EUR: 1.1620947920721894,
+								},
+								reference: "supplier|abcqwe12",
+								mask: "487184******3096",
+								expires: {
+									month: 5,
+									year: 24,
+								},
+								holder: "Rocket AB",
+							},
+							buyer: "jessie@rocket.com",
+							id: "--p1d1c1",
+							type: "purchase",
+							email: "receipt+--p1d1c1_----d1c1@proquse.com",
+							created: "2024-04-22T08:37:34.912Z",
+							modified: "2024-04-22T08:37:34.912Z",
+							receipts: [],
+							transactions: [],
+						},
+					],
+					type: "delegation",
+				},
+			],
+			type: "costCenter",
+		}
+		const cadence: Omit<proquse.Cadence, "created"> = { value: 500, currency: "GBP", interval: "week" }
+		// (1_162 - 3_000) >= 500
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-04-22" })).toEqual(true)
+		// (2_324 - 3_000) >= 500
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-04-29" })).toEqual(true)
+		// (3_486 - 3_000) >= 500
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-05-06" })).toEqual(false)
+		// (4_648 - 3_000) >= 500
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-05-13" })).toEqual(false)
+		// (4_648 - 3_000) >= 2000
+		expect(
+			Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-04-22" }, { date: "2024-05-13" })
+		).toEqual(false)
+	})
 })

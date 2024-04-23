@@ -7,7 +7,7 @@ import type { CostCenter } from "../CostCenter"
 import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
-import { findDelegation, findNode } from "./find"
+import { findDelegation, findNode, findPath } from "./find"
 import { Identifier as DelegationIdentifier } from "./Identifier"
 
 export interface Delegation extends Delegation.Creatable {
@@ -18,10 +18,8 @@ export interface Delegation extends Delegation.Creatable {
 	type: "delegation"
 }
 export namespace Delegation {
-	export type Identifier = DelegationIdentifier
-	export const Identifier = DelegationIdentifier
-	export type Creatable = DelegationCreatable
-	export const Creatable = DelegationCreatable
+	export import Identifier = DelegationIdentifier
+	export import Creatable = DelegationCreatable
 	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
@@ -135,32 +133,7 @@ export namespace Delegation {
 						(result = [root as unknown as TResult, ...result])
 			  ) && result
 	}
-	export function path(
-		nodes: (Delegation | CostCenter)[],
-		id: string,
-		path: (Delegation | CostCenter)[] = []
-	): (Delegation | CostCenter)[] | undefined {
-		const currentNodes = nodes
-		currentNodes
-		const found = nodes.find(root => root.id == id)
-		let result: (Delegation | CostCenter)[] | undefined
-		if (found)
-			result = [...path, found]
-		else if (nodes.length)
-			for (const node of nodes) {
-				let nodes = node.usage
-				nodes = nodes.reduce<(Delegation | CostCenter)[]>(
-					(result, node) => result.concat(node.type != "purchase" ? node : []),
-					[]
-				)
-				result = Delegation.path(nodes, id, [...path, node])
-				if (result)
-					break
-			}
-		else
-			result = undefined
-		return result
-	}
+	export const path = findPath
 	function sustainablePath<T extends Delegation | CostCenter>(
 		[node, ...nodes]: T[],
 		options?: { date?: isoly.Date; limit?: number }

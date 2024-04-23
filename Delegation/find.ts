@@ -31,12 +31,12 @@ export function findNode(
 	return result
 }
 
-export function findDelegation(
-	roots: (CostCenter | Delegation)[],
+export function findDelegation<T extends CostCenter | Delegation>(
+	roots: T[],
 	id: string
-): { root: CostCenter | Delegation; found: Delegation } | undefined {
+): { root: T; found: Delegation } | undefined {
 	const search = roots.find(root => root.id == id)
-	let result: { root: CostCenter | Delegation; found: Delegation } | undefined =
+	let result: { root: T; found: Delegation } | undefined =
 		search && search.type == "delegation" ? { root: search, found: search } : undefined
 	if (!result)
 		for (const root of roots) {
@@ -44,7 +44,7 @@ export function findDelegation(
 			for (const action of root.usage)
 				if (action.type != "purchase")
 					usage.push(action)
-			result = findDelegation(usage, id)
+			result = findDelegation(usage, id) as any
 			if (result) {
 				result = { ...result, root }
 				break
@@ -76,5 +76,30 @@ export function findCostCenter(
 						}
 					}
 
+	return result
+}
+
+export function findPath(
+	nodes: (Delegation | CostCenter)[],
+	id: string,
+	path: (Delegation | CostCenter)[] = []
+): (Delegation | CostCenter)[] | undefined {
+	const found = nodes.find(root => root.id == id)
+	let result: (Delegation | CostCenter)[] | undefined
+	if (found)
+		result = [...path, found]
+	else if (nodes.length)
+		for (const node of nodes) {
+			let nodes = node.usage
+			nodes = nodes.reduce<(Delegation | CostCenter)[]>(
+				(result, node) => result.concat(node.type != "purchase" ? node : []),
+				[]
+			)
+			result = findPath(nodes, id, [...path, node])
+			if (result)
+				break
+		}
+	else
+		result = undefined
 	return result
 }

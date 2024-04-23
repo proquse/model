@@ -1,15 +1,13 @@
 import { isly } from "isly"
-import { Cadence } from "../../Cadence"
+import { Common } from "../Common"
 
-export interface Creatable {
+export interface Creatable extends Common {
 	type: "card"
-	limit: Cadence
 	key?: string
 }
 export namespace Creatable {
-	export const type = isly.object<Creatable>({
+	export const type = Common.type.extend<Creatable>({
 		type: isly.string("card"),
-		limit: Cadence.type,
 		key: isly.string().optional(),
 	})
 	export const is = type.is
