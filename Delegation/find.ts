@@ -31,12 +31,12 @@ export function findNode(
 	return result
 }
 
-export function findDelegation(
-	roots: (CostCenter | Delegation)[],
+export function findDelegation<T extends CostCenter | Delegation>(
+	roots: T[],
 	id: string
-): { root: CostCenter | Delegation; found: Delegation } | undefined {
+): { root: T; found: Delegation } | undefined {
 	const search = roots.find(root => root.id == id)
-	let result: { root: CostCenter | Delegation; found: Delegation } | undefined =
+	let result: { root: T; found: Delegation } | undefined =
 		search && search.type == "delegation" ? { root: search, found: search } : undefined
 	if (!result)
 		for (const root of roots) {
@@ -44,7 +44,7 @@ export function findDelegation(
 			for (const action of root.usage)
 				if (action.type != "purchase")
 					usage.push(action)
-			result = findDelegation(usage, id)
+			result = findDelegation(usage, id) as any
 			if (result) {
 				result = { ...result, root }
 				break
