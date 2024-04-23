@@ -378,16 +378,16 @@ describe("Amount", () => {
 		}
 		const cadence: Omit<proquse.Cadence, "created"> = { value: 500, currency: "GBP", interval: "week" }
 		// (1_162 - 3_000) >= 500
-		expect(Cadence.add(center, center.usage[0].id, { ...cadence, created: "2024-04-22" })).toEqual(true)
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-04-22" })).toEqual(true)
 		// (2_324 - 3_000) >= 500
-		expect(Cadence.add(center, center.usage[0].id, { ...cadence, created: "2024-04-29" })).toEqual(true)
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-04-29" })).toEqual(true)
 		// (3_486 - 3_000) >= 500
-		expect(Cadence.add(center, center.usage[0].id, { ...cadence, created: "2024-05-06" })).toEqual(false)
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-05-06" })).toEqual(false)
 		// (4_648 - 3_000) >= 500
-		expect(Cadence.add(center, center.usage[0].id, { ...cadence, created: "2024-05-13" })).toEqual(false)
+		expect(Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-05-13" })).toEqual(false)
 		// (4_648 - 3_000) >= 2000
 		expect(
-			Cadence.add(center, center.usage[0].id, { ...cadence, created: "2024-04-22" }, { date: "2024-05-13" })
+			Cadence.check(center, center.usage[0].id, { ...cadence, created: "2024-04-22" }, { date: "2024-05-13" })
 		).toEqual(false)
 	})
 })

@@ -216,13 +216,13 @@ export namespace Cadence {
 	 *
 	 * Optional date overrides the date on which the given cadence is added in case the cadence should be added as if it was added in the past.
 	 */
-	export function add(
+	export function check(
 		root: CostCenter,
 		parent: CostCenter.Identifier | Delegation.Identifier,
 		cadence: Cadence,
 		options?: { date?: isoly.Date }
 	): boolean {
-		let result: Return<typeof add>
+		let result: Return<typeof check>
 		const path = findPath([root], parent)?.map(node => ({
 			node: node,
 			children: node.usage.map(child =>
