@@ -4,6 +4,7 @@ import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
 import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
+import { Payment } from "../Payment"
 import { Purchase } from "../Purchase"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
@@ -210,16 +211,19 @@ export namespace Delegation {
 	): boolean {
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(delegation.amount, date, { limit: options?.limit })
+		const children = delegation.usage.reduce<Cadence[]>(
+			(result, child) =>
+				result.concat(
+					child.type == "delegation" ? child.amount : Payment.exchange(child.payment, delegation.amount.currency) ?? []
+				),
+			[]
+		)
 		const sustainable = isoly.Date.next(
 			delegation.amount.created,
-			Cadence.sustainable(
-				delegation.amount,
-				delegation.usage.map(value => (value.type == "delegation" ? value.amount : value.payment.limit)),
-				date,
-				{ limit: allocated }
-			)
+			Cadence.sustainable(delegation.amount, children, date, { limit: allocated })
 		)
 		return (
+			children.length == delegation.usage.length &&
 			allocated > 0 &&
 			(!options?.limit || allocated <= options.limit) &&
 			isoly.DateTime.getDate(delegation.created) <= delegation.amount.created &&
