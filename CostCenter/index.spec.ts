@@ -547,5 +547,83 @@ describe("CostCenter", () => {
 			],
 		}
 		expect(proquse.CostCenter.validate(costCenter)).toEqual(true)
+		const root: proquse.CostCenter = {
+			from: "jessie@rocket.com",
+			name: "Development",
+			amount: { value: 5000, currency: "EUR", interval: "single", created: "2024-04-22" },
+			id: "------c1",
+			created: "2024-04-22T07:50:56.564Z",
+			modified: "2024-04-22T07:50:56.564Z",
+			usage: [
+				{
+					from: "jessie@rocket.com",
+					to: ["jessie@rocket.com"],
+					purpose: "Hosting",
+					amount: { value: 2500, currency: "EUR", interval: "single", created: "2024-04-22" },
+					costCenter: "Development",
+					id: "----d1c1",
+					created: "2024-04-22T07:53:09.776Z",
+					modified: "2024-04-22T07:53:09.776Z",
+					usage: [
+						{
+							purpose: "Domain",
+							payment: {
+								type: "card",
+								limit: { value: 15, currency: "GBP", interval: "single", created: "2024-04-22" },
+								rates: { EUR: 1.1620947920721894 },
+								reference: "supplier|V500014TS4",
+								mask: "482384******3546",
+								expires: { month: 5, year: 24 },
+								holder: "Rocket AB",
+							},
+							buyer: "jessie@rocket.com",
+							id: "wExqZ244",
+							type: "purchase",
+							email: "receipt+asdqweaq_asdqweaq@rocket.com",
+							created: "2024-04-22T08:37:34.912Z",
+							modified: "2024-04-22T08:37:34.912Z",
+							receipts: [],
+							transactions: [],
+						},
+						{
+							from: "jessie@rocket.com",
+							to: ["jessie@rocket.com"],
+							purpose: "Pi",
+							amount: { value: 70, currency: "EUR", interval: "single", created: "2024-04-23" },
+							costCenter: "Development",
+							id: "--p1d1c1",
+							created: "2024-04-23T07:17:44.680Z",
+							modified: "2024-04-23T07:17:44.680Z",
+							usage: [
+								{
+									purpose: "Pi",
+									payment: {
+										type: "card",
+										limit: { value: 70, currency: "GBP", interval: "single", created: "2024-04-23" },
+										rates: { EUR: 1.1620947920721894 },
+										reference: "supplier|V214314UDV",
+										mask: "507184******0039",
+										expires: { month: 5, year: 24 },
+										holder: "Rocket AB",
+									},
+									buyer: "jessie@rocket.com",
+									id: "--p2d1c1",
+									type: "purchase",
+									email: "receipt+asdqweaq_asdqweaq@rocket.com",
+									created: "2024-04-23T08:40:02.203Z",
+									modified: "2024-04-24T07:17:30.840Z",
+									receipts: [],
+									transactions: [],
+								},
+							],
+							type: "delegation",
+						},
+					],
+					type: "delegation",
+				},
+			],
+			type: "costCenter",
+		}
+		expect(proquse.CostCenter.validate(root)).toEqual(false)
 	})
 })
