@@ -169,15 +169,21 @@ export namespace Purchase {
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(purchase: Purchase, options?: { vat?: boolean }): number {
-		return purchase.receipts.reduce(
-			(result, receipt) =>
-				isoly.Currency.add(
-					purchase.payment.limit.currency,
-					result,
-					Receipt.spent(receipt, purchase.payment.limit.currency, options)
-				),
-			0
-		)
+		return purchase.transactions.length
+			? purchase.transactions.reduce<number>(
+					(result, transaction) =>
+						isoly.Currency.add(purchase.payment.limit.currency, result, transaction.amount.value),
+					0
+			  )
+			: purchase.receipts.reduce(
+					(result, receipt) =>
+						isoly.Currency.add(
+							purchase.payment.limit.currency,
+							result,
+							Receipt.spent(receipt, purchase.payment.limit.currency, options)
+						),
+					0
+			  )
 	}
 	export function calculateSpentBalance(purchase: Purchase, allocated: number): number
 	export function calculateSpentBalance(purchase: Purchase, date: isoly.Date, currency: isoly.Currency): number
