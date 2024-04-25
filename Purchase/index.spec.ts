@@ -413,7 +413,11 @@ describe("Purchase", () => {
 		expect(
 			proquse.Purchase.list(
 				costCenter.usage,
-				purchase => proquse.Cadence.allocated(purchase.payment.limit, "2023-12-31") <= 500
+				(purchase, delegation) =>
+					proquse.Cadence.allocated(
+						proquse.Payment.exchange(purchase.payment, delegation.amount.currency) ?? purchase.payment.limit,
+						"2023-12-31"
+					) <= 500
 			).length
 		).toEqual(2)
 		expect(proquse.Purchase.list(costCenter.usage, purchase => purchase.buyer == "mary@example.com").length).toEqual(1)
