@@ -158,7 +158,13 @@ export namespace Purchase {
 			isoly.DateTime.getDate(purchase.created) <= purchase.payment.limit.created &&
 			purchase.payment.limit.created <= date &&
 			purchase.receipts.every(r => Receipt.validate(r, purchase.payment.limit.currency)) &&
-			(!options?.spent || Cadence.allocated(purchase.payment.limit, date, { limit: options.limit }) >= spent(purchase))
+			(!options?.spent ||
+				Cadence.allocated(
+					(!options.currency ? purchase.payment.limit : Payment.exchange(purchase.payment, options.currency)) ??
+						purchase.payment.limit,
+					date,
+					{ limit: options.limit }
+				) >= spent(purchase))
 		)
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
@@ -174,9 +180,20 @@ export namespace Purchase {
 		)
 	}
 	export function calculateSpentBalance(purchase: Purchase, allocated: number): number
-	export function calculateSpentBalance(purchase: Purchase, date: isoly.Date): number
-	export function calculateSpentBalance(purchase: Purchase, allocated: isoly.Date | number): number {
-		allocated = typeof allocated == "number" ? allocated : Cadence.allocated(purchase.payment.limit, allocated)
+	export function calculateSpentBalance(purchase: Purchase, date: isoly.Date, currency: isoly.Currency): number
+	export function calculateSpentBalance(
+		purchase: Purchase,
+		allocated: isoly.Date | number,
+		currency?: isoly.Currency
+	): number {
+		allocated =
+			typeof allocated == "number"
+				? allocated
+				: Cadence.allocated(
+						(!currency ? purchase.payment.limit : Payment.exchange(purchase.payment, currency)) ??
+							purchase.payment.limit,
+						allocated
+				  )
 		return isoly.Currency.subtract(purchase.payment.limit.currency, allocated, spent(purchase))
 	}
 }

@@ -192,13 +192,13 @@ export namespace Delegation {
 	function calculateAllocated(root: Delegation | CostCenter, date: isoly.Date): number {
 		return root.usage.reduce(
 			(result, current) =>
-				current.type == "costCenter"
-					? isoly.Currency.add(root.amount.currency, result, Cadence.allocated(current.amount, date))
-					: Delegation.is(current)
-					? isoly.Currency.add(root.amount.currency, result, Cadence.allocated(current.amount, date))
-					: Purchase.is(current)
-					? isoly.Currency.add(root.amount.currency, result, Cadence.allocated(current.payment.limit, date))
-					: 0,
+				current.type == "purchase"
+					? isoly.Currency.add(
+							root.amount.currency,
+							result,
+							Cadence.allocated(Payment.exchange(current.payment, root.amount.currency) ?? current.payment.limit, date)
+					  )
+					: isoly.Currency.add(root.amount.currency, result, Cadence.allocated(current.amount, date)),
 			0
 		)
 	}
