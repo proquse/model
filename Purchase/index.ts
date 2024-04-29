@@ -39,50 +39,6 @@ export namespace Purchase {
 	export const is = type.is
 	export const flaw = type.flaw
 
-	// export function find(
-	// 	roots: CostCenter[],
-	// 	criteria: string | ((purchase: Purchase) => boolean)
-	// ): { root: CostCenter; parent: Delegation; found: Purchase } | undefined
-	// export function find(
-	// 	roots: Delegation[],
-	// 	criteria: string | ((purchase: Purchase) => boolean)
-	// ): { root: Delegation; parent: Delegation; found: Purchase } | undefined
-	// export function find(
-	// 	roots: (CostCenter | Delegation)[],
-	// 	criteria: string | ((purchase: Purchase) => boolean)
-	// ): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined
-	// export function find(
-	// 	roots: (CostCenter | Delegation)[],
-	// 	criteria: string | ((purchase: Purchase) => boolean)
-	// ): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-	// 	let result: Return<typeof find>
-	// 	for (const root of roots)
-	// 		if (root.type == "delegation") {
-	// 			for (const use of root.usage)
-	// 				if (use.type == "purchase" && (typeof criteria == "string" ? use.id == criteria : criteria(use))) {
-	// 					result = { root, parent: root, found: use }
-	// 					break
-	// 				} else if (use.type == "delegation") {
-	// 					result = find([use], criteria)
-	// 					if (result) {
-	// 						result = { ...result, root }
-	// 						break
-	// 					}
-	// 				}
-
-	// 			if (result) {
-	// 				result = { ...result, root }
-	// 				break
-	// 			}
-	// 		} else {
-	// 			result = find(root.usage, criteria)
-	// 			if (result) {
-	// 				result = { ...result, root }
-	// 				break
-	// 			}
-	// 		}
-	// 	return result
-	// }
 	export function find<T extends CostCenter | Delegation>(
 		roots: T[],
 		criteria: string | ((purchase: Purchase) => boolean)
