@@ -39,23 +39,11 @@ export namespace Purchase {
 	export const is = type.is
 	export const flaw = type.flaw
 
-	export function find(
-		roots: CostCenter[],
+	export function find<T extends CostCenter | Delegation>(
+		roots: T[],
 		criteria: string | ((purchase: Purchase) => boolean)
-	): { root: CostCenter; parent: Delegation; found: Purchase } | undefined
-	export function find(
-		roots: Delegation[],
-		criteria: string | ((purchase: Purchase) => boolean)
-	): { root: Delegation; parent: Delegation; found: Purchase } | undefined
-	export function find(
-		roots: (CostCenter | Delegation)[],
-		criteria: string | ((purchase: Purchase) => boolean)
-	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined
-	export function find(
-		roots: (CostCenter | Delegation)[],
-		criteria: string | ((purchase: Purchase) => boolean)
-	): { root: CostCenter | Delegation; parent: Delegation; found: Purchase } | undefined {
-		let result: Return<typeof find>
+	): { root: T; parent: Delegation; found: Purchase } | undefined {
+		let result: { root: T; parent: Delegation; found: Purchase } | undefined
 		for (const root of roots)
 			if (root.type == "delegation") {
 				for (const use of root.usage)
@@ -63,19 +51,18 @@ export namespace Purchase {
 						result = { root, parent: root, found: use }
 						break
 					} else if (use.type == "delegation") {
-						result = find([use], criteria)
+						result = find([use], criteria) as any
 						if (result) {
 							result = { ...result, root }
 							break
 						}
 					}
-
 				if (result) {
 					result = { ...result, root }
 					break
 				}
 			} else {
-				result = find(root.usage, criteria)
+				result = find(root.usage, criteria) as any
 				if (result) {
 					result = { ...result, root }
 					break
@@ -104,6 +91,14 @@ export namespace Purchase {
 	}
 
 	export function change(
+		roots: CostCenter[],
+		change: Purchase
+	): { root: CostCenter; parent: Delegation; changed: Purchase } | undefined
+	export function change(
+		roots: Delegation[],
+		change: Purchase
+	): { root: Delegation; parent: Delegation; changed: Purchase } | undefined
+	export function change(
 		roots: (Delegation | CostCenter)[],
 		change: Purchase
 	): { root: Delegation | CostCenter; parent: Delegation; changed: Purchase } | undefined
@@ -116,8 +111,10 @@ export namespace Purchase {
 		if (Purchase.is(roots))
 			result = Object.assign(roots, change)
 		else {
-			const search = find(roots, change.id)
-			if (search)
+			const search = find<CostCenter | Delegation>(roots as any, change.id)
+			if (!search)
+				result = undefined as any
+			else
 				result = {
 					root: search.root,
 					parent: search.parent,
