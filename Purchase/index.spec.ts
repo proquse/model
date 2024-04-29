@@ -280,19 +280,6 @@ describe("Purchase", () => {
 		expect(proquse.Purchase.is((({ payment, ...purchase }) => purchase)(purchase))).toEqual(false)
 		expect(proquse.Purchase.is((({ receipts, ...purchase }) => purchase)(purchase))).toEqual(false)
 	})
-	// it("create", () => {
-	// 	const purchase: proquse.Purchase.Creatable = {
-	// 		purpose: "buy things",
-	// 		payment: {
-	// 			type: "card",
-	// 			limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
-	// 		},
-	// 		buyer: "jane@example.com",
-	// 	}
-	// 	const result = proquse.Purchase.create(purchase, "organizationId", "receipt@example.com")
-	// 	expect(proquse.Purchase.is(result))
-	// 	expect(result.email).toMatch(/^receipt\+organizationId_[^@]+@example.com$/)
-	// })
 	it("find", () => {
 		expect(proquse.Purchase.find([costCenter], "c1d1d2p1")).toEqual({
 			root: costCenter,
