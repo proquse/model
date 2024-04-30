@@ -177,8 +177,10 @@ export namespace Cadence {
 				const next = isoly.Date.next(parent.created, days)
 				const balance =
 					allocated(parent, next) - children.reduce((result, cadence) => result + allocated(cadence, next), 0)
-				if (balance <= 0)
+				if (balance < 0) {
+					days--
 					break
+				}
 			}
 		else
 			for (days = approximation; days > -1; days--) {
