@@ -238,7 +238,11 @@ export namespace Delegation {
 							spent: options?.spent,
 					  })
 					: delegation.created <= value.created &&
-					  Purchase.validate(value, { date: sustainable, currency: delegation.amount.currency, spent: options?.spent })
+					  Purchase.validate(value, {
+							date: sustainable,
+							currency: delegation.amount.currency,
+							spent: options?.spent,
+					  })
 			)
 		)
 	}
