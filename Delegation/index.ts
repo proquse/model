@@ -6,6 +6,7 @@ import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
 import { Payment } from "../Payment"
 import { Purchase } from "../Purchase"
+import { Warning } from "../Warning"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
 import { findDelegation, findNode, findPath } from "./find"
@@ -244,6 +245,39 @@ export namespace Delegation {
 							spent: options?.spent,
 					  })
 			)
+		)
+	}
+	export function warnings<T extends WeakMap<CostCenter | Delegation | Purchase, Warning>>(
+		delegation: Delegation,
+		date: isoly.Date,
+		options?: { warnings?: T }
+	): T {
+		const warnings = options?.warnings ?? (new WeakMap() as T)
+		const allocated = Cadence.allocated(delegation.amount, date)
+		const children = delegation.usage.reduce<Cadence[]>(
+			(result, child) =>
+				result.concat(
+					child.type == "purchase"
+						? Payment.exchange(child.payment, delegation.amount.currency) ?? child.payment.limit
+						: child.amount
+				),
+			[]
+		)
+		const days = Cadence.sustainable(delegation.amount, children, date, { limit: allocated })
+		const sustainable = isoly.Date.next(delegation.amount.created, days)
+		if (sustainable < date)
+			warnings.set(delegation, {
+				type: "overallocation",
+				level: 0,
+				days: Math.max(0, days),
+				message: `Overallocation in ${days} days.`,
+			})
+		return delegation.usage.reduce(
+			(result, child) =>
+				child.type == "delegation"
+					? Delegation.warnings(child, sustainable, { warnings: result })
+					: Purchase.warnings(child, sustainable, delegation.amount, result),
+			warnings
 		)
 	}
 }
