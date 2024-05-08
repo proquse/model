@@ -247,12 +247,12 @@ export namespace Delegation {
 			)
 		)
 	}
-	export function warnings<T extends WeakMap<CostCenter | Delegation | Purchase, Warning>>(
+	export function warnings(
 		delegation: Delegation,
 		date: isoly.Date,
-		options?: { warnings?: T }
-	): T {
-		const warnings = options?.warnings ?? (new WeakMap() as T)
+		onWarning?: (warning: Warning) => Warning
+	): Record<string, { value: Warning[]; child: Warning[] } | undefined> {
+		const warnings: Return<typeof Delegation.warnings>[string] = { value: [], child: [] }
 		const allocated = Cadence.allocated(delegation.amount, date)
 		const children = delegation.usage.reduce<Cadence[]>(
 			(result, child) =>
@@ -266,18 +266,30 @@ export namespace Delegation {
 		const days = Cadence.sustainable(delegation.amount, children, date, { limit: allocated })
 		const sustainable = isoly.Date.next(delegation.amount.created, days)
 		if (sustainable < date)
-			warnings.set(delegation, {
-				type: "overallocation",
-				level: 0,
-				days: Math.max(0, days),
-				message: `Overallocation in ${days} days.`,
-			})
-		return delegation.usage.reduce(
-			(result, child) =>
-				child.type == "delegation"
-					? Delegation.warnings(child, sustainable, { warnings: result })
-					: Purchase.warnings(child, sustainable, delegation.amount, result),
-			warnings
+			warnings.value.push(
+				(onWarning ?? (warning => warning))({
+					type: "overallocation",
+					level: 0,
+					days: Math.max(0, days),
+					message: `Overallocation in ${days} days.`,
+				})
+			)
+		const callback: Parameter<typeof Delegation.warnings, 2> = warning => {
+			warnings.child.push(warning)
+			return onWarning?.(warning) ?? warning
+		}
+		const result = delegation.usage.reduce(
+			(result, child) => {
+				const children =
+					child.type == "delegation"
+						? Delegation.warnings(child, sustainable, callback)
+						: Purchase.warnings(child, sustainable, delegation.amount, callback)
+				return Object.assign(result, children)
+			},
+			{ [delegation.id]: warnings }
 		)
+		return Object.assign(result, {
+			[delegation.id]: !warnings.value.length && !warnings.child.length ? undefined : warnings,
+		})
 	}
 }

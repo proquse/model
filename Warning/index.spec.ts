@@ -124,11 +124,9 @@ describe("Warning", () => {
 			],
 			type: "costCenter",
 		}
-		const warnings = proquse.CostCenter.warnings(
-			costCenter,
-			"2024-05-02",
-			new Map<proquse.CostCenter | proquse.Delegation | proquse.Purchase, proquse.Warning>()
-		)
-		console.log(Array.from(warnings.entries(), ([node, warning]) => `${node.id}: ${warning.type} ${warning.message}`))
+		const warnings = proquse.CostCenter.warnings(costCenter, "2024-05-02")
+		console.log(warnings)
+		// expect(proquse.Warning.Overallocation.is(warnings.get((costCenter as any).usage[0].usage[1]))).toEqual(true)
+		// expect(proquse.Warning.Overspent.is(warnings.get((costCenter as any).usage[0].usage[1].usage[0]))).toEqual(true)
 	})
 })

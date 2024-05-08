@@ -201,13 +201,13 @@ export namespace Purchase {
 				  )
 		return isoly.Currency.subtract(purchase.payment.limit.currency, allocated, spent(purchase))
 	}
-	export function warnings<T extends WeakMap<CostCenter | Delegation | Purchase, Warning>>(
+	export function warnings(
 		purchase: Purchase,
 		date: isoly.Date,
 		budget: Amount,
-		warnings?: T
-	): T {
-		warnings = warnings ?? (new WeakMap() as T)
+		onWarning?: (warning: Warning) => Warning
+	): Record<string, { value: Warning[]; child: Warning[] } | undefined> {
+		const warnings: Return<typeof Purchase.warnings>[string] = { value: [], child: [] }
 		const allocated = Cadence.allocated(
 			Payment.exchange(purchase.payment, budget.currency) ?? purchase.payment.limit,
 			date,
@@ -217,24 +217,34 @@ export namespace Purchase {
 		// TODO: exchange back to budget currency
 		const spent = Purchase.spent(purchase)
 		if (spent > allocated)
-			warnings.set(purchase, {
-				type: "overspent",
-				level: 0,
-				message: `Overspent by ${spent - allocated}`,
-			})
+			warnings.value.push(
+				(onWarning ?? (warning => warning))({
+					type: "overspent",
+					level: 0,
+					message: `Overspent by ${spent - allocated}`,
+				})
+			)
 		if (purchase.payment.type == "card") {
 			const transactions = purchase.transactions.filter(transaction =>
 				purchase.receipts.find(receipt => transaction.receipts.includes(receipt.id))
 			)
 			transactions.length &&
-				warnings.set(purchase, {
-					type: "missing-receipt",
-					level: 0,
-					message: `Missing ${transactions.length} receipts.`,
-				})
+				warnings.value.push(
+					(onWarning ?? (warning => warning))({
+						type: "missing-receipt",
+						level: 0,
+						message: `Missing ${transactions.length} receipts.`,
+					})
+				)
 		} else
 			!purchase.receipts.length &&
-				warnings.set(purchase, { type: "missing-receipt", level: 0, message: `Missing at least one receipt.` })
-		return warnings
+				warnings.value.push(
+					(onWarning ?? (warning => warning))({
+						type: "missing-receipt",
+						level: 0,
+						message: `Missing at least one receipt.`,
+					})
+				)
+		return { [purchase.id]: !warnings.value.length ? undefined : warnings }
 	}
 }

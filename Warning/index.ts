@@ -13,4 +13,6 @@ export namespace Warning {
 		Overspent.type,
 		MissingReceipt.type
 	)
+	export const is = type.is
+	export const flaw = type.flaw
 }

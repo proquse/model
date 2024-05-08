@@ -13,4 +13,6 @@ export namespace Overallocation {
 		days: isly.number(),
 		message: isly.string().optional(),
 	})
+	export const is = type.is
+	export const flaw = type.flaw
 }
