@@ -1,17 +1,14 @@
 import { isly } from "isly"
+import { Base } from "./Base"
 
-export interface Overallocation {
+export interface Overallocation extends Base {
 	type: "overallocation"
-	level: number
 	days: number
-	message?: string
 }
 export namespace Overallocation {
-	export const type = isly.object<Overallocation>({
+	export const type = Base.type.extend<Overallocation>({
 		type: isly.string("overallocation"),
-		level: isly.number(),
 		days: isly.number(),
-		message: isly.string().optional(),
 	})
 	export const is = type.is
 	export const flaw = type.flaw

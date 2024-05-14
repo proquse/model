@@ -206,7 +206,7 @@ export namespace Purchase {
 		date: isoly.Date,
 		budget: Amount,
 		onWarning?: (warning: Warning) => Warning
-	): Record<string, { value: Warning[]; child: Warning[] } | undefined> {
+	): Warning.Record {
 		const warnings: Return<typeof Purchase.warnings>[string] = { value: [], child: [] }
 		const allocated = Cadence.allocated(
 			Payment.exchange(purchase.payment, budget.currency) ?? purchase.payment.limit,
@@ -219,8 +219,9 @@ export namespace Purchase {
 		if (spent > allocated)
 			warnings.value.push(
 				(onWarning ?? (warning => warning))({
+					source: purchase.id,
 					type: "overspent",
-					level: 0,
+					severity: 0,
 					message: `Overspent by ${spent - allocated}`,
 				})
 			)
@@ -231,8 +232,9 @@ export namespace Purchase {
 			transactions.length &&
 				warnings.value.push(
 					(onWarning ?? (warning => warning))({
+						source: purchase.id,
 						type: "missing-receipt",
-						level: 0,
+						severity: 0,
 						message: `Missing ${transactions.length} receipts.`,
 					})
 				)
@@ -240,11 +242,12 @@ export namespace Purchase {
 			!purchase.receipts.length &&
 				warnings.value.push(
 					(onWarning ?? (warning => warning))({
+						source: purchase.id,
 						type: "missing-receipt",
-						level: 0,
+						severity: 0,
 						message: `Missing at least one receipt.`,
 					})
 				)
-		return { [purchase.id]: !warnings.value.length ? undefined : warnings }
+		return { [purchase.id]: warnings }
 	}
 }

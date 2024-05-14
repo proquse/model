@@ -1,7 +1,23 @@
 import { proquse } from "../index"
 
 describe("Warning", () => {
-	it("testing", () => {
+	it("is", () => {
+		const warning: proquse.Warning.Overallocation = {
+			type: "overallocation",
+			severity: 0,
+			source: "resource-id",
+			days: 123,
+			message: "resource overallocated in 123 days.",
+		}
+		const warnings: proquse.Warning[] = [
+			warning,
+			{ type: "overspent", severity: 1, source: "resource-id" },
+			{ type: "missing-receipt", severity: 2, source: "resource-id" },
+		]
+		warnings.forEach(warning => expect(proquse.Warning.is(warning)).toEqual(true))
+		expect(proquse.Warning.is((({ days: _, ...warning }) => warning)(warning))).toEqual(false)
+	})
+	it("warnings function", () => {
 		const costCenter: proquse.CostCenter = {
 			from: "jessie@rocket.com",
 			name: "Development",
@@ -125,8 +141,22 @@ describe("Warning", () => {
 			type: "costCenter",
 		}
 		const warnings = proquse.CostCenter.warnings(costCenter, "2024-05-02")
-		console.log(warnings)
-		// expect(proquse.Warning.Overallocation.is(warnings.get((costCenter as any).usage[0].usage[1]))).toEqual(true)
-		// expect(proquse.Warning.Overspent.is(warnings.get((costCenter as any).usage[0].usage[1].usage[0]))).toEqual(true)
+		const c1 = warnings["------c1"]
+		const d1c1 = warnings["----d1c1"]
+		const p1d1c1 = warnings["--p1d1c1"]
+		const d1d1c1 = warnings["--d1d1c1"]
+		const p1d1d1c1 = warnings["p1d1d1c1"]
+		expect(c1).not.toBeUndefined()
+		expect(d1c1).not.toBeUndefined()
+		expect(p1d1c1).not.toBeUndefined()
+		expect(d1d1c1).not.toBeUndefined()
+		expect(p1d1d1c1).not.toBeUndefined()
+		expect(
+			!p1d1d1c1?.value.some(
+				warning => !d1d1c1?.child.includes(warning) || !d1c1?.child.includes(warning) || !c1?.child.includes(warning)
+			)
+		).toEqual(true)
+		expect(!d1d1c1?.value.some(warning => !d1c1?.child.includes(warning) || !c1?.child.includes(warning))).toEqual(true)
+		expect(!d1c1?.value.some(warning => !c1?.child.includes(warning))).toEqual(true)
 	})
 })
