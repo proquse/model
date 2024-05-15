@@ -142,7 +142,7 @@ export namespace CostCenter {
 		onWarning && warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof CostCenter.warnings, 2> = warning => {
 			warnings.child.push(warning)
-			return onWarning?.(warning) ?? warning
+			onWarning?.(warning)
 		}
 		return costCenter.usage.reduce(
 			(result, node) => {

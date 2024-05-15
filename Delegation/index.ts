@@ -276,7 +276,7 @@ export namespace Delegation {
 		onWarning && warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof Delegation.warnings, 2> = warning => {
 			warnings.child.push(warning)
-			return onWarning?.(warning) ?? warning
+			onWarning?.(warning)
 		}
 		return delegation.usage.reduce(
 			(result, child) => {
