@@ -141,14 +141,15 @@ describe("Warning", () => {
 			type: "costCenter",
 		}
 		const all: proquse.Warning[] = []
-		const warnings = proquse.CostCenter.warnings(costCenter, "2024-05-02", warning => all.push(warning))
+		const {
+			"------c1": c1,
+			"----d1c1": d1c1,
+			"--p1d1c1": p1d1c1,
+			"--d1d1c1": d1d1c1,
+			p1d1d1c1,
+		} = proquse.CostCenter.warnings(costCenter, "2024-05-02", warning => all.push(warning))
 		expect(all.length).toEqual(2)
 		expect(all).toEqual(Array.from(new Set(all)))
-		const c1 = warnings["------c1"]
-		const d1c1 = warnings["----d1c1"]
-		const p1d1c1 = warnings["--p1d1c1"]
-		const d1d1c1 = warnings["--d1d1c1"]
-		const p1d1d1c1 = warnings["p1d1d1c1"]
 		expect(c1).not.toBeUndefined()
 		expect(d1c1).not.toBeUndefined()
 		expect(p1d1c1).not.toBeUndefined()
