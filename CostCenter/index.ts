@@ -124,7 +124,7 @@ export namespace CostCenter {
 	export function warnings(
 		costCenter: CostCenter,
 		date: isoly.Date,
-		onWarning?: (warning: Warning) => Warning
+		onWarning?: (warning: Warning) => void
 	): Warning.Record {
 		const warnings: ReturnType<typeof CostCenter.warnings>[string] = { value: [], child: [] }
 		const allocated = Cadence.allocated(costCenter.amount, date)
@@ -132,15 +132,14 @@ export namespace CostCenter {
 		const days = Cadence.sustainable(costCenter.amount, children, date, { limit: allocated })
 		const sustainable = isoly.Date.next(costCenter.amount.created, days)
 		if (sustainable < date)
-			warnings.value.push(
-				(onWarning ?? (warning => warning))({
-					source: costCenter.id,
-					type: "overallocation",
-					severity: 0,
-					days: Math.max(0, days),
-					message: `Overallocation in ${days} days.`,
-				})
-			)
+			warnings.value.push({
+				source: costCenter.id,
+				type: "overallocation",
+				severity: 0,
+				days: Math.max(0, days),
+				message: `Overallocation in ${days} days.`,
+			})
+		onWarning && warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof CostCenter.warnings, 2> = warning => {
 			warnings.child.push(warning)
 			return onWarning?.(warning) ?? warning

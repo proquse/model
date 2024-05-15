@@ -250,7 +250,7 @@ export namespace Delegation {
 	export function warnings(
 		delegation: Delegation,
 		date: isoly.Date,
-		onWarning?: (warning: Warning) => Warning
+		onWarning?: (warning: Warning) => void
 	): Warning.Record {
 		const warnings: Return<typeof Delegation.warnings>[string] = { value: [], child: [] }
 		const allocated = Cadence.allocated(delegation.amount, date)
@@ -266,15 +266,14 @@ export namespace Delegation {
 		const days = Cadence.sustainable(delegation.amount, children, date, { limit: allocated })
 		const sustainable = isoly.Date.next(delegation.amount.created, days)
 		if (sustainable < date)
-			warnings.value.push(
-				(onWarning ?? (warning => warning))({
-					source: delegation.id,
-					type: "overallocation",
-					severity: 0,
-					days: Math.max(0, days),
-					message: `Overallocation in ${days} days.`,
-				})
-			)
+			warnings.value.push({
+				source: delegation.id,
+				type: "overallocation",
+				severity: 0,
+				days: Math.max(0, days),
+				message: `Overallocation in ${days} days.`,
+			})
+		onWarning && warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof Delegation.warnings, 2> = warning => {
 			warnings.child.push(warning)
 			return onWarning?.(warning) ?? warning

@@ -140,14 +140,10 @@ describe("Warning", () => {
 			],
 			type: "costCenter",
 		}
-		const warningArray: proquse.Warning[] = []
-		const warnings = proquse.CostCenter.warnings(
-			costCenter,
-			"2024-05-02",
-			warning => (warningArray.push(warning), warning)
-		)
-		expect(warningArray.length).toEqual(2)
-		expect(warningArray).toEqual(Array.from(new Set(warningArray)))
+		const all: proquse.Warning[] = []
+		const warnings = proquse.CostCenter.warnings(costCenter, "2024-05-02", warning => all.push(warning))
+		expect(all.length).toEqual(2)
+		expect(all).toEqual(Array.from(new Set(all)))
 		const c1 = warnings["------c1"]
 		const d1c1 = warnings["----d1c1"]
 		const p1d1c1 = warnings["--p1d1c1"]
