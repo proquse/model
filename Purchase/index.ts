@@ -1,12 +1,14 @@
 import { isoly } from "isoly"
 import { userwidgets } from "@userwidgets/model"
 import { isly } from "isly"
+import { Amount } from "../Amount"
 import { Cadence } from "../Cadence"
-import { CostCenter } from "../CostCenter"
-import { Delegation } from "../Delegation"
+import type { CostCenter } from "../CostCenter"
+import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
+import { Warning } from "../Warning"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
 import { Link as PurchaseLink } from "./link"
@@ -198,5 +200,49 @@ export namespace Purchase {
 						allocated
 				  )
 		return isoly.Currency.subtract(purchase.payment.limit.currency, allocated, spent(purchase))
+	}
+	export function warnings(
+		purchase: Purchase,
+		date: isoly.Date,
+		budget: Amount,
+		onWarning?: (warning: Warning) => void
+	): Warning.Record {
+		const warnings: Return<typeof Purchase.warnings>[string] = { value: [], child: [] }
+		const allocated = Cadence.allocated(
+			Payment.exchange(purchase.payment, budget.currency) ?? purchase.payment.limit,
+			date,
+			{ limit: budget.value }
+		)
+
+		// TODO: exchange back to budget currency
+		const spent = Purchase.spent(purchase)
+		if (spent > allocated)
+			warnings.value.push({
+				source: purchase.id,
+				type: "overspent",
+				severity: 0,
+				message: `Overspent by ${spent - allocated}`,
+			})
+		if (purchase.payment.type == "card") {
+			const transactions = purchase.transactions.filter(transaction =>
+				purchase.receipts.find(receipt => transaction.receipts.includes(receipt.id))
+			)
+			if (transactions.length)
+				warnings.value.push({
+					source: purchase.id,
+					type: "missing-receipt",
+					severity: 0,
+					message: `Missing ${transactions.length} receipts.`,
+				})
+		} else if (!purchase.receipts.length)
+			warnings.value.push({
+				source: purchase.id,
+				type: "missing-receipt",
+				severity: 0,
+				message: `Missing at least one receipt.`,
+			})
+
+		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		return { [purchase.id]: warnings }
 	}
 }

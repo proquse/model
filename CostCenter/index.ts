@@ -5,6 +5,8 @@ import { Cadence } from "../Cadence"
 import { Delegation } from "../Delegation"
 import { changeCostCenter } from "../Delegation/change"
 import { findCostCenter, findNode, findPath } from "../Delegation/find"
+import { Purchase } from "../Purchase"
+import { Warning } from "../Warning"
 import { Creatable as CostCenterCreatable } from "./Creatable"
 import { Identifier as CostCenterIdentifier } from "./Identifier"
 
@@ -119,4 +121,38 @@ export namespace CostCenter {
 	export const spent = Delegation.spent
 	export const allocated = Delegation.allocated
 	export const sustainable = Delegation.sustainable
+	export function warnings(
+		costCenter: CostCenter,
+		date: isoly.Date,
+		onWarning?: (warning: Warning) => void
+	): Warning.Record {
+		const warnings: ReturnType<typeof CostCenter.warnings>[string] = { value: [], child: [] }
+		const allocated = Cadence.allocated(costCenter.amount, date)
+		const children = costCenter.usage.reduce<Cadence[]>((result, child) => result.concat(child.amount), [])
+		const days = Cadence.sustainable(costCenter.amount, children, date, { limit: allocated })
+		const sustainable = isoly.Date.next(costCenter.amount.created, days)
+		if (sustainable < date)
+			warnings.value.push({
+				source: costCenter.id,
+				type: "overallocation",
+				severity: 0,
+				days: Math.max(0, days),
+				message: `Overallocation in ${days} days.`,
+			})
+		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		const callback: Parameter<typeof CostCenter.warnings, 2> = warning => {
+			warnings.child.push(warning)
+			onWarning?.(warning)
+		}
+		return costCenter.usage.reduce(
+			(result, node) => {
+				const children =
+					node.type == "costCenter"
+						? CostCenter.warnings(node, sustainable, callback)
+						: Delegation.warnings(node, sustainable, callback)
+				return Object.assign(result, children)
+			},
+			{ [costCenter.id]: warnings }
+		)
+	}
 }
