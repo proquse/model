@@ -49,11 +49,11 @@ export namespace Delegation {
 		}
 	}
 	export const change = changeDelegation
-	export function remove(
-		roots: (CostCenter | Delegation)[],
+	export function remove<T extends Delegation | CostCenter>(
+		roots: T[],
 		id: string
-	): { root: CostCenter | Delegation; removed: Delegation } | undefined {
-		let result: { root: CostCenter | Delegation; removed: Delegation } | undefined
+	): { root: T; removed: Delegation } | undefined {
+		let result: { root: T; removed: Delegation } | undefined
 		const index = roots.findIndex(root => root.id == id && root.type == "delegation")
 		const found = index == -1 ? undefined : roots[index]
 
@@ -66,7 +66,7 @@ export namespace Delegation {
 					(result, node) => result.concat(node.type != "purchase" ? node : []),
 					[]
 				)
-				result = remove(usage, id)
+				result = remove(usage, id) as any
 				if (result) {
 					const index = root.usage.findIndex(node => node.id == id)
 					if (index != -1)
