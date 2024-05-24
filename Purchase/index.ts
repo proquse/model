@@ -126,10 +126,10 @@ export namespace Purchase {
 		return result
 	}
 
-	export function remove(
-		roots: (Delegation | CostCenter)[],
+	export function remove<T extends Delegation | CostCenter>(
+		roots: T[],
 		id: string
-	): { root: Delegation | CostCenter; parent: Delegation; removed: Purchase } | undefined {
+	): { root: T; parent: Delegation; removed: Purchase } | undefined {
 		const search = find(roots, id)
 		const index = search?.parent.usage.findIndex(purchase => purchase == search.found) ?? -1
 
