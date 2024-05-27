@@ -94,6 +94,28 @@ export namespace Receipt {
 	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
 		return receipt.total.every(total => Total.validate(total, currency))
 	}
+	export function remove<T extends CostCenter | Delegation>(
+		roots: T[],
+		id: string
+	): { root: T; delegation: Delegation; purchase: Purchase; removed: Receipt } | undefined {
+		let result: { root: T; delegation: Delegation; purchase: Purchase; removed: Receipt } | undefined
+		const search = find(roots, id)
+		const index = search?.purchase.receipts.findIndex(receipt => receipt.id == id) ?? -1
+		if (!search || index < 0)
+			result = undefined
+		else {
+			for (const transaction of search.purchase.transactions)
+				for (let index = transaction.receipts.length - 1; index >= 0; index--)
+					transaction.receipts[index] && transaction.receipts.splice(index, 1)
+			result = search.purchase.receipts.splice(index, 1) && {
+				root: search.root,
+				delegation: search.delegation,
+				purchase: search.purchase,
+				removed: search.found,
+			}
+		}
+		return result
+	}
 	export function spent(receipt: Receipt, currency: isoly.Currency, options?: { vat?: boolean }): number {
 		return receipt.total.reduce(
 			(result, { net, vat }) =>
