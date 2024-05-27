@@ -326,4 +326,89 @@ describe("Receipt", () => {
 		)
 		expect(result.length).toEqual(2)
 	})
+	it("remove", () => {
+		const receipt: proquse.Receipt = {
+			id: "r1p1d1c1",
+			date: "2024-03-21T12:54:19.442Z",
+			original: "https://origin.tld/path",
+			total: [{ net: { value: 50, currency: "EUR" }, vat: { value: 0, currency: "EUR" } }],
+		}
+		const purchase: proquse.Purchase = {
+			type: "purchase",
+			id: "--p1d1c1",
+			email: "receipt+-rocket-_--p1d1c1@proquse.com",
+			buyer: "jessie@rocket.com",
+			purpose: "buss ticket",
+			payment: {
+				type: "card",
+				reference: "card-reference",
+				expires: { year: 25, month: 4 },
+				mask: "**** **** **** 0123",
+				limit: { value: 50, currency: "EUR", created: "2024-03-21", interval: "single" },
+			},
+			receipts: [receipt],
+			transactions: [
+				{
+					card: { reference: "card-reference" },
+					reference: "transaction-reference",
+					status: "finalized",
+					amount: { value: 50, currency: "EUR" },
+					receipts: [receipt.id],
+					operations: [
+						{
+							type: "authorize",
+							reference: "authorization-reference",
+							status: "success",
+							amount: { account: { value: 50, currency: "EUR" }, merchant: { value: 50, currency: "EUR" }, rate: 1 },
+							created: "2024-03-21T12:54:19.442Z",
+							modified: "2024-03-21T12:54:19.442Z",
+						},
+						{
+							type: "capture",
+							status: "success",
+							reference: "capture-reference",
+							amount: { account: { value: 50, currency: "EUR" }, merchant: { value: 50, currency: "EUR" }, rate: 1 },
+							created: "2024-03-22T12:54:19.442Z",
+							modified: "2024-03-22T12:54:19.442Z",
+						},
+					],
+					merchant: { category: "category", country: "DE", descriptor: "descriptor" },
+					created: "2024-03-21T12:54:19.442Z",
+					modified: "2024-03-22T12:54:19.442Z",
+				},
+			],
+			created: "2024-03-21T12:54:19.442Z",
+			modified: "2024-03-21T12:54:19.442Z",
+		}
+		const delegation: proquse.Delegation = {
+			type: "delegation",
+			id: "----d1c1",
+			costCenter: "Travel",
+			usage: [purchase],
+			from: purchase.buyer,
+			to: [purchase.buyer],
+			purpose: "Bus",
+			amount: { value: 250, created: "2024-03-20", currency: "EUR", interval: "month" },
+			created: "2024-03-20T12:54:19.442Z",
+			modified: "2024-03-20T12:54:19.442Z",
+		}
+		const root: proquse.CostCenter = {
+			type: "costCenter",
+			id: "------c1",
+			name: "Travel",
+			from: delegation.from,
+			amount: { value: 500, created: "2024-03-20", currency: "EUR", interval: "month" },
+			usage: [delegation],
+			created: "2024-03-20T12:54:19.442Z",
+			modified: "2024-03-20T12:54:19.442Z",
+		}
+		const result = proquse.Receipt.remove([root], receipt.id)
+		expect(result).not.toBeUndefined()
+		expect(result?.root).toEqual(root)
+		expect(result?.delegation).toEqual(delegation)
+		expect(result?.purchase).toEqual(purchase)
+		expect(result?.removed).toEqual(receipt)
+		expect(purchase.receipts.includes(receipt)).toEqual(false)
+		expect(purchase.transactions.some(transaction => transaction.receipts.includes(receipt.id))).toEqual(false)
+	})
 })
