@@ -106,7 +106,7 @@ export namespace Receipt {
 		else {
 			for (const transaction of search.purchase.transactions)
 				for (let index = transaction.receipts.length - 1; index >= 0; index--)
-					transaction.receipts[index] && transaction.receipts.splice(index, 1)
+					transaction.receipts[index] == id && transaction.receipts.splice(index, 1)
 			result = search.purchase.receipts.splice(index, 1) && {
 				root: search.root,
 				delegation: search.delegation,
