@@ -91,8 +91,25 @@ export namespace Receipt {
 		return Array.from(list(roots))
 	}
 
-	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
-		return receipt.total.every(total => Total.validate(total, currency))
+	export function validate(
+		receipt: Receipt,
+		currency: isoly.Currency
+	):
+		| { status: true }
+		| {
+				status: false
+				reason: "overallocated" | "overspent" | "currency" | "time" | "exchange"
+				origin: Receipt
+		  } {
+		let result: Return<typeof validate> | undefined
+		for (const total of receipt.total) {
+			const validated = Total.validate(total, currency)
+			if (validated.status == false) {
+				result = { ...validated, origin: receipt }
+				break
+			}
+		}
+		return result ?? { status: true }
 	}
 	export function remove<T extends CostCenter | Delegation>(
 		roots: T[],

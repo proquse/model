@@ -209,7 +209,7 @@ export namespace Delegation {
 	export function validate(
 		delegation: Delegation,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): boolean {
+	): { status: true } | { status: false; message: string } {
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(delegation.amount, date, { limit: options?.limit })
 		const children = delegation.usage.reduce<Cadence[]>(

@@ -1,5 +1,6 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
+import { Validation as CreatableValidation } from "../Validation"
 import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
@@ -13,12 +14,26 @@ export namespace Creatable {
 
 	export const is = type.is
 	export const flaw = type.flaw
+	export type Validation = CreatableValidation<Creatable>
+	export function validate(receipt: Creatable, currency: isoly.Currency): Validation {
+		let result: Return<typeof validate> | undefined
+		if (!receipt.total.length)
+			result = { status: false, reason: "amount", origin: receipt }
+		else if (!receipt.total.every(total => Total.validate(total, currency)))
+			result = { status: false, reason: "" }
 
-	export function validate(receipt: Creatable, currency: isoly.Currency): boolean {
-		return !!(
-			receipt.total.length &&
-			receipt.total.every(total => Total.validate(total, currency)) &&
-			receipt.file instanceof File
-		)
+for (const total of receipt.total) {
+			const validated = Total.validate(total, currency)
+			if (validated.status == false) {
+				result = { ...validated, origin: receipt }
+				break
+			}
+		}
+
+
+
+		else
+			result = { status: true }
+		return result
 	}
 }

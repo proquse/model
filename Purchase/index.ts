@@ -145,26 +145,45 @@ export namespace Purchase {
 	export function validate(
 		purchase: Purchase,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): boolean {
+	):
+		| { status: true }
+		| {
+				status: false
+				reason: "overallocated" | "overspent" | "currency" | "time" | "exchange"
+				origin: Purchase | Receipt
+		  } {
+		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
 		const limit = Payment.exchange(purchase.payment, options?.currency ?? purchase.payment.limit.currency)
 		const cadence = !limit ? undefined : Cadence.allocated(limit, date, { limit: options?.limit })
-		return (
-			limit !== undefined &&
-			cadence !== undefined &&
-			cadence > 0 &&
-			(!options?.limit || cadence <= options.limit) &&
-			isoly.DateTime.getDate(purchase.created) <= purchase.payment.limit.created &&
-			purchase.payment.limit.created <= date &&
-			purchase.receipts.every(r => Receipt.validate(r, purchase.payment.limit.currency)) &&
-			(!options?.spent ||
-				Cadence.allocated(
-					(!options.currency ? purchase.payment.limit : Payment.exchange(purchase.payment, options.currency)) ??
-						purchase.payment.limit,
-					date,
-					{ limit: options.limit }
-				) >= spent(purchase))
+
+		if (limit == undefined || cadence == undefined)
+			result = { status: false, reason: "exchange", origin: purchase }
+		else if (cadence < 0 || (options?.limit && options.limit <= cadence))
+			result = { status: false, reason: "overallocated", origin: purchase }
+		// maybe time
+		else if (isoly.DateTime.getDate(purchase.created) >= purchase.payment.limit.created)
+			result = { status: false, reason: "time", origin: purchase }
+		else if (
+			!options?.spent ||
+			Cadence.allocated(
+				(!options.currency ? purchase.payment.limit : Payment.exchange(purchase.payment, options.currency)) ??
+					purchase.payment.limit,
+				date,
+				{ limit: options.limit }
+			) >= spent(purchase)
 		)
+			result = { status: false, reason: "overspent", origin: purchase }
+		else {
+			for (const r of purchase.receipts) {
+				const validated = Receipt.validate(r, purchase.payment.limit.currency)
+				if (validated.status == false) {
+					result = validated
+					break
+				}
+			}
+		}
+		return result ?? { status: true }
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(purchase: Purchase, options?: { vat?: boolean }): number {

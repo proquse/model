@@ -78,7 +78,7 @@ export namespace CostCenter {
 	export function validate(
 		costCenter: CostCenter,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): boolean {
+	): { status: true } | { status: false; message: string } {
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(costCenter.amount, date, { limit: options?.limit })
 		const sustainable = isoly.Date.next(
