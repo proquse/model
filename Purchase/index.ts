@@ -8,6 +8,7 @@ import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
+import { Validation as PurchaseValidation } from "../Validation"
 import { Warning } from "../Warning"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
@@ -28,6 +29,7 @@ export namespace Purchase {
 	export import Identifier = PurchaseIdentifier
 	export import Creatable = PurchaseCreatable
 	export import Link = PurchaseLink
+	export type Validation = PurchaseValidation<Purchase>
 	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
 		type: isly.string("purchase"),
 		id: Identifier.type,
@@ -145,13 +147,7 @@ export namespace Purchase {
 	export function validate(
 		purchase: Purchase,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	):
-		| { status: true }
-		| {
-				status: false
-				reason: "overallocated" | "overspent" | "currency" | "time" | "exchange"
-				origin: Purchase | Receipt
-		  } {
+	): Validation | Receipt.Validation {
 		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
 		const limit = Payment.exchange(purchase.payment, options?.currency ?? purchase.payment.limit.currency)
