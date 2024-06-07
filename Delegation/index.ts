@@ -6,6 +6,7 @@ import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
 import { Payment } from "../Payment"
 import { Purchase } from "../Purchase"
+import { Validation as DelegationValidation } from "../Validation"
 import { Warning } from "../Warning"
 import { changeDelegation } from "./change"
 import { Creatable as DelegationCreatable } from "./Creatable"
@@ -22,6 +23,7 @@ export interface Delegation extends Delegation.Creatable {
 export namespace Delegation {
 	export import Identifier = DelegationIdentifier
 	export import Creatable = DelegationCreatable
+	export type Validation = DelegationValidation<Delegation>
 	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
@@ -209,7 +211,8 @@ export namespace Delegation {
 	export function validate(
 		delegation: Delegation,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): { status: true } | { status: false; message: string } {
+	): Validation {
+		let result: Return<typeof validate>
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(delegation.amount, date, { limit: options?.limit })
 		const children = delegation.usage.reduce<Cadence[]>(
@@ -223,29 +226,39 @@ export namespace Delegation {
 			delegation.amount.created,
 			Cadence.sustainable(delegation.amount, children, date, { limit: allocated })
 		)
-		return (
-			children.length == delegation.usage.length &&
-			allocated > 0 &&
-			(!options?.limit || allocated <= options.limit) &&
-			isoly.DateTime.getDate(delegation.created) <= delegation.amount.created &&
-			delegation.amount.created <= sustainable &&
-			(!options?.currency || delegation.amount.currency == options.currency) &&
-			delegation.usage.every(value =>
-				value.type == "delegation"
-					? delegation.created <= value.created &&
-					  Delegation.validate(value, {
-							date: sustainable,
-							currency: delegation.amount.currency,
-							spent: options?.spent,
-					  })
-					: delegation.created <= value.created &&
-					  Purchase.validate(value, {
-							date: sustainable,
-							currency: delegation.amount.currency,
-							spent: options?.spent,
-					  })
-			)
-		)
+
+		if (children.length != delegation.usage.length)
+			result = { status: false, reason: "amount", origin: delegation }
+		else if (allocated < 0)
+			result = { status: false, reason: "amount", origin: delegation }
+		else if (!options?.limit || allocated >= options.limit)
+			result = { status: false, reason: "amount", origin: delegation }
+		else if (isoly.DateTime.getDate(delegation.created) >= delegation.amount.created)
+			result = { status: false, reason: "time", origin: delegation }
+		// return (
+		// 	children.length == delegation.usage.length &&
+		// 	allocated > 0 &&
+		// 	(!options?.limit || allocated <= options.limit) &&
+		// 	isoly.DateTime.getDate(delegation.created) <= delegation.amount.created &&
+		// 	delegation.amount.created <= sustainable &&
+		// 	(!options?.currency || delegation.amount.currency == options.currency) &&
+		// 	delegation.usage.every(value =>
+		// 		value.type == "delegation"
+		// 			? delegation.created <= value.created &&
+		// 			  Delegation.validate(value, {
+		// 					date: sustainable,
+		// 					currency: delegation.amount.currency,
+		// 					spent: options?.spent,
+		// 			  })
+		// 			: delegation.created <= value.created &&
+		// 			  Purchase.validate(value, {
+		// 					date: sustainable,
+		// 					currency: delegation.amount.currency,
+		// 					spent: options?.spent,
+		// 			  })
+		// 	)
+		// )
+		return result
 	}
 	export function warnings(
 		delegation: Delegation,
