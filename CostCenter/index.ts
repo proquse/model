@@ -6,6 +6,8 @@ import { Delegation } from "../Delegation"
 import { changeCostCenter } from "../Delegation/change"
 import { findCostCenter, findNode, findPath } from "../Delegation/find"
 import { Purchase } from "../Purchase"
+import { Receipt } from "../Receipt"
+import { Validation as CostCenterValidation } from "../Validation"
 import { Warning } from "../Warning"
 import { Creatable as CostCenterCreatable } from "./Creatable"
 import { Identifier as CostCenterIdentifier } from "./Identifier"
@@ -20,7 +22,7 @@ export interface CostCenter extends CostCenter.Creatable {
 export namespace CostCenter {
 	export import Identifier = CostCenterIdentifier
 	export import Creatable = CostCenterCreatable
-
+	export type Validation = CostCenterValidation<CostCenter | Delegation | Purchase | Receipt>
 	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
@@ -78,7 +80,8 @@ export namespace CostCenter {
 	export function validate(
 		costCenter: CostCenter,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): { status: true } | { status: false; message: string } {
+	): Validation {
+		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(costCenter.amount, date, { limit: options?.limit })
 		const sustainable = isoly.Date.next(
@@ -90,28 +93,38 @@ export namespace CostCenter {
 				{ limit: allocated }
 			)
 		)
-		return (
-			allocated > 0 &&
-			(!options?.limit || allocated <= options.limit) &&
-			isoly.DateTime.getDate(costCenter.created) <= costCenter.amount.created &&
-			costCenter.amount.created <= sustainable &&
-			(!options?.currency || costCenter.amount.currency == options.currency) &&
-			costCenter.usage.every(action =>
-				costCenter.created > action.created
-					? false
-					: action.type == "costCenter"
-					? CostCenter.validate(action, {
-							date: sustainable,
-							currency: costCenter.amount.currency,
-							spent: options?.spent,
-					  })
-					: Delegation.validate(action, {
-							date: sustainable,
-							currency: costCenter.amount.currency,
-							spent: options?.spent,
-					  })
-			)
-		)
+		if (allocated < 0)
+			result = { status: false, reason: "amount", origin: costCenter }
+		else if (options?.limit && allocated >= options.limit)
+			result = { status: false, reason: "amount", origin: costCenter }
+		else if (isoly.DateTime.getDate(costCenter.created) >= costCenter.amount.created)
+			result = { status: false, reason: "time", origin: costCenter }
+		else if (costCenter.amount.created > sustainable)
+			result = { status: false, reason: "time", origin: costCenter }
+		else if (options?.currency && costCenter.amount.currency != options.currency)
+			result = { status: false, reason: "currency", origin: costCenter }
+		else {
+			for (const usage of costCenter.usage) {
+				const validated =
+					usage.type == "costCenter"
+						? CostCenter.validate(usage, {
+								date: sustainable,
+								currency: costCenter.amount.currency,
+								spent: options?.spent,
+						  })
+						: Delegation.validate(usage, {
+								date: sustainable,
+								currency: costCenter.amount.currency,
+								spent: options?.spent,
+						  })
+				if (validated.status == false) {
+					result = validated
+					break
+				}
+			}
+		}
+
+		return result ?? { status: true }
 	}
 	export const find = Object.assign(findCostCenter, { node: findNode })
 	export const findUser = Delegation.findUser
