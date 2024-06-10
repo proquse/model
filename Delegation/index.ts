@@ -6,6 +6,7 @@ import { Cadence } from "../Cadence"
 import type { CostCenter } from "../CostCenter"
 import { Payment } from "../Payment"
 import { Purchase } from "../Purchase"
+import { Receipt } from "../Receipt"
 import { Validation as DelegationValidation } from "../Validation"
 import { Warning } from "../Warning"
 import { changeDelegation } from "./change"
@@ -211,8 +212,8 @@ export namespace Delegation {
 	export function validate(
 		delegation: Delegation,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): Validation {
-		let result: Return<typeof validate>
+	): Validation | Purchase.Validation | Receipt.Validation {
+		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(delegation.amount, date, { limit: options?.limit })
 		const children = delegation.usage.reduce<Cadence[]>(
@@ -227,38 +228,31 @@ export namespace Delegation {
 			Cadence.sustainable(delegation.amount, children, date, { limit: allocated })
 		)
 
-		if (children.length != delegation.usage.length)
+		if (children.length != delegation.usage.length || allocated < 0 || (options?.limit && allocated >= options.limit))
 			result = { status: false, reason: "amount", origin: delegation }
-		else if (allocated < 0)
-			result = { status: false, reason: "amount", origin: delegation }
-		else if (!options?.limit || allocated >= options.limit)
-			result = { status: false, reason: "amount", origin: delegation }
-		else if (isoly.DateTime.getDate(delegation.created) >= delegation.amount.created)
+		else if (
+			//                       shouldn't this be !=
+			isoly.DateTime.getDate(delegation.created) >= delegation.amount.created ||
+			delegation.amount.created <= sustainable
+		)
 			result = { status: false, reason: "time", origin: delegation }
-		// return (
-		// 	children.length == delegation.usage.length &&
-		// 	allocated > 0 &&
-		// 	(!options?.limit || allocated <= options.limit) &&
-		// 	isoly.DateTime.getDate(delegation.created) <= delegation.amount.created &&
-		// 	delegation.amount.created <= sustainable &&
-		// 	(!options?.currency || delegation.amount.currency == options.currency) &&
-		// 	delegation.usage.every(value =>
-		// 		value.type == "delegation"
-		// 			? delegation.created <= value.created &&
-		// 			  Delegation.validate(value, {
-		// 					date: sustainable,
-		// 					currency: delegation.amount.currency,
-		// 					spent: options?.spent,
-		// 			  })
-		// 			: delegation.created <= value.created &&
-		// 			  Purchase.validate(value, {
-		// 					date: sustainable,
-		// 					currency: delegation.amount.currency,
-		// 					spent: options?.spent,
-		// 			  })
-		// 	)
-		// )
-		return result
+		else if (!options?.currency || delegation.amount.currency != options.currency)
+			result = { status: false, reason: "currency", origin: delegation }
+		else {
+			for (const usage of delegation.usage) {
+				const validated = usage.type == "delegation" ? Delegation.validate(usage) : Purchase.validate(usage)
+				if (validated.status == false) {
+					if (usage.type == "purchase" && validated.reason == "overallocated") {
+						result = { status: false, reason: "overallocated", origin: delegation }
+						break
+					} else {
+						result = validated
+						break
+					}
+				}
+			}
+		}
+		return result ?? { status: true }
 	}
 	export function warnings(
 		delegation: Delegation,
