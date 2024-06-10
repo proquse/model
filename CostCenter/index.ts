@@ -79,7 +79,7 @@ export namespace CostCenter {
 	}
 	export function validate(
 		costCenter: CostCenter,
-		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
+		options?: { date?: isoly.Date; limit?: number; spent?: boolean; parent?: CostCenter }
 	): Validation {
 		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
@@ -93,15 +93,11 @@ export namespace CostCenter {
 				{ limit: allocated }
 			)
 		)
-		if (allocated < 0)
-			result = { status: false, reason: "amount", origin: costCenter }
-		else if (options?.limit && allocated >= options.limit)
-			result = { status: false, reason: "amount", origin: costCenter }
-		else if (isoly.DateTime.getDate(costCenter.created) >= costCenter.amount.created)
+		if (allocated <= 0)
+			result = { status: false, reason: "overallocated", origin: options?.parent ?? costCenter }
+		else if (isoly.DateTime.getDate(costCenter.created) > costCenter.amount.created)
 			result = { status: false, reason: "time", origin: costCenter }
-		else if (costCenter.amount.created > sustainable)
-			result = { status: false, reason: "time", origin: costCenter }
-		else if (options?.currency && costCenter.amount.currency != options.currency)
+		else if (options?.parent?.amount.currency && costCenter.amount.currency != options.parent.amount.currency)
 			result = { status: false, reason: "currency", origin: costCenter }
 		else {
 			for (const usage of costCenter.usage) {
@@ -109,13 +105,13 @@ export namespace CostCenter {
 					usage.type == "costCenter"
 						? CostCenter.validate(usage, {
 								date: sustainable,
-								currency: costCenter.amount.currency,
 								spent: options?.spent,
+								parent: costCenter,
 						  })
 						: Delegation.validate(usage, {
 								date: sustainable,
-								currency: costCenter.amount.currency,
 								spent: options?.spent,
+								parent: costCenter,
 						  })
 				if (validated.status == false) {
 					result = validated
