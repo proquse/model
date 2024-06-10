@@ -24,7 +24,7 @@ export interface Delegation extends Delegation.Creatable {
 export namespace Delegation {
 	export import Identifier = DelegationIdentifier
 	export import Creatable = DelegationCreatable
-	export type Validation = DelegationValidation<Delegation>
+	export type Validation = DelegationValidation<Delegation | Purchase | Receipt>
 	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
@@ -212,7 +212,7 @@ export namespace Delegation {
 	export function validate(
 		delegation: Delegation,
 		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): Validation | Purchase.Validation | Receipt.Validation {
+	): Validation {
 		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
 		const allocated = Cadence.allocated(delegation.amount, date, { limit: options?.limit })
@@ -240,7 +240,18 @@ export namespace Delegation {
 			result = { status: false, reason: "currency", origin: delegation }
 		else {
 			for (const usage of delegation.usage) {
-				const validated = usage.type == "delegation" ? Delegation.validate(usage) : Purchase.validate(usage)
+				const validated =
+					usage.type == "delegation"
+						? Delegation.validate(usage, {
+								date: sustainable,
+								currency: delegation.amount.currency,
+								spent: options?.spent,
+						  })
+						: Purchase.validate(usage, {
+								date: sustainable,
+								currency: delegation.amount.currency,
+								spent: options?.spent,
+						  })
 				if (validated.status == false) {
 					if (usage.type == "purchase" && validated.reason == "overallocated") {
 						result = { status: false, reason: "overallocated", origin: delegation }
