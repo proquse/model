@@ -526,7 +526,7 @@ describe("Delegation", () => {
 		])
 	})
 	it("validate", () => {
-		expect(proquse.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual(true)
+		expect(proquse.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual({ status: true })
 	})
 	it("sustainable", () => {
 		const costCenter: proquse.CostCenter = {
