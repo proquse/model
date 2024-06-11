@@ -235,6 +235,8 @@ export namespace Delegation {
 
 		if (children.length != delegation.usage.length)
 			result = { status: false, reason: "exchange", origin: delegation }
+		else if (options?.parent && delegation.amount.currency != options?.parent?.amount.currency)
+			result = { status: false, reason: "currency", origin: delegation }
 		else if (allocated <= 0)
 			result = { status: false, reason: "overallocated", origin: options?.parent ?? delegation }
 		else if (isoly.DateTime.getDate(delegation.created) > delegation.amount.created)

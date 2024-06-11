@@ -285,13 +285,32 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01", spent: true })).toEqual(true)
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 400, currency: "USD" })).toEqual(false)
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 600, currency: "EUR" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({ status: true })
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01", spent: true })).toEqual({ status: true })
+		expect(
+			proquse.CostCenter.validate(
+				{
+					usage: [costCenter],
+					name: "Currencies don't match",
+					id: "currErr1",
+					amount: { interval: "year", value: 600, currency: "EUR", created: "2023-01-01" },
+					created: "2023-01-01T10:37:42Z",
+					modified: "2024-01-01T11:37:42Z",
+					from: "jessie@example.com",
+					description: "description",
+					type: "costCenter",
+				},
+				{ date: "2023-01-01", limit: 600 }
+			)
+		).toEqual({ status: false, reason: "currency", origin: costCenter })
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01", limit: 400 })).toEqual({
+			status: false,
+			origin: costCenter,
+			reason: "overallocated",
+		})
 		const oldCostCenter = costCenter.usage[0]
 		if (!proquse.CostCenter.is(oldCostCenter)) {
-			expect(proquse.CostCenter.is(oldCostCenter)).toEqual(true)
+			expect(proquse.CostCenter.is(oldCostCenter)).toEqual({ status: true })
 			return
 		}
 		proquse.CostCenter.change([costCenter], {
@@ -299,21 +318,29 @@ describe("CostCenter", () => {
 			amount: { interval: "year", value: 700, currency: "USD", created: "2023-01-01" },
 		})
 
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: costCenter,
+		})
 		proquse.CostCenter.change([costCenter], {
 			...oldCostCenter,
 			amount: { interval: "year", value: 200, currency: "USD", created: "2023-01-01" },
 		})
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: costCenter.usage[0],
+		})
 		proquse.CostCenter.change([costCenter], {
 			...oldCostCenter,
 			amount: { interval: "year", value: 500, currency: "USD", created: "2023-01-01" },
 		})
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({ status: true })
 
 		const oldDelegation = oldCostCenter.usage[0]
 		if (!proquse.Delegation.is(oldDelegation)) {
-			expect(proquse.Delegation.is(oldDelegation)).toEqual(true)
+			expect(proquse.Delegation.is(oldDelegation)).toEqual({ status: true })
 			return
 		}
 
@@ -321,19 +348,27 @@ describe("CostCenter", () => {
 			...oldDelegation,
 			amount: { interval: "year", value: 600, currency: "USD", created: "2023-01-01" },
 		})
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: costCenter.usage[0],
+		})
 
 		proquse.Delegation.change([costCenter], {
 			...oldDelegation,
 			amount: { interval: "year", value: 400, currency: "EUR", created: "2023-01-01" },
 		})
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({
+			status: false,
+			reason: "currency",
+			origin: costCenter.usage[0].usage[0],
+		})
 
 		proquse.Delegation.change([costCenter], {
 			...oldDelegation,
 			amount: { interval: "year", value: 200, currency: "USD", created: "2023-01-01" },
 		})
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-01-01" })).toEqual({ status: true })
 
 		// running out of resources early is ok
 		costCenter = {
@@ -371,7 +406,7 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-06-01" })).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-06-01" })).toEqual({ status: true })
 		expect(
 			isoly.Date.next(
 				isoly.DateTime.getDate(costCenter.created),
@@ -382,7 +417,7 @@ describe("CostCenter", () => {
 				)
 			)
 		).not.toEqual("2023-12-31")
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual({ status: true })
 
 		// running out of resources on day 0 is ok
 		costCenter = {
@@ -420,7 +455,7 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual({ status: true })
 
 		// running out of resources before day 0 is not ok
 		costCenter = {
@@ -458,9 +493,13 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual({ status: true })
 		costCenter.usage[0].amount.value = 101
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-12-01" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: costCenter,
+		})
 
 		// not ok to overspend with single
 		// This one is not quite working with a single at the bottom
@@ -513,7 +552,11 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(proquse.CostCenter.validate(costCenter, { date: "2023-03-15" })).toEqual(false)
+		expect(proquse.CostCenter.validate(costCenter, { date: "2023-03-15" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: costCenter.usage[0],
+		})
 
 		costCenter = {
 			from: "jessie@example.com",
@@ -546,7 +589,7 @@ describe("CostCenter", () => {
 				},
 			],
 		}
-		expect(proquse.CostCenter.validate(costCenter)).toEqual(true)
+		expect(proquse.CostCenter.validate(costCenter)).toEqual({ status: true })
 		const root: proquse.CostCenter = {
 			from: "jessie@rocket.com",
 			name: "Development",
@@ -624,7 +667,11 @@ describe("CostCenter", () => {
 			],
 			type: "costCenter",
 		}
-		expect(proquse.CostCenter.validate(root)).toEqual(false)
+		expect(proquse.CostCenter.validate(root)).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: root.usage[0].usage[1],
+		})
 		const original: proquse.CostCenter = {
 			from: "jessie@rocket.com",
 			name: "Development",
@@ -869,7 +916,11 @@ describe("CostCenter", () => {
 			],
 			type: "costCenter",
 		}
-		expect(proquse.CostCenter.validate(original)).toEqual(true)
-		expect(proquse.CostCenter.validate(change)).toEqual(false)
+		expect(proquse.CostCenter.validate(original)).toEqual({ status: true })
+		expect(proquse.CostCenter.validate(change)).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: change.usage[0].usage[1],
+		})
 	})
 })
