@@ -256,10 +256,18 @@ describe("Receipt", () => {
 				(costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0],
 				(costCenter.usage[0].usage[1] as proquse.Purchase).payment.limit.currency
 			)
-		).toEqual(true)
-		expect(proquse.Receipt.validate((costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], "AMD")).toEqual(
-			false
-		)
+		).toEqual({ status: true })
+		console.log(proquse.Receipt.validate((costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], "AMD"))
+		expect(proquse.Receipt.validate((costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], "AMD")).toEqual({
+			status: false,
+			reason: "currency",
+			origin: {
+				id: "r13-----",
+				total: [{ net: { currency: "EUR", value: 299 }, vat: { currency: "EUR", value: 0 } }],
+				date: "2022-11-16T00:00:42Z",
+				original: "https://example.com/receipt.pdf",
+			},
+		})
 	})
 	it("spent", () => {
 		expect(

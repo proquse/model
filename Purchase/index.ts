@@ -160,7 +160,7 @@ export namespace Purchase {
 			result = { status: false, reason: "exchange", origin: purchase }
 		else if (allocated <= 0)
 			result = { status: false, reason: "overallocated", origin: options?.parent ?? purchase }
-		else if (isoly.DateTime.getDate(purchase.created) >= purchase.payment.limit.created)
+		else if (isoly.DateTime.getDate(purchase.created) > purchase.payment.limit.created)
 			result = { status: false, reason: "time", origin: purchase }
 		else if (options?.spent && allocated < spent(purchase))
 			result = { status: false, reason: "overspent", origin: purchase }
