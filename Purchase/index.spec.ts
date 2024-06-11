@@ -421,19 +421,22 @@ describe("Purchase", () => {
 		expect(proquse.Purchase.spent(costCenter.usage[0].usage[1] as proquse.Purchase)).toEqual(598)
 	})
 	it("validate", () => {
-		expect(proquse.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual(true)
-		expect(proquse.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual(false)
-		expect(
-			proquse.Purchase.validate(
-				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
-				{ date: "2023-12-31" }
-			)
-		).toEqual(true)
-		expect(
-			proquse.Purchase.validate(
-				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
-				{ date: "2023-12-31", spent: true }
-			)
-		).toEqual(false)
+		expect(proquse.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual({ status: true })
+		expect(proquse.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: purchase,
+		})
+		let p: proquse.Purchase = {
+			...purchase,
+			payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } },
+		}
+		expect(proquse.Purchase.validate(p, { date: "2023-12-31" })).toEqual({ status: true })
+		p = { ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } }
+		expect(proquse.Purchase.validate(p, { date: "2023-12-31", spent: true })).toEqual({
+			status: false,
+			reason: "overspent",
+			origin: p,
+		})
 	})
 })
