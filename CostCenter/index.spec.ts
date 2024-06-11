@@ -922,5 +922,22 @@ describe("CostCenter", () => {
 			reason: "overallocated",
 			origin: change.usage[0].usage[1],
 		})
+		// testing reason: "time"
+		const costCenterTimeError: proquse.CostCenter = {
+			from: "jessie@example.com",
+			name: "time warning",
+			amount: { value: 100, currency: "EUR", interval: "single", created: "2023-09-06" },
+			id: "vAw9hMxQ",
+			created: "2023-09-07T09:11:38.198Z",
+			modified: "2023-09-07T09:11:38.198Z",
+			type: "costCenter",
+			usage: [],
+		}
+
+		expect(proquse.CostCenter.validate(costCenterTimeError)).toEqual({
+			status: false,
+			reason: "time",
+			origin: costCenterTimeError,
+		})
 	})
 })
