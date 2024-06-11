@@ -256,10 +256,13 @@ describe("Receipt", () => {
 				(costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0],
 				(costCenter.usage[0].usage[1] as proquse.Purchase).payment.limit.currency
 			)
-		).toEqual(true)
-		expect(proquse.Receipt.validate((costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], "AMD")).toEqual(
-			false
-		)
+		).toEqual({ status: true })
+		expect(proquse.Receipt.validate((costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], "AMD")).toEqual({
+			status: false,
+			reason: "currency",
+			origin: (costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0],
+		})
+		expect(proquse.CostCenter.validate(costCenter)).toEqual({ status: true })
 	})
 	it("spent", () => {
 		expect(
