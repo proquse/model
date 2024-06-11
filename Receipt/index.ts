@@ -95,13 +95,16 @@ export namespace Receipt {
 
 	export function validate(receipt: Receipt, currency: isoly.Currency): Validation {
 		let result: Return<typeof validate> | undefined
-		for (const total of receipt.total) {
-			const validated = Total.validate(total, currency)
-			if (validated.status == false) {
-				result = { ...validated, origin: receipt }
-				break
+		if (!receipt.total.length)
+			result = { status: false, reason: "amount", origin: receipt }
+		else
+			for (const total of receipt.total) {
+				const validated = Total.validate(total, currency)
+				if (validated.status == false) {
+					result = { ...validated, origin: receipt }
+					break
+				}
 			}
-		}
 		return result ?? { status: true }
 	}
 	export function remove<T extends CostCenter | Delegation>(

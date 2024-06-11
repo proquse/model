@@ -19,10 +19,20 @@ export namespace Creatable {
 		let result: Return<typeof validate> | undefined
 		if (!receipt.total.length)
 			result = { status: false, reason: "amount", origin: receipt }
-		else if (!receipt.total.every(total => Total.validate(total, currency)))
-			result = { status: false, reason: "currency", origin: receipt }
 		else
-			result = { status: true }
-		return result
+			for (const total of receipt.total) {
+				const validated = Total.validate(total, currency)
+				if (!validated.status) {
+					result = { ...validated, origin: receipt }
+					break
+				}
+			}
+		return result ?? { status: true }
+		// if (!receipt.total.length)
+		// 	result = { status: false, reason: "amount", origin: receipt }
+		// else if (!receipt.total.every(total => Total.validate(total, currency)))
+		// 	result = { status: false, reason: "currency", origin: receipt }
+		// else
+		// 	result = { status: true }
 	}
 }

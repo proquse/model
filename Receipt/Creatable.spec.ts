@@ -23,8 +23,16 @@ describe("Receipt.Creatable", () => {
 			file: new File([new Uint8Array([97])], "file"),
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 		}
-		expect(proquse.Receipt.Creatable.validate(creatable, "EUR")).toEqual(true)
-		expect(proquse.Receipt.Creatable.validate(creatable, "USD")).toEqual(false)
-		expect(proquse.Receipt.Creatable.validate({ ...creatable, total: [] }, "EUR")).toEqual(false)
+		expect(proquse.Receipt.Creatable.validate(creatable, "EUR")).toEqual({ status: true })
+		expect(proquse.Receipt.Creatable.validate(creatable, "USD")).toEqual({
+			status: false,
+			reason: "currency",
+			origin: creatable,
+		})
+		expect(proquse.Receipt.Creatable.validate({ ...creatable, total: [] }, "EUR")).toEqual({
+			status: false,
+			reason: "amount",
+			origin: { ...creatable, total: [] },
+		})
 	})
 })
