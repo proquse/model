@@ -263,6 +263,10 @@ describe("Receipt", () => {
 			origin: (costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0],
 		})
 		expect(proquse.CostCenter.validate(costCenter)).toEqual({ status: true })
+		const receipt: proquse.Receipt = { ...(costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], total: [] }
+		expect(
+			proquse.Receipt.validate(receipt, (costCenter.usage[0].usage[1] as proquse.Purchase).payment.limit.currency)
+		).toEqual({ status: false, reason: "amount", origin: receipt })
 	})
 	it("spent", () => {
 		expect(
