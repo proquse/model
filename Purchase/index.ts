@@ -167,7 +167,7 @@ export namespace Purchase {
 		else {
 			for (const receipt of purchase.receipts) {
 				const validated = Receipt.validate(receipt, purchase.payment.limit.currency)
-				if (validated.status == false) {
+				if (!validated.status) {
 					result = validated
 					break
 				}

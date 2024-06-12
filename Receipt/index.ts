@@ -100,7 +100,7 @@ export namespace Receipt {
 		else
 			for (const total of receipt.total) {
 				const validated = Total.validate(total, currency)
-				if (validated.status == false) {
+				if (!validated.status) {
 					result = { ...validated, origin: receipt }
 					break
 				}

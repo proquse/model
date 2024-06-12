@@ -438,5 +438,29 @@ describe("Purchase", () => {
 			reason: "overspent",
 			origin: p,
 		})
+		p = {
+			...purchase,
+			created: "2023-01-01T00:00:42Z",
+			payment: { type: "pre-paid", limit: { ...purchase.payment.limit, created: "2022-12-31" } },
+		}
+		expect(proquse.Purchase.validate(p, { date: "2023-12-31" })).toEqual({ status: false, reason: "time", origin: p })
+		p = purchase
+		const delegation: proquse.Delegation = {
+			type: "delegation",
+			id: "------d1",
+			from: "jessie@rocket.com",
+			costCenter: "testing",
+			purpose: "testing",
+			to: ["jessie@rocket.com"],
+			amount: { created: "2023-01-01", currency: "GBP", interval: "single", value: 5000 },
+			usage: [p],
+			created: "2023-01-01T00:00:42Z",
+			modified: "2023-01-01T00:00:42Z",
+		}
+		expect(proquse.Delegation.validate(delegation, { date: "2023-12-31" })).toEqual({
+			status: false,
+			reason: "exchange",
+			origin: delegation,
+		})
 	})
 })

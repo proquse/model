@@ -526,7 +526,45 @@ describe("Delegation", () => {
 		])
 	})
 	it("validate", () => {
+		const delegation: proquse.Delegation = {
+			type: "delegation",
+			id: "------d1",
+			from: "jessie@rocket.com",
+			costCenter: "testing",
+			purpose: "testing",
+			to: ["jessie@rocket.com"],
+			amount: { created: "2023-01-01", currency: "EUR", interval: "single", value: 5000 },
+			usage: [
+				{
+					id: "---p----",
+					created: "2023-01-01T00:00:42Z",
+					modified: "2023-01-01T00:00:42Z",
+					buyer: "jessie@rocket.com",
+					purpose: "Production Workers",
+					email: "receipt@example.com",
+					type: "purchase",
+					payment: {
+						type: "card",
+						limit: { interval: "month", value: 10, currency: "EUR", created: "2023-01-01" },
+						mask: "012345******6789",
+						expires: { month: 4, year: 24 },
+						reference: "reference",
+					},
+					transactions: [],
+					receipts: [],
+				},
+			],
+			created: "2023-01-01T00:00:42Z",
+			modified: "2023-01-01T00:00:42Z",
+		}
 		expect(proquse.Delegation.validate(initialDelegation, { date: "2023-12-31" })).toEqual({ status: true })
+		expect(proquse.Delegation.validate(delegation, { date: "2023-12-31" })).toEqual({ status: true })
+		const d: proquse.Delegation = { ...delegation, amount: { ...delegation.amount, currency: "GBP" } }
+		expect(proquse.Delegation.validate(d, { date: "2023-12-31" })).toEqual({
+			status: false,
+			reason: "exchange",
+			origin: d,
+		})
 	})
 	it("sustainable", () => {
 		const costCenter: proquse.CostCenter = {

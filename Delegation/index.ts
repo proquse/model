@@ -255,7 +255,7 @@ export namespace Delegation {
 								spent: options?.spent,
 								parent: delegation,
 						  })
-				if (validated.status == false) {
+				if (!validated.status) {
 					result = validated
 					break
 				}
