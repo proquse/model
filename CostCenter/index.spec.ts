@@ -340,7 +340,7 @@ describe("CostCenter", () => {
 
 		const oldDelegation = oldCostCenter.usage[0]
 		if (!proquse.Delegation.is(oldDelegation)) {
-			expect(proquse.Delegation.is(oldDelegation)).toEqual({ status: true })
+			expect(proquse.Delegation.is(oldDelegation)).toEqual(true)
 			return
 		}
 
