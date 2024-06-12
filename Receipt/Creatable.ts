@@ -28,11 +28,5 @@ export namespace Creatable {
 				}
 			}
 		return result ?? { status: true }
-		// if (!receipt.total.length)
-		// 	result = { status: false, reason: "amount", origin: receipt }
-		// else if (!receipt.total.every(total => Total.validate(total, currency)))
-		// 	result = { status: false, reason: "currency", origin: receipt }
-		// else
-		// 	result = { status: true }
 	}
 }
