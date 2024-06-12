@@ -8,6 +8,7 @@ import type { Delegation } from "../Delegation"
 import { Payment } from "../Payment"
 import { Receipt } from "../Receipt"
 import { Transaction } from "../Transaction"
+import { Validation as PurchaseValidation } from "../Validation"
 import { Warning } from "../Warning"
 import { Creatable as PurchaseCreatable } from "./Creatable"
 import { Identifier as PurchaseIdentifier } from "./Identifier"
@@ -28,6 +29,7 @@ export namespace Purchase {
 	export import Identifier = PurchaseIdentifier
 	export import Creatable = PurchaseCreatable
 	export import Link = PurchaseLink
+	export type Validation = PurchaseValidation<Delegation | Purchase | Receipt>
 	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
 		type: isly.string("purchase"),
 		id: Identifier.type,
@@ -144,27 +146,34 @@ export namespace Purchase {
 	// TODO: currently not validating transactions. Should we do that?
 	export function validate(
 		purchase: Purchase,
-		options?: { date?: isoly.Date; limit?: number; spent?: boolean; currency?: isoly.Currency }
-	): boolean {
+		options?: { date?: isoly.Date; limit?: number; spent?: boolean; parent?: Delegation }
+	): Validation {
+		let result: Return<typeof validate> | undefined
 		const date = options?.date ?? isoly.Date.now()
-		const limit = Payment.exchange(purchase.payment, options?.currency ?? purchase.payment.limit.currency)
-		const cadence = !limit ? undefined : Cadence.allocated(limit, date, { limit: options?.limit })
-		return (
-			limit !== undefined &&
-			cadence !== undefined &&
-			cadence > 0 &&
-			(!options?.limit || cadence <= options.limit) &&
-			isoly.DateTime.getDate(purchase.created) <= purchase.payment.limit.created &&
-			purchase.payment.limit.created <= date &&
-			purchase.receipts.every(r => Receipt.validate(r, purchase.payment.limit.currency)) &&
-			(!options?.spent ||
-				Cadence.allocated(
-					(!options.currency ? purchase.payment.limit : Payment.exchange(purchase.payment, options.currency)) ??
-						purchase.payment.limit,
-					date,
-					{ limit: options.limit }
-				) >= spent(purchase))
+		const limit = Payment.exchange(
+			purchase.payment,
+			options?.parent?.amount.currency ?? purchase.payment.limit.currency
 		)
+		const allocated = !limit ? undefined : Cadence.allocated(limit, date, { limit: options?.limit })
+
+		if (limit == undefined || allocated == undefined)
+			result = { status: false, reason: "exchange", origin: purchase }
+		else if (allocated <= 0)
+			result = { status: false, reason: "overallocated", origin: options?.parent ?? purchase }
+		else if (isoly.DateTime.getDate(purchase.created) > purchase.payment.limit.created)
+			result = { status: false, reason: "time", origin: purchase }
+		else if (options?.spent && allocated < spent(purchase))
+			result = { status: false, reason: "overspent", origin: purchase }
+		else {
+			for (const receipt of purchase.receipts) {
+				const validated = Receipt.validate(receipt, purchase.payment.limit.currency)
+				if (!validated.status) {
+					result = validated
+					break
+				}
+			}
+		}
+		return result ?? { status: true }
 	}
 	export const spent = Object.assign(calculateSpent, { balance: calculateSpentBalance })
 	function calculateSpent(purchase: Purchase, options?: { vat?: boolean }): number {

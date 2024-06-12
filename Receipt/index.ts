@@ -4,6 +4,7 @@ import { isly } from "isly"
 import type { CostCenter } from "../CostCenter"
 import type { Delegation } from "../Delegation"
 import type { Purchase } from "../Purchase"
+import { Validation as ReceiptValidation } from "../Validation"
 import { Creatable as ReceiptCreatable } from "./Creatable"
 import { Identifier as ReceiptIdentifier } from "./Identifier"
 import { Total as ReceiptTotal } from "./Total"
@@ -18,6 +19,7 @@ export namespace Receipt {
 	export import Identifier = ReceiptIdentifier
 	export import Creatable = ReceiptCreatable
 	export import Total = ReceiptTotal
+	export type Validation = ReceiptValidation<Receipt>
 	export const type = isly.object<Receipt>({
 		id: Identifier.type,
 		original: isly.string(/^http.+$/),
@@ -91,8 +93,19 @@ export namespace Receipt {
 		return Array.from(list(roots))
 	}
 
-	export function validate(receipt: Receipt, currency: isoly.Currency): boolean {
-		return receipt.total.every(total => Total.validate(total, currency))
+	export function validate(receipt: Receipt, currency: isoly.Currency): Validation {
+		let result: Return<typeof validate> | undefined
+		if (!receipt.total.length)
+			result = { status: false, reason: "amount", origin: receipt }
+		else
+			for (const total of receipt.total) {
+				const validated = Total.validate(total, currency)
+				if (!validated.status) {
+					result = { ...validated, origin: receipt }
+					break
+				}
+			}
+		return result ?? { status: true }
 	}
 	export function remove<T extends CostCenter | Delegation>(
 		roots: T[],

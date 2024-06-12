@@ -1,6 +1,7 @@
 import { isoly } from "isoly"
 import { isly } from "isly"
 import { Amount } from "../Amount"
+import { Validation as TotalValidation } from "../Validation"
 export interface Total {
 	net: Amount
 	vat: Amount
@@ -9,8 +10,10 @@ export namespace Total {
 	export const type = isly.object<Total>({ net: Amount.type, vat: Amount.type })
 	export const is = type.is
 	export const flaw = type.flaw
-	export function validate(total: Total, currency: isoly.Currency): boolean {
-		return currency == total.net.currency && currency == total.vat.currency
+	export type Validation = TotalValidation<Total>
+	export function validate(total: Total, currency: isoly.Currency): Validation {
+		const validated: boolean = currency == total.net.currency && currency == total.vat.currency
+		return validated ? { status: true } : { status: false, reason: "currency", origin: total }
 	}
 
 	export function spent(total: Total, currency: isoly.Currency): number {

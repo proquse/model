@@ -421,19 +421,46 @@ describe("Purchase", () => {
 		expect(proquse.Purchase.spent(costCenter.usage[0].usage[1] as proquse.Purchase)).toEqual(598)
 	})
 	it("validate", () => {
-		expect(proquse.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual(true)
-		expect(proquse.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual(false)
-		expect(
-			proquse.Purchase.validate(
-				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
-				{ date: "2023-12-31" }
-			)
-		).toEqual(true)
-		expect(
-			proquse.Purchase.validate(
-				{ ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } },
-				{ date: "2023-12-31", spent: true }
-			)
-		).toEqual(false)
+		expect(proquse.Purchase.validate(purchase, { date: "2023-12-31" })).toEqual({ status: true })
+		expect(proquse.Purchase.validate(purchase, { date: "2022-12-31" })).toEqual({
+			status: false,
+			reason: "overallocated",
+			origin: purchase,
+		})
+		let p: proquse.Purchase = {
+			...purchase,
+			payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } },
+		}
+		expect(proquse.Purchase.validate(p, { date: "2023-12-31" })).toEqual({ status: true })
+		p = { ...purchase, payment: { ...purchase.payment, limit: { ...purchase.payment.limit, interval: "year" } } }
+		expect(proquse.Purchase.validate(p, { date: "2023-12-31", spent: true })).toEqual({
+			status: false,
+			reason: "overspent",
+			origin: p,
+		})
+		p = {
+			...purchase,
+			created: "2023-01-01T00:00:42Z",
+			payment: { type: "pre-paid", limit: { ...purchase.payment.limit, created: "2022-12-31" } },
+		}
+		expect(proquse.Purchase.validate(p, { date: "2023-12-31" })).toEqual({ status: false, reason: "time", origin: p })
+		p = purchase
+		const delegation: proquse.Delegation = {
+			type: "delegation",
+			id: "------d1",
+			from: "jessie@rocket.com",
+			costCenter: "testing",
+			purpose: "testing",
+			to: ["jessie@rocket.com"],
+			amount: { created: "2023-01-01", currency: "GBP", interval: "single", value: 5000 },
+			usage: [p],
+			created: "2023-01-01T00:00:42Z",
+			modified: "2023-01-01T00:00:42Z",
+		}
+		expect(proquse.Delegation.validate(delegation, { date: "2023-12-31" })).toEqual({
+			status: false,
+			reason: "exchange",
+			origin: delegation,
+		})
 	})
 })
