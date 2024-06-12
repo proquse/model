@@ -113,7 +113,7 @@ export namespace CostCenter {
 								spent: options?.spent,
 								parent: costCenter,
 						  })
-				if (validated.status == false) {
+				if (!validated.status) {
 					result = validated
 					break
 				}
