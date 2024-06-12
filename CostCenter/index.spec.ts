@@ -310,7 +310,7 @@ describe("CostCenter", () => {
 		})
 		const oldCostCenter = costCenter.usage[0]
 		if (!proquse.CostCenter.is(oldCostCenter)) {
-			expect(proquse.CostCenter.is(oldCostCenter)).toEqual({ status: true })
+			expect(proquse.CostCenter.is(oldCostCenter)).toEqual(true)
 			return
 		}
 		proquse.CostCenter.change([costCenter], {
