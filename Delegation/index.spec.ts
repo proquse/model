@@ -565,6 +565,53 @@ describe("Delegation", () => {
 			reason: "exchange",
 			origin: d,
 		})
+		expect(
+			proquse.Delegation.validate({
+				from: "jessie@rocket.com",
+				to: ["jessie@rocket.com"],
+				purpose: "Salesforce",
+				amount: { value: 100, currency: "EUR", interval: "single", created: "2024-06-03", sustainable: "2024-06-13" },
+				costCenter: "Development",
+				id: "adsfasd",
+				created: "2024-06-03T07:43:42.164Z",
+				modified: "2024-06-03T07:43:42.164Z",
+				usage: [
+					{
+						from: "jessie@rocket.com",
+						to: ["james@rocket.com"],
+						purpose: "overspending",
+						amount: { value: 90, currency: "EUR", interval: "single", created: "2024-06-13" },
+						costCenter: "Development",
+						id: "fadsfasdf",
+						created: "2024-06-13T12:15:01.500Z",
+						modified: "2024-06-13T12:15:01.500Z",
+						usage: [],
+						type: "delegation",
+					},
+					{
+						purpose: "initial payment",
+						payment: {
+							type: "card",
+							limit: { value: 10, currency: "GBP", interval: "single", created: "2024-06-03" },
+							rates: { EUR: 1.1620947920721894 },
+							reference: "adsfasd|fadfasdf",
+							mask: "13371337******1337",
+							expires: { month: 7, year: 24 },
+							holder: "Rocket AB",
+						},
+						buyer: "jessie@rocket.com",
+						id: "fasdfasdf",
+						type: "purchase",
+						email: "receipt+afsdfasd_Adfasdf@radfasf.com",
+						created: "2024-06-03T07:44:06.719Z",
+						modified: "2024-06-03T07:44:06.719Z",
+						receipts: [],
+						transactions: [],
+					},
+				],
+				type: "delegation",
+			})
+		).toMatchObject({ status: false, reason: "overallocated" })
 	})
 	it("sustainable", () => {
 		const costCenter: proquse.CostCenter = {

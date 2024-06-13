@@ -160,33 +160,48 @@ export namespace Cadence {
 		options?: { limit?: number }
 	): number {
 		const singles = children.filter(child => child.interval == "single")
-		const limit =
-			Math.min(allocated(parent, date), options?.limit ?? Infinity) -
-			singles.reduce((result, cadence) => result + cadence.value, 0)
+		const limit = isoly.Currency.subtract(
+			parent.currency,
+			Math.min(allocated(parent, date), options?.limit ?? Infinity),
+			singles.reduce((result, cadence) => isoly.Currency.add(parent.currency, result, cadence.value), 0)
+		)
 
 		const max = duration(date, parent.created)
 		const approximation = Math.max(0, Math.min(max, approximate(parent, children, date, { limit })))
 		const approximationDate = isoly.Date.next(parent.created, approximation)
-		const balance =
-			allocated(parent, approximationDate) -
-			children.reduce((result, cadence) => result + allocated(cadence, approximationDate), 0)
+		const balance = isoly.Currency.subtract(
+			parent.currency,
+			allocated(parent, approximationDate),
+			children.reduce(
+				(result, cadence) => isoly.Currency.add(parent.currency, result, allocated(cadence, approximationDate)),
+				0
+			)
+		)
 
 		let days: number
-		if (balance >= 0)
-			for (days = approximation; days < max; days++) {
+		if (balance >= 0) {
+			for (days = approximation; days <= max; days++) {
 				const next = isoly.Date.next(parent.created, days)
-				const balance =
-					allocated(parent, next) - children.reduce((result, cadence) => result + allocated(cadence, next), 0)
+				const balance = isoly.Currency.subtract(
+					parent.currency,
+					allocated(parent, next),
+					children.reduce((result, cadence) => isoly.Currency.add(parent.currency, result, allocated(cadence, next)), 0)
+				)
 				if (balance < 0) {
 					days--
 					break
 				}
 			}
-		else
+			if (days > max)
+				days = max
+		} else
 			for (days = approximation; days > -1; days--) {
 				const next = isoly.Date.next(parent.created, days)
-				const balance =
-					allocated(parent, next) - children.reduce((result, cadence) => result + allocated(cadence, next), 0)
+				const balance = isoly.Currency.subtract(
+					parent.currency,
+					allocated(parent, next),
+					children.reduce((result, cadence) => isoly.Currency.add(parent.currency, result, allocated(cadence, next)), 0)
+				)
 				if (balance >= 0)
 					break
 			}
