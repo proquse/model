@@ -179,7 +179,7 @@ export namespace Cadence {
 		)
 
 		let days: number
-		if (balance >= 0)
+		if (balance >= 0) {
 			for (days = approximation; days <= max; days++) {
 				const next = isoly.Date.next(parent.created, days)
 				const balance = isoly.Currency.subtract(
@@ -192,7 +192,9 @@ export namespace Cadence {
 					break
 				}
 			}
-		else
+			if (days > max)
+				days = max
+		} else
 			for (days = approximation; days > -1; days--) {
 				const next = isoly.Date.next(parent.created, days)
 				const balance = isoly.Currency.subtract(
