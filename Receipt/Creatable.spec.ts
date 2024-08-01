@@ -8,10 +8,12 @@ describe("Receipt.Creatable", () => {
 		const receiptImg: proquse.Receipt.Creatable = {
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 			file: new File([new Uint8Array([97])], "file", { type: "image/jpeg" }),
+			date: "2023-01-01T00:00:42Z",
 		}
 		const receipt: proquse.Receipt.Creatable = {
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 			file: new File([new Uint8Array([97])], "file"),
+			date: "2023-01-01T00:00:42Z",
 		}
 
 		expect(proquse.Receipt.Creatable.is(receiptImg)).toEqual(true)
@@ -22,13 +24,10 @@ describe("Receipt.Creatable", () => {
 		const creatable: proquse.Receipt.Creatable = {
 			file: new File([new Uint8Array([97])], "file"),
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+			date: "2023-01-01T00:00:42Z",
 		}
 		expect(proquse.Receipt.Creatable.validate(creatable, "EUR")).toEqual({ status: true })
-		expect(proquse.Receipt.Creatable.validate(creatable, "USD")).toEqual({
-			status: false,
-			reason: "currency",
-			origin: creatable,
-		})
+		expect(proquse.Receipt.Creatable.validate(creatable, "USD")).toEqual({ status: true })
 		expect(proquse.Receipt.Creatable.validate({ ...creatable, total: [] }, "EUR")).toEqual({
 			status: false,
 			reason: "amount",

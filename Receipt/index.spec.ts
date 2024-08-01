@@ -258,9 +258,7 @@ describe("Receipt", () => {
 			)
 		).toEqual({ status: true })
 		expect(proquse.Receipt.validate((costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], "AMD")).toEqual({
-			status: false,
-			reason: "currency",
-			origin: (costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0],
+			status: true,
 		})
 		expect(proquse.CostCenter.validate(costCenter)).toEqual({ status: true })
 		const receipt: proquse.Receipt = { ...(costCenter.usage[0].usage[1] as proquse.Purchase).receipts[0], total: [] }

@@ -9,10 +9,14 @@ import { Creatable as ReceiptCreatable } from "./Creatable"
 import { Identifier as ReceiptIdentifier } from "./Identifier"
 import { Total as ReceiptTotal } from "./Total"
 
+/**
+ * if Receipt.uploaded is undefined then Receipt.date is the date the receipt was uploaded.
+ * Otherwise Receipt.date is the date on the receipt.
+ */
 export interface Receipt extends Omit<Receipt.Creatable, "file"> {
 	id: Receipt.Identifier
 	original: string
-	date: isoly.DateTime
+	uploaded?: isoly.DateTime
 }
 
 export namespace Receipt {
@@ -25,6 +29,7 @@ export namespace Receipt {
 		original: isly.string(/^http.+$/),
 		total: isly.array(ReceiptTotal.type),
 		date: isly.fromIs("DateTime", isoly.DateTime.is),
+		uploaded: isly.fromIs("DateTime", isoly.DateTime.is).optional(),
 	})
 	export const is = type.is
 	export const flaw = type.flaw
@@ -35,7 +40,7 @@ export namespace Receipt {
 			...override,
 			id: override?.id ?? id,
 			original: override?.original ?? `${origin}/receipt/${purchase}/${id}`,
-			date: override?.date ?? isoly.DateTime.now(),
+			uploaded: isoly.DateTime.now(),
 		}
 	}
 
