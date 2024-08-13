@@ -24,11 +24,9 @@ export namespace Receipt {
 	export import Creatable = ReceiptCreatable
 	export import Total = ReceiptTotal
 	export type Validation = ReceiptValidation<Receipt>
-	export const type = isly.object<Receipt>({
+	export const type = Receipt.Creatable.type.omit(["file"]).extend<Receipt>({
 		id: Identifier.type,
 		original: isly.string(/^http.+$/),
-		total: isly.array(ReceiptTotal.type),
-		date: isly.fromIs("DateTime", isoly.DateTime.is),
 		uploaded: isly.fromIs("DateTime", isoly.DateTime.is).optional(),
 	})
 	export const is = type.is
