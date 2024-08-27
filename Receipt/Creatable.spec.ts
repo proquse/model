@@ -8,15 +8,20 @@ describe("Receipt.Creatable", () => {
 		const receiptImg: proquse.Receipt.Creatable = {
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 			file: new File([new Uint8Array([97])], "file", { type: "image/jpeg" }),
-			date: "2023-01-01T00:00:42Z",
+			date: "2023-01-01", //issue
 		}
 		const receipt: proquse.Receipt.Creatable = {
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 			file: new File([new Uint8Array([97])], "file"),
 			date: "2023-01-01T00:00:42Z",
 		}
-
+		const dateTime: proquse.Receipt.Creatable = {
+			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
+			file: new File([new Uint8Array([97])], "file", { type: "image/jpeg" }),
+			date: "2023-01-01T00:00:42Z",
+		}
 		expect(proquse.Receipt.Creatable.is(receiptImg)).toEqual(true)
+		expect(proquse.Receipt.Creatable.is(dateTime)).toEqual(true)
 		expect(proquse.Receipt.Creatable.is((({ total, ...receipt }) => receipt)(receipt))).toEqual(false)
 		expect(proquse.Receipt.Creatable.is((({ file, ...receipt }) => receipt)(receipt))).toEqual(false)
 	})
