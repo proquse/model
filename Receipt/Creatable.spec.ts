@@ -8,7 +8,7 @@ describe("Receipt.Creatable", () => {
 		const receiptImg: proquse.Receipt.Creatable = {
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 			file: new File([new Uint8Array([97])], "file", { type: "image/jpeg" }),
-			date: "2023-01-01", //issue
+			date: "2023-01-01",
 		}
 		const receipt: proquse.Receipt.Creatable = {
 			total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
