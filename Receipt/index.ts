@@ -143,4 +143,7 @@ export namespace Receipt {
 			0
 		)
 	}
+	export function uploaded(receipt: Receipt): isoly.DateTime {
+		return receipt.uploaded ?? receipt.date
+	}
 }
