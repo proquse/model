@@ -20,7 +20,7 @@ describe("Receipt.Creatable", () => {
 			file: new File([new Uint8Array([97])], "file", { type: "image/jpeg" }),
 			date: "2023-01-01T00:00:42Z",
 		}
-		expect(proquse.Receipt.Creatable.is(receiptImg)).toEqual(true)
+		expect(proquse.Receipt.Creatable.is(receiptImg)).toEqual(false)
 		expect(proquse.Receipt.Creatable.is(dateTime)).toEqual(true)
 		expect(proquse.Receipt.Creatable.is((({ total, ...receipt }) => receipt)(receipt))).toEqual(false)
 		expect(proquse.Receipt.Creatable.is((({ file, ...receipt }) => receipt)(receipt))).toEqual(false)

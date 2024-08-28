@@ -1,11 +1,18 @@
 import { proquse } from "../index"
 
 describe("Receipt", () => {
+	const oldReceipt: proquse.Receipt = {
+		id: "---r----",
+		original: "https://example.com/receipt.pdf",
+		total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
+		date: "2022-01-01T00:00:42Z",
+	}
 	const receipt: proquse.Receipt = {
 		id: "---r----",
 		original: "https://example.com/receipt.pdf",
 		total: [{ net: { value: 10, currency: "USD" }, vat: { value: 2.5, currency: "USD" } }],
 		date: "2022-01-01T00:00:42Z",
+		uploaded: "2021-12-24T00:00:42Z",
 	}
 	const costCenter: proquse.CostCenter = {
 		id: "c1------",
@@ -73,6 +80,7 @@ describe("Receipt", () => {
 										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 										date: "2023-01-10T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
+										uploaded: "2021-12-24T00:00:42Z",
 									},
 									{
 										id: "r2------",
@@ -85,6 +93,7 @@ describe("Receipt", () => {
 										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 										date: "2023-03-10T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
+										uploaded: "2021-12-24T00:00:42Z",
 									},
 									{
 										id: "r4------",
@@ -103,6 +112,7 @@ describe("Receipt", () => {
 										total: [{ net: { value: 10, currency: "EUR" }, vat: { value: 2.5, currency: "EUR" } }],
 										date: "2023-06-10T00:00:42Z",
 										original: "https://example.com/receipt.pdf",
+										uploaded: "2021-12-24T00:00:42Z",
 									},
 									{
 										id: "r7------",
@@ -248,6 +258,7 @@ describe("Receipt", () => {
 	}
 	it("is", () => {
 		expect(proquse.Receipt.is(receipt)).toEqual(true)
+		expect(proquse.Receipt.is(oldReceipt)).toEqual(true)
 		expect(proquse.Receipt.is((({ original, ...receipt }) => receipt)(receipt))).toEqual(false)
 	})
 	it("validate", () => {
@@ -415,5 +426,9 @@ describe("Receipt", () => {
 		expect(result?.removed).toEqual(receipt)
 		expect(purchase.receipts.includes(receipt)).toEqual(false)
 		expect(purchase.transactions.some(transaction => transaction.receipts.includes(receipt.id))).toEqual(false)
+	})
+	it("uploaded", () => {
+		expect(proquse.Receipt.uploaded(oldReceipt)).toEqual("2022-01-01T00:00:42Z")
+		expect(proquse.Receipt.uploaded(receipt)).toEqual("2021-12-24T00:00:42Z")
 	})
 })

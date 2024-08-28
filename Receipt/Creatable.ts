@@ -5,13 +5,13 @@ import { Total } from "./Total"
 export interface Creatable {
 	total: Total[]
 	file: File
-	date: isoly.Date
+	date: isoly.DateTime
 }
 export namespace Creatable {
 	export const type = isly.object<Creatable>({
 		total: isly.array(Total.type),
 		file: isly.fromIs<File>("File", value => value instanceof File),
-		date: isly.union(isly.fromIs("Date", isoly.Date.is), isly.fromIs("DateTime", isoly.DateTime.is)),
+		date: isly.fromIs("DateTime", isoly.DateTime.is),
 	})
 
 	export const is = type.is
