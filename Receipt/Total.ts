@@ -12,8 +12,7 @@ export namespace Total {
 	export const flaw = type.flaw
 	export type Validation = TotalValidation<Total>
 	export function validate(total: Total, currency: isoly.Currency): Validation {
-		const validated: boolean = currency == total.net.currency && currency == total.vat.currency
-		return validated ? { status: true } : { status: false, reason: "currency", origin: total }
+		return { status: true }
 	}
 
 	export function spent(total: Total, currency: isoly.Currency): number {
