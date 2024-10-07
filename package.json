@@ -72,11 +72,11 @@
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
-		"@userwidgets/model": "^0.8.5",
+		"@userwidgets/model": "^0.8.31",
 		"authly": "^3.0.7",
-		"cryptly": "^3.0.8",
-		"flagly": "^0.1.13",
-		"isly": "^0.1.16",
+		"cryptly": "^4.0.6",
+		"flagly": "^0.2.4",
+		"isly": "^0.1.20",
 		"isoly": "^2.0.25",
 		"web-file-polyfill": "^1.0.4"
 	}

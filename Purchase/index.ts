@@ -30,7 +30,7 @@ export namespace Purchase {
 	export import Creatable = PurchaseCreatable
 	export import Link = PurchaseLink
 	export type Validation = PurchaseValidation<Delegation | Purchase | Receipt>
-	export const type: isly.object.ExtendableType<Purchase> = PurchaseCreatable.type.extend<Purchase>({
+	export const type = PurchaseCreatable.type.extend<Purchase>({
 		type: isly.string("purchase"),
 		id: Identifier.type,
 		created: isly.fromIs("DateTime", isoly.DateTime.is),

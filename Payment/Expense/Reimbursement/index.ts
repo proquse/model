@@ -8,7 +8,7 @@ export interface Reimbursement extends Reimbursement.Creatable {
 }
 
 export namespace Reimbursement {
-	export const type: isly.object.ExtendableType<Reimbursement> = ReimbursementCreatable.type.extend<Reimbursement>({
+	export const type = ReimbursementCreatable.type.extend<Reimbursement>({
 		created: isly.fromIs("Date", isoly.DateTime.is),
 		modified: isly.fromIs("Date", isoly.DateTime.is),
 	})

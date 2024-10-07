@@ -6,7 +6,7 @@ export interface Amount {
 	currency: isoly.Currency
 }
 export namespace Amount {
-	export const type: isly.object.ExtendableType<Amount> = isly.object({
+	export const type = isly.object<Amount>({
 		value: isly.number(),
 		currency: isly.fromIs("Currency", isoly.Currency.is),
 	})
