@@ -25,7 +25,7 @@ export namespace Delegation {
 	export import Identifier = DelegationIdentifier
 	export import Creatable = DelegationCreatable
 	export type Validation = DelegationValidation<CostCenter | Delegation | Purchase | Receipt>
-	export const type: isly.object.ExtendableType<Delegation> = Creatable.type.extend<Delegation>({
+	export const type: isly.Type<Delegation> = Creatable.type.extend<Delegation>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
@@ -289,7 +289,8 @@ export namespace Delegation {
 				days: Math.max(0, days),
 				message: `Overallocation in ${days} days.`,
 			})
-		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		if (onWarning)
+			warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof Delegation.warnings, 2> = warning => {
 			warnings.child.push(warning)
 			onWarning?.(warning)

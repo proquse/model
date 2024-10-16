@@ -33,7 +33,8 @@ function changeName(root: CostCenter | Delegation, name: string): string {
 	else
 		root.costCenter = name
 	for (const child of root.usage)
-		child.type == "delegation" && changeName(child, name)
+		if (child.type == "delegation")
+			changeName(child, name)
 	return name
 }
 export function changeCostCenter(

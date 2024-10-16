@@ -23,7 +23,7 @@ export namespace CostCenter {
 	export import Identifier = CostCenterIdentifier
 	export import Creatable = CostCenterCreatable
 	export type Validation = CostCenterValidation<CostCenter | Delegation | Purchase | Receipt>
-	export const type: isly.object.ExtendableType<CostCenter> = Creatable.type.extend<CostCenter>({
+	export const type: isly.Type<CostCenter> = Creatable.type.extend<CostCenter>({
 		id: Identifier.type,
 		created: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
 		modified: isly.fromIs<isoly.DateTime>("DateTime", isoly.DateTime.is),
@@ -148,7 +148,8 @@ export namespace CostCenter {
 				days: Math.max(0, days),
 				message: `Overallocation in ${days} days.`,
 			})
-		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		if (onWarning)
+			warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof CostCenter.warnings, 2> = warning => {
 			warnings.child.push(warning)
 			onWarning?.(warning)

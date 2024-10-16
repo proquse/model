@@ -21,16 +21,16 @@
 	},
 	"jest": {
 		"transform": {
+			
 			"^.+\\.(j|t)sx?$": [
 				"ts-jest",
 				{
 					"tsconfig": "./tsconfig.test.json"
 				}
-			],
-			"^.+\\.(js)$": "babel-jest"
+			]
 		},
 		"transformIgnorePatterns": [
-			"<rootDir>/node_modules/(?!(@userwidgets/model|flagly|userwidgets|cryptly|authly|isoly|gracely|cloudly-rest|cloudly-http|cloudly-router|cloudly-formdata|fetch-blob|formdata-polyfill|isly)/.*)"
+			"<rootDir>/node_modules/(?!(@userwidgets/model|flagly|userwidgets|cryptly|authly|isoly|gracely|cloudly-rest|cloudly-http|cloudly-router|cloudly-formdata|fetch-blob|formdata-polyfill|isly|@userwidgets)/.*)"
 		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
@@ -43,6 +43,7 @@
 			"!**/node_modules/**",
 			"!**/dist/**"
 		]
+		
 	},
 	"scripts": {
 		"dev": "watch 'npm run build' .",
@@ -56,28 +57,27 @@
 		"clean:dist": "rimraf dist"
 	},
 	"devDependencies": {
-		"@types/jest": "^29.5.5",
-		"@typescript-eslint/eslint-plugin": "6.7.0",
-		"@typescript-eslint/parser": "6.7.0",
-		"babel-jest": "^29.7.0",
+		"@types/jest": "^29.5.13",
+		"@typescript-eslint/eslint-plugin": "8.9.0",
+		"@typescript-eslint/parser": "8.9.0",
 		"eslint": "^8.49.0",
 		"eslint-plugin-prettierx": "github:utily/eslint-plugin-prettierx#utily-20231004",
-		"eslint-plugin-simple-import-sort": "^10.0.0",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"formdata-polyfill": "^4.0.10",
 		"jest": "^29.7.0",
 		"prettierx": "github:utily/prettierx#utily-20231004",
-		"rimraf": "^5.0.1",
-		"ts-jest": "^29.1.1",
+		"rimraf": "^6.0.1",
+		"ts-jest": "^29.2.5",
 		"typedly": "^0.0.6",
-		"typescript": "^5.2.2"
+		"typescript": "5.5.4"
 	},
 	"dependencies": {
-		"@userwidgets/model": "^0.8.5",
-		"authly": "^3.0.7",
-		"cryptly": "^3.0.8",
-		"flagly": "^0.1.13",
-		"isly": "^0.1.16",
-		"isoly": "^2.0.25",
+		"@userwidgets/model": "^0.8.31",
+		"authly": "^3.1.1",
+		"cryptly": "^4.0.6",
+		"flagly": "^0.2.4",
+		"isly": "^0.1.20",
+		"isoly": "^2.3.11",
 		"web-file-polyfill": "^1.0.4"
 	}
 }
