@@ -251,7 +251,8 @@ export namespace Purchase {
 				message: `Missing at least one receipt.`,
 			})
 
-		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		if (onWarning)
+			warnings.value.forEach(warning => onWarning(warning))
 		return { [purchase.id]: warnings }
 	}
 }

@@ -289,7 +289,8 @@ export namespace Delegation {
 				days: Math.max(0, days),
 				message: `Overallocation in ${days} days.`,
 			})
-		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		if (onWarning)
+			warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof Delegation.warnings, 2> = warning => {
 			warnings.child.push(warning)
 			onWarning?.(warning)

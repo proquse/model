@@ -148,7 +148,8 @@ export namespace CostCenter {
 				days: Math.max(0, days),
 				message: `Overallocation in ${days} days.`,
 			})
-		onWarning && warnings.value.forEach(warning => onWarning(warning))
+		if (onWarning)
+			warnings.value.forEach(warning => onWarning(warning))
 		const callback: Parameter<typeof CostCenter.warnings, 2> = warning => {
 			warnings.child.push(warning)
 			onWarning?.(warning)

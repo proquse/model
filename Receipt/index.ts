@@ -47,19 +47,21 @@ export namespace Receipt {
 		id: string
 	): { root: T; delegation: Delegation; purchase: Purchase; found: Receipt } | undefined {
 		let result: { root: T; delegation: Delegation; purchase: Purchase; found: Receipt } | undefined
-		roots.find(
-			root =>
-				root.type == "delegation" &&
-				root.usage.find(
-					purchase =>
-						purchase.type == "purchase" &&
-						purchase.receipts.find(
-							receipt =>
-								receipt.id == id &&
-								(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt })
-						)
-				)
-		) ??
+		if (
+			!roots.find(
+				root =>
+					root.type == "delegation" &&
+					root.usage.find(
+						purchase =>
+							purchase.type == "purchase" &&
+							purchase.receipts.find(
+								receipt =>
+									receipt.id == id &&
+									(result = { root, delegation: root as Delegation, purchase: purchase, found: receipt })
+							)
+					)
+			)
+		)
 			roots.find(root => {
 				const notPurchase = root.usage.reduce<(CostCenter | Delegation)[]>(
 					(result, node) => result.concat(node.type != "purchase" ? node : []),
@@ -122,7 +124,8 @@ export namespace Receipt {
 		else {
 			for (const transaction of search.purchase.transactions)
 				for (let index = transaction.receipts.length - 1; index >= 0; index--)
-					transaction.receipts[index] == id && transaction.receipts.splice(index, 1)
+					if (transaction.receipts[index] == id)
+						transaction.receipts.splice(index, 1)
 			result = search.purchase.receipts.splice(index, 1) && {
 				root: search.root,
 				delegation: search.delegation,
